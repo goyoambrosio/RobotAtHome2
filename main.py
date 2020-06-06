@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""" This is the docstring"""
+""" Robot@Home Python API """
 
 __author__ = "Gregorio Ambrosio"
 __contact__ = "gambrosio[at]uma.es"
@@ -13,13 +13,32 @@ import fire
 import os
 import hashlib
 import humanize
-import requests
 import wget
 import ssl
-import re
+# import requests
+# import re
 
 
 class Dataset():
+    class home():
+        def __init__(self, id, name, room_list=[]):
+            self.id = id
+            self.name = name
+            self.room_list = room_list
+
+    class room():
+        def __init__(self, id, type_id, home_id, object_list=[]):
+            self.id = id
+            self.type_id = type_id
+            self.home_id = home_id
+            self.objects_list = object_list
+
+    class object():
+        def __init__(self, id, name, type_id, room_id, feature_list=[]):
+            self.id = id
+            self.name = name
+            self.room_id = room_id
+            self.feature_list = feature_list
 
     class DatasetUnit():
 
@@ -53,12 +72,14 @@ class Dataset():
             return {'name': self.name, 'url': self.url}
 
         def __str__(self):
-            s = self.name + '\n' + \
+            s = '=' * len(self.name) + '\n' + \
+                self.name + '\n' + \
+                '=' * len(self.name) + '\n' + \
                 '  url           = ' + self.url + '\n' + \
                 '  path          = ' + self.path + '\n' + \
                 '  expected hash = ' + self.expected_hash_code + '\n' + \
-                '  expected size = ' + str(self.expected_size) + ' bytes  (' + \
-                humanize.naturalsize(self.expected_size) + ')' + '\n'
+                '  expected size = ' + str(self.expected_size) + ' bytes  (' +\
+                humanize.naturalsize(self.expected_size) + ')' + '\n'*2
             return s
 
         def check_folder_size(self, verbose=False):
@@ -68,9 +89,11 @@ class Dataset():
             """
             real_folder_size = self.size(self.path)
             if verbose:
-                print('expected size : ' + str(self.expected_size) + ' bytes (' +
+                print('expected size : ' + str(self.expected_size) +
+                      ' bytes (' +
                       humanize.naturalsize(self.expected_size) + ')')
-                print('counted       : ' + str(real_folder_size) + ' bytes (' +
+                print('counted       : ' + str(real_folder_size) +
+                      ' bytes (' +
                       humanize.naturalsize(real_folder_size) + ')')
             return self.expected_size == real_folder_size
 
@@ -106,7 +129,8 @@ class Dataset():
             """
             try:
                 with os.scandir(path) as it:
-                    return sum(self.size(entry, follow_symlinks=follow_symlinks)
+                    return sum(self.size(entry,
+                                         follow_symlinks=follow_symlinks)
                                for entry in it)
             except NotADirectoryError:
                 return os.stat(path, follow_symlinks=follow_symlinks).st_size
@@ -114,19 +138,22 @@ class Dataset():
         def hash_for_directory(self, hashfunc=hashlib.sha1):
             """
             Computes a single hash for a given folder. It works fine for
-            small-sized files (e.g. a source tree or something, where every file
-            individually can fit into RAM easily), ignoring empty directories.
+            small-sized files (e.g. a source tree or something, where every
+            file individually can fit into RAM easily), ignoring empty
+            directories.
 
             It works like this:
 
-            1. Find all files in the directory recursively and sort them by name
-            2. Calculate the hash (default: SHA-1) of every file (reads whole file
-               into memory)
+            1. Find all files in the directory recursively and sort them by
+               name
+            2. Calculate the hash (default: SHA-1) of every file (reads whole
+               file into memory)
             3. Make a textual index with "filename=hash" lines
             4. Encode that index back into a UTF-8 byte string and hash that
 
             You can pass in a different hash function
-            (https://docs.python.org/3/library/hashlib.html) as second parameter
+            (https://docs.python.org/3/library/hashlib.html) as second
+            parameter
 
             Source:
             https://stackoverflow.com/questions/545387/linux-compute-a-single-hash-for-a-given-folder-contents
@@ -143,18 +170,38 @@ class Dataset():
                                              hexdigest()) for fn in filenames)
             return hashfunc(index.encode('utf-8')).hexdigest()
 
-    class DatasetUnitCharacterizedElemets(DatasetUnit):
-        def get_sessions(self):
-            sessions = {"alma-s1",
-                        "anto-s1",
-                        "pare-s1",
-                        "rx2-s1",
-                        "sarmis-s1",
-                        "sarmis-s2",
-                        "sarmis-s3"}
-            return sessions
+    class DatasetUnitCharacterizedElements(DatasetUnit):
 
-        def get_types(self):
+        def __init__(self, name="", url="", path="", expected_hash_code="",
+                     expected_size=0):
+            """ Calls the super class __init__"""
+            super().__init__(name, url, path, expected_hash_code,
+                             expected_size)
+            self.__categories_file = "types.txt"
+            self.__home_key_string = "home"
+            self.__room_key_string = "room"
+            self.__object_key_string = "object"
+            self.categories = self.__load_categories()
+            self.home_files = self.__get_home_files()
+
+        def __str__(self):
+            """ Categories """
+
+            s = "\n"
+            s += "Categories" + "\n" + "==========" + "\n"*2
+            for category in self.categories:
+                w = category + " (" + str(len(self.categories[category])) + ")"
+                s += w + "\n"
+                s += "-" * len(w) + "\n"
+                for item in self.categories[category]:
+                    s += item + ", " + self.categories[category][item] + "\n"
+                s += "\n"
+            return super().__str__() + s
+
+        def __get_type(self):
+            """
+            Obsolete function. Just for reference.
+            """
             file_name = "types.txt"
             searched_key = "N_homes"
             ignored_keys = ["N_typesOfRooms", "N_typesOfObjects"]
@@ -184,6 +231,123 @@ class Dataset():
                     line = file_handler.readline()
             return types
 
+        def __load_categories(self):
+            """
+            types.txt file contains information about homes, room categories
+            and object categories that are considered.
+            This function read  a file with those elements and return it as a
+            dictionary:
+                key   : Name of the category
+                value : Dict with items belonging to the category:
+                    key   : id
+                    value : item's name
+            """
+            categories = {}
+
+            with open(self.path+"/"+self.__categories_file, "r") as file_handler:
+                # Initially they key is empty
+                key = ""
+                # Read the first line
+                line = file_handler.readline()
+                """
+                First lines before a key is found are ignored
+                """
+                while line:
+                    words = line.strip().split()
+                    if words[0].isdigit():
+                        if key:
+                            categories[key][words[0]] = words[1]
+                    else:
+                        key = words[0]
+                        categories[key] = {}
+                    line = file_handler.readline()
+            return categories
+
+        def get_homes(self):
+            for key in self.categories.keys():
+                if self.__home_key_string in key.lower():
+                    return self.categories[key]
+
+        def get_rooms(self):
+            for key in self.categories.keys():
+                if self.__room_key_string in key.lower():
+                    return self.categories[key]
+
+        def get_objects(self):
+            for key in self.categories.keys():
+                if self.__object_key_string in key.lower():
+                    return self.categories[key]
+
+        def __get_home_files(self):
+            """
+            returns a dict with all files under homes folders in a dictionary:
+            key   : home's name
+            value : a list with files under key folder
+
+            """
+            home_file = {}
+            home_list = list(self.get_homes().values())
+            for home in home_list:
+                home_file[home] = os.listdir(self.path + '/' + home)
+            return home_file
+
+        def load_home_file(self):
+            """
+            """
+            home_list = []
+            room_list = []
+
+            home_dict = self.get_homes()
+            reversed_home_dict = dict(map(reversed, home_dict.items()))
+
+            for home_files_key, home_files_value in self.home_files.items():
+                home_name = home_files_key
+                home_id = int(reversed_home_dict[home_files_key])
+                home = Dataset.home(home_id, home_name)
+                for home_file_name in home_files_value:
+                    path = self.path + "/" + home_files_key + "/" + \
+                           home_file_name
+                    print(path)
+                    with open(path, "r") as file_handler:
+                        # Read the first line
+                        home_header = file_handler.readline()
+                        words = home_header.strip().split()
+                        print(words)
+                        room_id         = words[7]
+                        room_type_id    = words[6]
+                        num_of_objects  = int(words[9])
+                        num_of_features  = int(words[11])
+                        room = Dataset.room(room_id, room_type_id, home_id)
+
+                        for object_index in range(1, num_of_objects):
+                            object_line = file_handler.readline()
+                            words = object_line.strip().split()
+                            print(words)
+                            object_name = words[0]
+                            object_id = words[1]
+                            object_type_id = words[3]
+                            object_feature_list = words[4:num_of_features + 3]
+                            object = Dataset.object(object_id, object_name,
+                                                    object_type_id, room_id,
+                                                    object_feature_list)
+
+                            # for feature_index in range(1, num_of_features):
+                            #    object_feature_list.append(words[feature_index+3])
+                            room.objects_list.append(object)
+                        home.room_list.append(room)
+                home_list.append(home)
+
+            # print(self.home_files)
+
+            """
+            home_files_key = "alma-s1"
+            home_file_name = "features_alma-s1_bathroom1.txt"
+            path = self.path + "/" + home_files_key + "/" + home_file_name
+            print(path)
+            """
+
+
+
     def __init__(self, name=""):
         """
         Initializes the Dataset with supplied values
@@ -192,6 +356,9 @@ class Dataset():
         =========
 
         name : Human name of
+        unit : dict with the expected dataset units:
+            http://mapir.isa.uma.es/mapirwebsite/index.php/mapir-downloads/203-robot-at-home-dataset.html#downloads
+        types : dict with homes, room categories and object categories
         """
 
         self.name = name
@@ -239,12 +406,13 @@ class Dataset():
           "6834f930a16bb5d968d55b0b647703d952384e91",
           16739353847)
 
-        self.unit["chelmnts"] = self.DatasetUnitCharacterizedElemets(
-          "Characterized elements",
-          "https://ananas.isa.uma.es:10002/sharing/t6zVblP3w",
-          "Robot@Home-dataset_characterized-elements",
-          "9d46bc3b33d2c6b84c04bd3db12cc415c17b4ae8",
-          33345659)
+        self.unit["chelmnts"] = self.DatasetUnitCharacterizedElements(
+            "Characterized elements",
+            "https://ananas.isa.uma.es:10002/sharing/t6zVblP3w",
+            "Robot@Home-dataset_characterized-elements",
+            "9d46bc3b33d2c6b84c04bd3db12cc415c17b4ae8",
+            33345659
+        )
 
         self.unit["2dgeomap"] = self.DatasetUnit(
           "2D geometric maps",
@@ -267,6 +435,27 @@ class Dataset():
           "652087d30c05ff4eaec9a0770307a2ced7fe5064",
           40872)
 
+        # self.categories = self.unit["chelmnts"].load_categories()
+        self.categories = self.unit["chelmnts"].categories
+
+    def __str__(self):
+
+        """ Units """
+        total_expected_size = 0
+
+        s = "\n" + self.name + "\n" + "*" * len(self.name) + "\n"*2
+        s += "Units" + "\n" + "=====" + "\n"*2
+        for unit in self.unit.values():
+            s += unit.__str__()
+            total_expected_size += unit.expected_size
+
+        s += "\n"
+        s += 'Total expected size = ' + str(total_expected_size) + \
+             ' (' + humanize.naturalsize(total_expected_size) + ')'
+        s += "\n"
+
+        return s
+
 
 def main():
 
@@ -278,24 +467,22 @@ def main():
     # /media/goyo/WDGREEN2TB-A/Users/goyo/Documents
 
     rhds = Dataset("MyRobot@Home")
-    """
-    print('Robot@Home dataset units: ' + str(len(rhds.unit)))
-    print('============================')
-    total_expected_size = 0
-    for x in rhds.unit:
-        total_expected_size = total_expected_size + rhds.unit[x].expected_size
-        print('(' + x + ')')
-        print(rhds.unit[x])
-        # print('  Check size: ' + str(rhds.unit[x].check_folder_size()))
-    print('Total expected size = ' + str(total_expected_size) + ' (' +
-          humanize.naturalsize(total_expected_size) + ')')
-    """
+    # print(rhds)
+
     """
     print(rhds["hometopo"].check_integrity(verbose=True))
     print(rhds["hometopo"].hash_for_directory())
     rhds["hometopo"].download()
     """
-    print(rhds.unit["chelmnts"].get_types())
+    # print(rhds.unit["chelmnts"])
+    home_dict = rhds.unit["chelmnts"].get_homes()
+    reversed_home_dict = dict(map(reversed, home_dict.items()))
+    print(home_dict)
+    print(reversed_home_dict)
+    # print(rhds.unit["chelmnts"].get_rooms())
+    # print(rhds.unit["chelmnts"].get_objects())
+
+    rhds.unit["chelmnts"].load_home_file()
 
     return 0
 
