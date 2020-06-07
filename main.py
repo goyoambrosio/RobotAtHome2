@@ -26,19 +26,182 @@ class Dataset():
             self.name = name
             self.room_list = room_list
 
-    class room():
-        def __init__(self, id, type_id, home_id, object_list=[]):
-            self.id = id
-            self.type_id = type_id
-            self.home_id = home_id
-            self.objects_list = object_list
+        def __str__(self):
+            s = "\t" + str(self.id) + ", " + self.name + ", (" + \
+                str(len(self.room_list)) + " rooms)"
+            return s
 
-    class object():
-        def __init__(self, id, name, type_id, room_id, feature_list=[]):
+    class room():
+        def __init__(self, id, name,
+                     type_id, type_name,
+                     home_id,
+                     object_list, relations):
+            """
+            word  0: Home
+            word  1: <readable-home-id>
+            word  2: <home-id>
+            word  3: Room_type
+            word  4: <readable-room-type>
+            word  5: <room-type-id>
+            word  6: ID
+            word  7: <room-id>
+            word  8: N_objects
+            word  9: <number-of-objects>
+            word 10: N_objectFeatures
+            word 11: <number-of-object-features>
+            """
             self.id = id
             self.name = name
+            self.type_id = type_id
+            self.type_name = type_name
+            self.home_id = home_id
+            self.object_list = object_list
+            self.relations = relations
+
+        def __str__(self):
+            s = "\t" + str(self.id) + ", " + self.name + ", " + \
+                str(self.type_id) + ", " + self.type_name + ", " + \
+                str(self.home_id) + ", (" + \
+                str(len(self.object_list)) + " objects), (" + \
+                str(len(self.relations)) + " relations)"
+            return s
+
+    class object():
+        def __init__(self, id, name, type_id, type_name, room_id, features):
+            self.id = id
+            self.name = name
+            self.type_id = type_id
+            self.type_name = type_name
             self.room_id = room_id
-            self.feature_list = feature_list
+            self.features = features
+
+        def __str__(self):
+            s = "\t" + str(self.id) + ", " + self.name + ", " + \
+                str(self.type_id) + ", " + self.type_name + ", " + \
+                str(self.room_id) + ", (" + \
+                str(len(self.features)) + " features)"
+            return s
+
+    class object_features(list):
+        """
+        The feature list follows this structure:
+        0 : <planarity>
+        1 : <scatter>
+        2 : <linearity>
+        3 : <min-height>
+        4 : <max-height>
+        5 : <centroid-x>
+        6 : <centroid-y>
+        7 : <centroid-z>
+        8 : <volume>
+        9 : <biggest-area>
+        10 : <orientation>
+        11 : <hue-mean>
+        12 : <sturation-mean>
+        13 : <vlue-mean>
+        14 : <hue-stdv>
+        15 : <saturation-stdv>
+        16 : <value-stdv>
+        17 : <hue-histogram(5)>
+        18 : <hue-histogram(5)>
+        19 : <hue-histogram(5)>
+        20 : <hue-histogram(5)>
+        21 : <hue-histogram(5)>
+        22 : <value-histogram(5)>
+        23 : <value-histogram(5)>
+        24 : <value-histogram(5)>
+        25 : <value-histogram(5)>
+        26 : <value-histogram(5)>
+        27 :<saturation-histogram(0)>
+        28 :<saturation-histogram(1)>
+        29 :<saturation-histogram(2)>
+        30 :<saturation-histogram(3)>
+        31 :<saturation-histogram(4)>
+        """
+
+        def __init__(self):
+            pass
+
+        def __str__(self):
+            s = "\t" + "planarity            : " + self[0] + "\n" + \
+                "\t" + "scatter              : " + self[1] + "\n" + \
+                "\t" + "linearity            : " + self[2] + "\n" + \
+                "\t" + "min-height           : " + self[3] + "\n" + \
+                "\t" + "max-height           : " + self[4] + "\n" + \
+                "\t" + "centroid-(x,y,z)     : " + str(self[5:8]) + "\n" + \
+                "\t" + "volume               : " + self[8] + "\n" + \
+                "\t" + "biggest-area         : " + self[9] + "\n" + \
+                "\t" + "orientation          : " + self[10] + "\n" + \
+                "\t" + "hue-mean             : " + self[11] + "\n" + \
+                "\t" + "saturation-mean      : " + self[12] + "\n" + \
+                "\t" + "value-men            : " + self[13] + "\n" + \
+                "\t" + "hue-stdy             : " + self[14] + "\n" + \
+                "\t" + "saturation-stdy      : " + self[15] + "\n" + \
+                "\t" + "value-stdy           : " + self[16] + "\n" + \
+                "\t" + "hue-histogram        : " + str(self[17:22]) + "\n" + \
+                "\t" + "value-histogram      : " + str(self[22:27]) + "\n" + \
+                "\t" + "saturation-histogram : " + str(self[27:32])
+            return s
+
+    class ObjectRelation():
+        def __init__(self, id,
+                     obj1_id, obj1_name, obj1_type,
+                     obj2_id, obj2_name, obj2_type,
+                     features):
+            self.id = id
+            self.obj1_id = obj1_id
+            self.obj1_name = obj1_name
+            self.obj1_type = obj1_type
+            self.obj2_id = obj2_id
+            self.obj2_name = obj2_name
+            self.obj2_type = obj2_type
+            self.features = features
+
+        def __str__(self):
+            s = "\t" + self.id + ", " + \
+                "(" + self.obj1_name + ", " + \
+                self.obj1_id + ", " + \
+                self.obj1_type + ")-" + \
+                "(" + self.obj2_name + ", " + \
+                self.obj2_id + ", " + \
+                self.obj2_type + "), (" + \
+                str(len(self.features)) + ") features"
+            return s
+
+    class ObjectRelationFeatures(list):
+        """
+        The feature list follows this structure:
+
+        0 : <minimum-distance>
+        1 : <perpendicularity>
+        2 : <vertical-distance>
+        3 : <volume-ratio>
+        4 : <is-on>
+        5 : <abs-hue-stdv-diff>
+        6 : <abs-saturation-stdv-diff>
+        7 : <abs-value-stdv-diff>
+        8 : <abs-hue-mean-diff>
+        9 : <abs-saturation-mean-diff>
+        10 : <abs-value-mean-diff>
+        """
+
+        def __init__(self):
+            pass
+
+        def __str__(self):
+            s = "\t" + "minimum-distance             : " + self[0] + "\n" + \
+                "\t" + "perpendicularity             : " + self[1] + "\n" + \
+                "\t" + "vertical-distance            : " + self[2] + "\n" + \
+                "\t" + "volume-ratio                 : " + self[3] + "\n" + \
+                "\t" + "is-on                        : " + self[4] + "\n" + \
+                "\t" + "abs-hue-stdv-diff            : " + self[5] + "\n" + \
+                "\t" + "abs-saturation-stdv-diff     : " + self[6] + "\n" + \
+                "\t" + "abs-value-stdv-diff          : " + self[7] + "\n" + \
+                "\t" + "abs-hue-mean-difforientation : " + self[8] + "\n" + \
+                "\t" + "abs-saturation-mean-diff     : " + self[9] + "\n" + \
+                "\t" + "abs-value-mean-diff          : " + self[10] + "\n"
+            return s
+
 
     class DatasetUnit():
 
@@ -303,39 +466,175 @@ class Dataset():
             for home_files_key, home_files_value in self.home_files.items():
                 home_name = home_files_key
                 home_id = int(reversed_home_dict[home_files_key])
-                home = Dataset.home(home_id, home_name)
+                room_list = []
+                home = Dataset.home(home_id, home_name, room_list)
+                """
+                Loop a file per room
+                """
                 for home_file_name in home_files_value:
                     path = self.path + "/" + home_files_key + "/" + \
                            home_file_name
-                    print(path)
+                    # print(path)
                     with open(path, "r") as file_handler:
-                        # Read the first line
+                        """
+                        Read the first line with the following structure:
+                        word  0: Home
+                        word  1: <readable-home-id>
+                        word  2: <home-id>
+                        word  3: Room_type
+                        word  4: <readable-room-type>
+                        word  5: <room-type-id>
+                        word  6: ID
+                        word  7: <room-id>
+                        word  8: N_objects
+                        word  9: <number-of-objects>
+                        word 10: N_objectFeatures
+                        word 11: <number-of-object-features>
+                        """
                         home_header = file_handler.readline()
                         words = home_header.strip().split()
-                        print(words)
+                        # print(words)
                         room_id         = words[7]
-                        room_type_id    = words[6]
+                        """
+                        File record does not contain a name for the room so
+                        the type_name is given as name.
+                        """
+                        room_name       = words[4]
+                        room_type_id    = int(words[5])
+                        room_type_name  = words[4]
                         num_of_objects  = int(words[9])
-                        num_of_features  = int(words[11])
-                        room = Dataset.room(room_id, room_type_id, home_id)
-
-                        for object_index in range(1, num_of_objects):
+                        num_of_features = int(words[11])
+                        object_list     = []
+                        relations       = []
+                        room = Dataset.room(room_id, room_name,
+                                            room_type_id, room_type_name,
+                                            home_id,
+                                            relations, object_list)
+                        # Read the next num_of_objects lines
+                        for object_index in range(num_of_objects):
+                            """
+                            Read a line with the following structure:
+                            word  0 : <object-label>
+                            word  1 : <object-ID>
+                            word  2 : <object-type>
+                            word  3 : <object-ground-truh>
+                            word  4 : <planarity>
+                            word  5 : <scatter>
+                            word  6 : <linearity>
+                            word  7 : <min-height>
+                            word  8 : <max-height>
+                            word  9 : <centroid-x>
+                            word 10 : <centroid-y>
+                            word 11 : <centroid-z>
+                            word 12 : <volume>
+                            word 13 : <biggest-area>
+                            word 14 : <orientation>
+                            word 15 : <hue-mean>
+                            word 16 : <sturation-mean>
+                            word 17 : <vlue-mean>
+                            word 18 : <hue-stdv>
+                            word 19 : <saturation-stdv>
+                            word 20 : <value-stdv>
+                            word 21 : <hue-histogram(5)>
+                            word 22 : <hue-histogram(5)>
+                            word 23 : <hue-histogram(5)>
+                            word 24 : <hue-histogram(5)>
+                            word 25 : <hue-histogram(5)>
+                            word 26 : <value-histogram(5)>
+                            word 27 : <value-histogram(5)>
+                            word 28 : <value-histogram(5)>
+                            word 29 : <value-histogram(5)>
+                            word 30 : <value-histogram(5)>
+                            word 31 :<saturation-histogram(0)>
+                            word 32 :<saturation-histogram(1)>
+                            word 33 :<saturation-histogram(2)>
+                            word 34 :<saturation-histogram(3)>
+                            word 35 :<saturation-histogram(4)>
+                            """
                             object_line = file_handler.readline()
+                            # print(object_line)
                             words = object_line.strip().split()
-                            print(words)
+                            # print(words)
+                            object_id = int(words[1])
                             object_name = words[0]
-                            object_id = words[1]
-                            object_type_id = words[3]
-                            object_feature_list = words[4:num_of_features + 3]
-                            object = Dataset.object(object_id, object_name,
-                                                    object_type_id, room_id,
+                            object_type_id = int(words[3])
+                            object_type_name = words[2]
+                            object_feature_list = Dataset.object_features()
+                            object_feature_list += words[4:]
+                            # print(len(object_feature_list))
+                            object = Dataset.object(object_id,
+                                                    object_name,
+                                                    object_type_id,
+                                                    object_type_name,
+                                                    room_id,
                                                     object_feature_list)
+                            room.object_list.append(object)
+                        # home.room_list.append(room)
+                        """
+                        Read the next line with the following structure:
+                        word  0: N_relations
+                        word  1: <number-of-relations>
+                        word  2: N_relationFeatures
+                        word  3: <number-of-features>
+                        """
+                        relations_header_line = file_handler.readline()
+                        # print(relations_header_line)
+                        words = relations_header_line.strip().split()
+                        # print(words)
+                        num_relations = int(words[1])
+                        num_features_per_relation = int(words[3])
+                        # Read the next num_relations lines
+                        for object_relation_index in range(num_relations):
+                            """
+                            Read a line with the following structure:
 
-                            # for feature_index in range(1, num_of_features):
-                            #    object_feature_list.append(words[feature_index+3])
-                            room.objects_list.append(object)
+                            word 0  : <label-obj-1>
+                            word 1  : <label-obj-2>
+                            word 2  : <relation-ID>
+                            word 3  : <obj-1-ID>
+                            word 4  : <obj-2-ID>
+                            word 5  : <obj-1-ground-truth>
+                            word 6  : <obj-2-ground-truth>
+                            word 7  : <minimum-distance>
+                            word 8  : <perpendicularity>
+                            word 9  : <vertical-distance>
+                            word 10 : <volume-ratio>
+                            word 11 : <is-on>
+                            word 12 : <abs-hue-stdv-diff>
+                            word 13 : <abs-saturation-stdv-diff>
+                            word 14 : <abs-value-stdv-diff>
+                            word 15 : <abs-hue-mean-diff>
+                            word 16 : <abs-saturation-mean-diff>
+                            word 17 : <abs-value-mean-diff>
+                            """
+                            relation_line = file_handler.readline()
+                            words = relation_line.strip().split()
+
+                            object_relation_id = words[2]
+                            object_relation_obj1_id   = words[3]
+                            object_relation_obj1_name = words[0]
+                            object_relation_obj1_type = words[5]
+                            object_relation_obj2_id   = words[4]
+                            object_relation_obj2_name = words[1]
+                            object_relation_obj2_type = words[6]
+                            object_relation_feature_list = Dataset.ObjectRelationFeatures()
+                            object_relation_feature_list += words[7:]
+ 
+                            object_relation = Dataset.ObjectRelation(
+                                object_relation_id,
+                                object_relation_obj1_id,
+                                object_relation_obj1_name,
+                                object_relation_obj1_type,
+                                object_relation_obj2_id,
+                                object_relation_obj2_name,
+                                object_relation_obj2_type,
+                                object_relation_feature_list
+                            )
+                            room.relations.append(object_relation)
                         home.room_list.append(room)
                 home_list.append(home)
+
+            return home_list
 
             # print(self.home_files)
 
@@ -475,14 +774,25 @@ def main():
     rhds["hometopo"].download()
     """
     # print(rhds.unit["chelmnts"])
-    home_dict = rhds.unit["chelmnts"].get_homes()
-    reversed_home_dict = dict(map(reversed, home_dict.items()))
-    print(home_dict)
-    print(reversed_home_dict)
+    # home_dict = rhds.unit["chelmnts"].get_homes()
+    # reversed_home_dict = dict(map(reversed, home_dict.items()))
+    # print(home_dict)
+    # print(reversed_home_dict)
     # print(rhds.unit["chelmnts"].get_rooms())
     # print(rhds.unit["chelmnts"].get_objects())
 
-    rhds.unit["chelmnts"].load_home_file()
+    home_list = rhds.unit["chelmnts"].load_home_file()
+    tab = 4
+    for home in home_list:
+        print(str(home).expandtabs(0))
+        for room in home.room_list:
+            print(str(room).expandtabs(tab))
+            #for object in room.object_list:
+                #print(str(object).expandtabs(tab*2))
+                #print((str(object.features).expandtabs(tab*3)))
+            for relation in room.relations:
+                print(str(relation).expandtabs(tab*2))
+                print(str(relation.features).expandtabs(tab*3))
 
     return 0
 
