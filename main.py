@@ -20,53 +20,41 @@ import ssl
 
 
 class Dataset():
-    class home():
-        def __init__(self, id, name, room_list=[]):
+    class Home():
+        def __init__(self, id, name, rooms):
             self.id = id
             self.name = name
-            self.room_list = room_list
+            self.rooms = rooms
 
         def __str__(self):
             s = "\t" + str(self.id) + ", " + self.name + ", (" + \
-                str(len(self.room_list)) + " rooms)"
+                str(len(self.rooms)) + " rooms)"
             return s
 
-    class room():
+    class Room():
         def __init__(self, id, name,
                      type_id, type_name,
                      home_id,
-                     object_list, relations):
-            """
-            word  0: Home
-            word  1: <readable-home-id>
-            word  2: <home-id>
-            word  3: Room_type
-            word  4: <readable-room-type>
-            word  5: <room-type-id>
-            word  6: ID
-            word  7: <room-id>
-            word  8: N_objects
-            word  9: <number-of-objects>
-            word 10: N_objectFeatures
-            word 11: <number-of-object-features>
-            """
+                     objects, relations, observations):
             self.id = id
             self.name = name
             self.type_id = type_id
             self.type_name = type_name
             self.home_id = home_id
-            self.object_list = object_list
+            self.objects = objects
             self.relations = relations
+            self.observations = observations
 
         def __str__(self):
             s = "\t" + str(self.id) + ", " + self.name + ", " + \
                 str(self.type_id) + ", " + self.type_name + ", " + \
                 str(self.home_id) + ", (" + \
-                str(len(self.object_list)) + " objects), (" + \
-                str(len(self.relations)) + " relations)"
+                str(len(self.objects)) + " objects), (" + \
+                str(len(self.relations)) + " relations), (" + \
+                str(len(self.observations)) + " observations)"
             return s
 
-    class object():
+    class Object():
         def __init__(self, id, name, type_id, type_name, room_id, features):
             self.id = id
             self.name = name
@@ -82,7 +70,7 @@ class Dataset():
                 str(len(self.features)) + " features)"
             return s
 
-    class object_features(list):
+    class ObjectFeatures(list):
         """
         The feature list follows this structure:
         0 : <planarity>
@@ -119,6 +107,25 @@ class Dataset():
         31 :<saturation-histogram(4)>
         """
 
+        keys = ['planarity',
+                'scatter',
+                'linearity',
+                'min-height',
+                'max-height',
+                'centroid-xyz',
+                'volume',
+                'biggest-area',
+                'orientation',
+                'hue-mean',
+                'sturation-mean',
+                'vlue-mean',
+                'hue-stdv',
+                'saturation-stdv',
+                'value-stdv',
+                'hue-histogram',
+                'value-histogram',
+                'saturation-histogram']
+
         def __init__(self):
             pass
 
@@ -128,7 +135,7 @@ class Dataset():
                 "\t" + "linearity            : " + self[2] + "\n" + \
                 "\t" + "min-height           : " + self[3] + "\n" + \
                 "\t" + "max-height           : " + self[4] + "\n" + \
-                "\t" + "centroid-(x,y,z)     : " + str(self[5:8]) + "\n" + \
+                "\t" + "centroid-xyz         : " + str(self[5:8]) + "\n" + \
                 "\t" + "volume               : " + self[8] + "\n" + \
                 "\t" + "biggest-area         : " + self[9] + "\n" + \
                 "\t" + "orientation          : " + self[10] + "\n" + \
@@ -142,6 +149,16 @@ class Dataset():
                 "\t" + "value-histogram      : " + str(self[22:27]) + "\n" + \
                 "\t" + "saturation-histogram : " + str(self[27:32])
             return s
+
+        def as_dict(self):
+            new_list = self[0:5] + \
+                       [self[5:8]] + \
+                       self[8:17] + \
+                       [self[17:22]] + [self[22:27]] + [self[27:]]
+
+            zip_obj = zip(self.keys, new_list)
+            new_dict = dict(zip_obj)
+            return new_dict
 
     class ObjectRelation():
         def __init__(self, id,
@@ -185,6 +202,18 @@ class Dataset():
         10 : <abs-value-mean-diff>
         """
 
+        keys = ['minimum-distance',
+                'perpendicularity',
+                'vertical-distance',
+                'volume-ratio',
+                'is-on',
+                'abs-hue-stdv-diff',
+                'abs-saturation-stdv-diff',
+                'abs-value-stdv-diff',
+                'abs-hue-mean-diff',
+                'abs-saturation-mean-diff',
+                'abs-value-mean-diff']
+
         def __init__(self):
             pass
 
@@ -202,6 +231,180 @@ class Dataset():
                 "\t" + "abs-value-mean-diff          : " + self[10] + "\n"
             return s
 
+        def as_dict(self):
+            zip_obj = zip(self.keys, self)
+            new_dict = dict(zip_obj)
+            return new_dict
+
+    class RoomRGBDObservation():
+        def __init__(self,
+                     id,
+                     sensor_name,
+                     objects_id,
+                     features,
+                     scan_features):
+            self.id = id
+            self.sensor_name = sensor_name
+            self.objects_id = objects_id
+            self.features = features
+            self.scan_features = scan_features
+
+        def __str__(self):
+            s = "\t" + self.id + " : " + self.sensor_name + " : (" + \
+                str(len(self.objects_id)) + \
+                ") observed objects, (" + \
+                str(len(self.features)) + \
+                ") observation features, (" + \
+                str(len(self.scan_features)) + \
+                ") scan features"
+            return s
+
+    class RoomRGBDObservationFeatures(list):
+        """
+        The feature list follows this structure:
+            0 : <mean-hue>
+            1 : <mean-saturation>
+            2 : <mean-value>
+            3 : <hue-stdv>
+            4 : <saturation-stdv>
+            5 : <value-stdv>
+         6:10 : <hue-histogram(5)>
+        11:15 : <saturation-histogram(5)>
+        16:20 : <value-histogram(5)>
+           21 : <distance>
+           22 : <foot-print>
+           23 : <volume>
+           24 : <mean-mean-hue>
+           25 : <mean-mean-saturation>
+           26 : <mean-mean-value>
+           27 : <mean-hue-stdv>
+           28 : <mean-saturation-stdv>
+           29 : <mean-value-stdv>
+        30:34 : <mean-hue-histogram(5)>
+        35:39 : <mean-saturation-histogram(5)>
+        40:44 : <mean-value-histogram(5)>
+           45 : <mean-distance>
+           46 : <mean-foot-print>
+           47 : <mean-volume>
+            0 : <area>
+            1 : <elongation>
+            2 : <mean-distance>
+            3 : <distance-stdv>
+            4 : <num-of-points>
+            5 : <compactness>
+            6 : <compactness2>
+            7 : <linearity>
+            8 : <scatter>
+        """
+
+        keys = ['mean-hue',
+                'mean-saturation',
+                'mean-value',
+                'hue-stdv',
+                'saturation-stdv',
+                'value-stdv',
+                'hue-histogram',
+                'saturation-histogram',
+                'value-histogram',
+                'distance',
+                'foot-print',
+                'volume',
+                'mean-mean-hue',
+                'mean-mean-saturation',
+                'mean-mean-value',
+                'mean-hue-stdv',
+                'mean-saturation-stdv',
+                'mean-value-stdv',
+                'mean-hue-histogram',
+                'mean-saturation-histogram',
+                'mean-value-histogram',
+                'mean-distance',
+                'mean-foot-print',
+                'mean-volume']
+
+        def __init__(self):
+            pass
+
+        def __str__(self):
+            s = "\t" + "mean-hue                  : " + self[0] + "\n" + \
+                "\t" + "mean-saturation           : " + self[1] + "\n" + \
+                "\t" + "mean-value                : " + self[2] + "\n" + \
+                "\t" + "hue-stdv                  : " + self[3] + "\n" + \
+                "\t" + "saturation-stdv           : " + self[4] + "\n" + \
+                "\t" + "value-stdv                : " + self[5] + "\n" + \
+                "\t" + "hue-histogram             : " + str(self[6:11]) + "\n" + \
+                "\t" + "saturation-histogram      : " + str(self[11:16]) + "\n" + \
+                "\t" + "value-histogram           : " + str(self[16:21]) + "\n" + \
+                "\t" + "distance                  : " + self[21] + "\n" + \
+                "\t" + "foot-print                : " + self[22] + "\n" + \
+                "\t" + "volume                    : " + self[23] + "\n" + \
+                "\t" + "mean-mean-hue             : " + self[24] + "\n" + \
+                "\t" + "mean-mean-saturation      : " + self[25] + "\n" + \
+                "\t" + "mean-mean-value           : " + self[26] + "\n" + \
+                "\t" + "mean-hue-stdv             : " + self[27] + "\n" + \
+                "\t" + "mean-saturation-stdv      : " + self[28] + "\n" + \
+                "\t" + "mean-value-stdv           : " + self[29] + "\n" + \
+                "\t" + "mean-hue-histogram        : " + str(self[30:35]) + "\n" + \
+                "\t" + "mean-saturation-histogram : " + str(self[35:40]) + "\n" + \
+                "\t" + "mean-value-histogram      : " + str(self[40:45]) + "\n" + \
+                "\t" + "mean-distance             : " + self[45] + "\n" + \
+                "\t" + "mean-foot-print           : " + self[46] + "\n" + \
+                "\t" + "mean-volume               : " + self[47] + "\n"
+            return s
+
+        def as_dict(self):
+            new_list = self[0:6] + \
+                       [self[6:11]] + [self[11:16]] + [self[16:21]] + \
+                       self[21:30] + \
+                       [self[30:35]] + [self[35:40]] + [self[40:45]] + \
+                       self[45:]
+
+            zip_obj = zip(self.keys, new_list)
+            new_dict = dict(zip_obj)
+            return new_dict
+
+    class RoomRGBDObservationScanFeatures(list):
+        """
+        The feature list follows this structure:
+            0 : <area>
+            1 : <elongation>
+            2 : <mean-distance>
+            3 : <distance-stdv>
+            4 : <num-of-points>
+            5 : <compactness>
+            6 : <compactness2>
+            7 : <linearity>
+            8 : <scatter>
+        """
+        keys = ['area',
+                'elongation',
+                'mean-distance',
+                'distance-stdv',
+                'num-of-points',
+                'compactness',
+                'compactness2',
+                'linearity',
+                'scatter']
+
+        def __init__(self):
+            pass
+
+        def __str__(self):
+            s = "\t" + "area          : " + self[0] + "\n" + \
+                "\t" + "elongation    : " + self[1] + "\n" + \
+                "\t" + "mean-distance : " + self[2] + "\n" + \
+                "\t" + "distance-stdv : " + self[3] + "\n" + \
+                "\t" + "num-of-points : " + self[4] + "\n" + \
+                "\t" + "compactness   : " + self[5] + "\n" + \
+                "\t" + "compactness2  : " + self[6] + "\n" + \
+                "\t" + "linearity     : " + self[7] + "\n" + \
+                "\t" + "scatter       : " + self[8]
+            return s
+
+        def as_dict(self):
+            zip_obj = zip(self.keys, self)
+            new_dict = dict(zip_obj)
+            return new_dict
 
     class DatasetUnit():
 
@@ -346,6 +549,7 @@ class Dataset():
             self.__object_key_string = "object"
             self.categories = self.__load_categories()
             self.home_files = self.__get_home_files()
+            self.homes = self.__load_home_files()
 
         def __str__(self):
             """ Categories """
@@ -454,12 +658,10 @@ class Dataset():
                 home_file[home] = os.listdir(self.path + '/' + home)
             return home_file
 
-        def load_home_file(self):
+        def __load_home_files(self):
             """
             """
             home_list = []
-            room_list = []
-
             home_dict = self.get_homes()
             reversed_home_dict = dict(map(reversed, home_dict.items()))
 
@@ -467,7 +669,7 @@ class Dataset():
                 home_name = home_files_key
                 home_id = int(reversed_home_dict[home_files_key])
                 room_list = []
-                home = Dataset.home(home_id, home_name, room_list)
+                home = Dataset.Home(home_id, home_name, room_list)
                 """
                 Loop a file per room
                 """
@@ -504,12 +706,13 @@ class Dataset():
                         room_type_name  = words[4]
                         num_of_objects  = int(words[9])
                         num_of_features = int(words[11])
-                        object_list     = []
+                        objects         = []
                         relations       = []
-                        room = Dataset.room(room_id, room_name,
+                        observations    = []
+                        room = Dataset.Room(room_id, room_name,
                                             room_type_id, room_type_name,
                                             home_id,
-                                            relations, object_list)
+                                            objects, relations, observations)
                         # Read the next num_of_objects lines
                         for object_index in range(num_of_objects):
                             """
@@ -559,16 +762,16 @@ class Dataset():
                             object_name = words[0]
                             object_type_id = int(words[3])
                             object_type_name = words[2]
-                            object_feature_list = Dataset.object_features()
+                            object_feature_list = Dataset.ObjectFeatures()
                             object_feature_list += words[4:]
                             # print(len(object_feature_list))
-                            object = Dataset.object(object_id,
+                            object = Dataset.Object(object_id,
                                                     object_name,
                                                     object_type_id,
                                                     object_type_name,
                                                     room_id,
                                                     object_feature_list)
-                            room.object_list.append(object)
+                            room.objects.append(object)
                         # home.room_list.append(room)
                         """
                         Read the next line with the following structure:
@@ -631,9 +834,104 @@ class Dataset():
                                 object_relation_feature_list
                             )
                             room.relations.append(object_relation)
-                        home.room_list.append(room)
-                home_list.append(home)
+                        """
+                        Read the next line with the following structure:
+                        word  0: N_observations
+                        word  1: <number-of-observations>
+                        word  2: N_roomFeatures
+                        word  3: <number-of-room-features>
+                        word  4: N_scanFeatures
+                        word  5: <number-of-scan-features>
+                        """
+                        observations_header_line = file_handler.readline()
+                        #print(observations_header_line)
+                        words = observations_header_line.strip().split()
+                        #print(words)
+                        num_observations  = int(words[1])
+                        num_room_features = int(words[3])
+                        num_scan_features = int(words[5])
+                        # Read the next num_relations lines
+                        for observation_index in range(num_observations):
+                            """
+                            word  0 : <sensor-label>
+                            word  1 : <observation-ID>
+                            word  2 : <number-of-objects-in-obs>
+                            word  3 : <object-ID> number-of-objects-in-obs times
+                            jump number-of-objects-in-obs lines
+                            word  4 (end - 55): <mean-hue>
+                            word  5 (end - 54): <mean-saturation>
+                            word  6 (end - 53): <mean-value> <hue-stdv>
+                            word  7 (end - 52): <saturation-stdv>
+                            word  8 (end - 51): <value-stdv>
+                            word  9 (end - 46): <hue-histogram(5)>
+                            word 14 (end - 41): <saturation-histogram(5)>
+                            word 19 (end - 36): <value-histogram(5)>
+                            word 24 (end - 35): <distance>
+                            word 25 (end - 34): <foot-print>
+                            word 26 (end - 33): <volume>
+                            word 27 (end - 32): <mean-mean-hue>
+                            word 28 (end - 31): <mean-mean-saturation>
+                            word 29 (end - 30): <mean-mean-value>
+                            word 30 (end - 29): <mean-hue-stdv>
+                            word 31 (end - 28): <mean-saturation-stdv>
+                            word 32 (end - 27): <mean-value-stdv>
+                            word 33 (end - 22): <mean-hue-histogram(5)>
+                            word 34 (end - 17): <mean-saturation-histogram(5)>
+                            word 35 (end - 12): <mean-value-histogram(5)>
+                            word 36 (end - 11): <mean-distance>
+                            word 37 (end - 10): <mean-foot-print>
+                            word 38 (end -  9): <mean-volume>
+                            word 39 (end -  8): <area>
+                            word 40 (end -  7): <elongation>
+                            word 41 (end -  6): <mean-distance>
+                            word 42 (end -  5): <distance-stdv>
+                            word 43 (end -  4): <num-of-points>
+                            word 44 (end -  3): <compactness>
+                            word 45 (end -  2): <compactness2>
+                            word 46 (end -  1): <linearity>
+                            word 47 (end -  0): <scatter>
+                            """
+                            observations_line = file_handler.readline()
+                            # print(observations_line)
+                            words = observations_line.strip().split()
+                            # print(observation_index, len(words))
+                            # print(words)
+                            observation_id = words[1]
+                            observation_sensor_name = words[0]
 
+                            """ compute range values """
+                            obj_num = int(words[2])
+                            obj_id_range_begin = 3
+                            obj_id_range_end     = obj_id_range_begin + obj_num
+                            obs_feat_range_begin = obj_id_range_end
+                            obs_feat_range_end   = obs_feat_range_begin + 48
+                            obs_scan_range_begin = obs_feat_range_end
+                            obs_scan_range_end   = obs_scan_range_begin + 9
+                            # print("[{},{}]".format(obj_id_range_begin,obj_id_range_end))
+                            # print("[{},{}]".format(obs_feat_range_begin,obs_feat_range_end))
+                            # print("[{},{}]".format(obs_scan_range_begin,obs_scan_range_end))
+
+                            observation_objects_id = words[obj_id_range_begin:obj_id_range_end]
+
+                            observation_features = Dataset.RoomRGBDObservationFeatures()
+                            observation_features += words[obs_feat_range_begin:obs_feat_range_end]
+                            # print(len(observation_features))
+
+                            observation_scan_features = Dataset.RoomRGBDObservationScanFeatures()
+                            observation_scan_features += words[obs_scan_range_begin:obs_scan_range_end]
+                            # print(len(observation_scan_features))
+
+                            observation = Dataset.RoomRGBDObservation(
+                                observation_id,
+                                observation_sensor_name,
+                                observation_objects_id,
+                                observation_features,
+                                observation_scan_features
+                            )
+
+                            room.observations.append(observation)
+                        home.rooms.append(room)
+                home_list.append(home)
             return home_list
 
             # print(self.home_files)
@@ -644,7 +942,6 @@ class Dataset():
             path = self.path + "/" + home_files_key + "/" + home_file_name
             print(path)
             """
-
 
 
     def __init__(self, name=""):
@@ -781,19 +1078,32 @@ def main():
     # print(rhds.unit["chelmnts"].get_rooms())
     # print(rhds.unit["chelmnts"].get_objects())
 
-    home_list = rhds.unit["chelmnts"].load_home_file()
+    homes = rhds.unit["chelmnts"].homes
     tab = 4
-    for home in home_list:
+    for home in homes:
         print(str(home).expandtabs(0))
-        for room in home.room_list:
+        for room in home.rooms:
             print(str(room).expandtabs(tab))
-            #for object in room.object_list:
-                #print(str(object).expandtabs(tab*2))
+            """
+            """
+            for object in room.objects:
+                print(str(object).expandtabs(tab*2))
                 #print((str(object.features).expandtabs(tab*3)))
+                #print(object.features.as_dict())
+            """
             for relation in room.relations:
                 print(str(relation).expandtabs(tab*2))
                 print(str(relation.features).expandtabs(tab*3))
-
+                print(relation.features.as_dict())
+            """
+            """
+            for observation in room.observations:
+                print(str(observation).expandtabs(tab*2))
+                print(str(observation.features).expandtabs(tab*3))
+                print(observation.features.as_dict())
+                print(str(observation.scan_features).expandtabs(tab*3))
+                print(observation.scan_features.as_dict())
+            """
     return 0
 
 
