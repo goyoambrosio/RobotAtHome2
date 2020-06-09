@@ -20,702 +20,6 @@ import ssl
 
 
 class Dataset():
-    class Home():
-        keys = ['id',
-                'name',
-                'rooms']
-
-        def __init__(self, id, name, rooms):
-            self.id = id
-            self.name = name
-            self.rooms = rooms
-
-        def __str__(self):
-            s = "\t" + str(self.id) + ", " + self.name + ", (" + \
-                str(len(self.rooms)) + " rooms)"
-            return s
-
-        def __repr__(self):
-            s = "<Home instance (" + str(self.id) + ":" + self.name + ")>"
-            return s
-
-        def as_list(self):
-            return [self.id, self.name, self.rooms]
-
-        def as_dict(self):
-            new_dict = {
-                'id': self.id,
-                'name': self.name,
-                'rooms': self.rooms
-            }
-            return new_dict
-
-    class Homes(list):
-
-        def __init__(self):
-            pass
-
-        def __str__(self):
-            s = ''
-            for item in self:
-                s += str(item) + "\n"
-            return s
-
-        def __repr__(self):
-            s = "<Home list instance (" + str(len(self)) + " items)>"
-            return s
-
-        def get_names(self):
-            return [home.name for home in self]
-
-        def get_ids(self):
-            return [home.id for home in self]
-
-        def as_dict_id(self):
-            keys = [home.id for home in self]
-            zip_obj = zip(keys, self)
-            new_dict = dict(zip_obj)
-            return new_dict
-
-        def as_dict_name(self):
-            keys = [home.name for home in self]
-            zip_obj = zip(keys, self)
-            new_dict = dict(zip_obj)
-            return new_dict
-
-    class Room():
-        def __init__(self, id, name,
-                     type_id, type_name,
-                     home_id,
-                     objects, relations, observations):
-            self.id = id
-            self.name = name
-            self.type_id = type_id
-            self.type_name = type_name
-            self.home_id = home_id
-            self.objects = objects
-            self.relations = relations
-            self.observations = observations
-
-        def __str__(self):
-            s = "\t" + str(self.id) + ", " + self.name + ", " + \
-                str(self.type_id) + ", " + self.type_name + ", " + \
-                str(self.home_id) + ", (" + \
-                str(len(self.objects)) + " objects), (" + \
-                str(len(self.relations)) + " relations), (" + \
-                str(len(self.observations)) + " observations)"
-            return s
-
-        def __repr__(self):
-            s = "<Room instance (" + str(self.id) + ":" + self.name + ")>"
-            return s
-
-        def as_list(self):
-            return [self.id,
-                    self.name,
-                    self.type_id,
-                    self.type_name,
-                    self.home_id,
-                    self.objects,
-                    self.relations,
-                    self.observations]
-
-        def as_dict(self):
-            new_dict = {
-                'id': self.id,
-                'name': self.name,
-                'type_id': self.type_id,
-                'type_name': self.type_name,
-                'home_id': self.home_id,
-                'objects': self.objects,
-                'relations': self.relations,
-                'observations': self.observations
-            }
-            return new_dict
-
-    class Rooms(list):
-
-        def __init__(self):
-            pass
-
-        def __str__(self):
-            s = ''
-            for item in self:
-                s += str(item) + "\n"
-            return s
-
-        def __repr__(self):
-            s = "<Room list instance (" + str(len(self)) + " items)>"
-            return s
-
-        def get_names(self):
-            return [room.name for room in self]
-
-        def get_ids(self):
-            return [room.id for room in self]
-
-        def as_dict_id(self):
-            keys = [room.id for room in self]
-            zip_obj = zip(keys, self)
-            new_dict = dict(zip_obj)
-            return new_dict
-
-        def as_dict_name(self):
-            keys = [room.name for room in self]
-            zip_obj = zip(keys, self)
-            new_dict = dict(zip_obj)
-            return new_dict
-
-    class Object():
-        def __init__(self, id, name, type_id, type_name, room_id, features):
-            self.id = id
-            self.name = name
-            self.type_id = type_id
-            self.type_name = type_name
-            self.room_id = room_id
-            self.features = features
-
-        def __str__(self):
-            s = "\t" + str(self.id) + ", " + self.name + ", " + \
-                str(self.type_id) + ", " + self.type_name + ", " + \
-                str(self.room_id) + ", (" + \
-                str(len(self.features)) + " features)"
-            return s
-
-        def __repr__(self):
-            s = "<Object instance (" + str(self.id) + ":" + self.name + ")>"
-            return s
-
-        def as_list(self):
-            return [self.id,
-                    self.name,
-                    self.type_id,
-                    self.type_name,
-                    self.room_id,
-                    self.features]
-
-        def as_dict(self):
-            new_dict = {
-                'id': self.id,
-                'name': self.name,
-                'type_id': self.type_id,
-                'type_name': self.type_name,
-                'room_id': self.room_id,
-                'features': self.features
-            }
-            return new_dict
-
-    class Objects(list):
-
-        def __init__(self):
-            pass
-
-        def __str__(self):
-            s = ''
-            for item in self:
-                s += str(item) + "\n"
-            return s
-
-        def __repr__(self):
-            s = "<Objects list instance (" + str(len(self)) + " items)>"
-            return s
-
-        def get_names(self):
-            return [object.name for object in self]
-
-        def get_ids(self):
-            return [object.id for object in self]
-
-        def as_dict_id(self):
-            keys = [object.id for object in self]
-            zip_obj = zip(keys, self)
-            new_dict = dict(zip_obj)
-            return new_dict
-
-        def as_dict_name(self):
-            keys = [object.name for object in self]
-            zip_obj = zip(keys, self)
-            new_dict = dict(zip_obj)
-            return new_dict
-
-    class ObjectFeatures(list):
-        """
-        The feature list follows this structure:
-        0 : <planarity>
-        1 : <scatter>
-        2 : <linearity>
-        3 : <min-height>
-        4 : <max-height>
-        5 : <centroid-x>
-        6 : <centroid-y>
-        7 : <centroid-z>
-        8 : <volume>
-        9 : <biggest-area>
-        10 : <orientation>
-        11 : <hue-mean>
-        12 : <sturation-mean>
-        13 : <vlue-mean>
-        14 : <hue-stdv>
-        15 : <saturation-stdv>
-        16 : <value-stdv>
-        17 : <hue-histogram(5)>
-        18 : <hue-histogram(5)>
-        19 : <hue-histogram(5)>
-        20 : <hue-histogram(5)>
-        21 : <hue-histogram(5)>
-        22 : <value-histogram(5)>
-        23 : <value-histogram(5)>
-        24 : <value-histogram(5)>
-        25 : <value-histogram(5)>
-        26 : <value-histogram(5)>
-        27 :<saturation-histogram(0)>
-        28 :<saturation-histogram(1)>
-        29 :<saturation-histogram(2)>
-        30 :<saturation-histogram(3)>
-        31 :<saturation-histogram(4)>
-        """
-
-        keys = ['planarity',
-                'scatter',
-                'linearity',
-                'min-height',
-                'max-height',
-                'centroid-xyz',
-                'volume',
-                'biggest-area',
-                'orientation',
-                'hue-mean',
-                'sturation-mean',
-                'vlue-mean',
-                'hue-stdv',
-                'saturation-stdv',
-                'value-stdv',
-                'hue-histogram',
-                'value-histogram',
-                'saturation-histogram']
-
-        def __init__(self):
-            pass
-
-        def __str__(self):
-            s = "\t" + "planarity            : " + self[0] + "\n" + \
-                "\t" + "scatter              : " + self[1] + "\n" + \
-                "\t" + "linearity            : " + self[2] + "\n" + \
-                "\t" + "min-height           : " + self[3] + "\n" + \
-                "\t" + "max-height           : " + self[4] + "\n" + \
-                "\t" + "centroid-xyz         : " + str(self[5:8]) + "\n" + \
-                "\t" + "volume               : " + self[8] + "\n" + \
-                "\t" + "biggest-area         : " + self[9] + "\n" + \
-                "\t" + "orientation          : " + self[10] + "\n" + \
-                "\t" + "hue-mean             : " + self[11] + "\n" + \
-                "\t" + "saturation-mean      : " + self[12] + "\n" + \
-                "\t" + "value-men            : " + self[13] + "\n" + \
-                "\t" + "hue-stdy             : " + self[14] + "\n" + \
-                "\t" + "saturation-stdy      : " + self[15] + "\n" + \
-                "\t" + "value-stdy           : " + self[16] + "\n" + \
-                "\t" + "hue-histogram        : " + str(self[17:22]) + "\n" + \
-                "\t" + "value-histogram      : " + str(self[22:27]) + "\n" + \
-                "\t" + "saturation-histogram : " + str(self[27:32])
-            return s
-
-        def __repr__(self):
-            s = "<ObjectFeatures list instance (" + str(len(self)) + " items)>"
-            return s
-
-        def as_dict(self):
-            new_list = self[0:5] + \
-                       [self[5:8]] + \
-                       self[8:17] + \
-                       [self[17:22]] + [self[22:27]] + [self[27:]]
-
-            zip_obj = zip(self.keys, new_list)
-            new_dict = dict(zip_obj)
-            return new_dict
-
-    class ObjectRelation():
-        def __init__(self, id,
-                     obj1_id, obj1_name, obj1_type,
-                     obj2_id, obj2_name, obj2_type,
-                     features):
-            self.id = id
-            self.obj1_id = obj1_id
-            self.obj1_name = obj1_name
-            self.obj1_type = obj1_type
-            self.obj2_id = obj2_id
-            self.obj2_name = obj2_name
-            self.obj2_type = obj2_type
-            self.features = features
-
-        def __str__(self):
-            s = "\t" + self.id + ", " + \
-                "(" + self.obj1_name + ", " + \
-                self.obj1_id + ", " + \
-                self.obj1_type + ")-" + \
-                "(" + self.obj2_name + ", " + \
-                self.obj2_id + ", " + \
-                self.obj2_type + "), (" + \
-                str(len(self.features)) + ") features"
-            return s
-
-        def __repr__(self):
-            s = "<ObjectRelation instance (" + str(self.id) + ":" + \
-                self.obj1_id + "-" + self.obj2_id + ")>"
-            return s
-
-        def as_list(self):
-            return [self.id,
-                    self.obj1_id,
-                    self.obj1_name,
-                    self.obj1_type,
-                    self.obj2_id,
-                    self.obj2_name,
-                    self.obj2_type,
-                    self.features]
-
-        def as_dict(self):
-            new_dict = {
-                'id': self.id,
-                'obj1_id': self.obj1_id,
-                'obj1_name': self.obj1_name,
-                'obj1_type': self.obj1_type,
-                'obj2_id': self.obj2_id,
-                'obj2_name': self.obj2_name,
-                'obj2_type': self.obj2_type,
-                'features': self.features
-            }
-            return new_dict
-
-    class ObjectRelations(list):
-        def __init__(self):
-            pass
-
-        def __str__(self):
-            s = ''
-            for item in self:
-                s += str(item) + "\n"
-            return s
-
-        def __repr__(self):
-            s = "<ObjectRelations list instance (" + str(len(self)) + \
-                " items)>"
-            return s
-
-        def get_ids(self):
-            return [relation.id for relation in self]
-
-        def get_obj1_ids(self):
-            return [relation.obj1_id for relation in self]
-
-        def get_obj2_ids(self):
-            return [relation.obj2_id for relation in self]
-
-        def as_dict_id(self):
-            keys = [relation.id for relation in self]
-            zip_obj = zip(keys, self)
-            new_dict = dict(zip_obj)
-            return new_dict
-
-        def as_dict_obj1_id(self):
-            keys = [relation.obj1_id for relation in self]
-            zip_obj = zip(keys, self)
-            new_dict = dict(zip_obj)
-            return new_dict
-
-        def as_dict_obj2_id(self):
-            keys = [relation.obj2_id for relation in self]
-            zip_obj = zip(keys, self)
-            new_dict = dict(zip_obj)
-            return new_dict
-
-    class ObjectRelationFeatures(list):
-        """
-        The feature list follows this structure:
-
-        0 : <minimum-distance>
-        1 : <perpendicularity>
-        2 : <vertical-distance>
-        3 : <volume-ratio>
-        4 : <is-on>
-        5 : <abs-hue-stdv-diff>
-        6 : <abs-saturation-stdv-diff>
-        7 : <abs-value-stdv-diff>
-        8 : <abs-hue-mean-diff>
-        9 : <abs-saturation-mean-diff>
-        10 : <abs-value-mean-diff>
-        """
-
-        keys = ['minimum-distance',
-                'perpendicularity',
-                'vertical-distance',
-                'volume-ratio',
-                'is-on',
-                'abs-hue-stdv-diff',
-                'abs-saturation-stdv-diff',
-                'abs-value-stdv-diff',
-                'abs-hue-mean-diff',
-                'abs-saturation-mean-diff',
-                'abs-value-mean-diff']
-
-        def __init__(self):
-            pass
-
-        def __str__(self):
-            s = "\t" + "minimum-distance             : " + self[0] + "\n" + \
-                "\t" + "perpendicularity             : " + self[1] + "\n" + \
-                "\t" + "vertical-distance            : " + self[2] + "\n" + \
-                "\t" + "volume-ratio                 : " + self[3] + "\n" + \
-                "\t" + "is-on                        : " + self[4] + "\n" + \
-                "\t" + "abs-hue-stdv-diff            : " + self[5] + "\n" + \
-                "\t" + "abs-saturation-stdv-diff     : " + self[6] + "\n" + \
-                "\t" + "abs-value-stdv-diff          : " + self[7] + "\n" + \
-                "\t" + "abs-hue-mean-difforientation : " + self[8] + "\n" + \
-                "\t" + "abs-saturation-mean-diff     : " + self[9] + "\n" + \
-                "\t" + "abs-value-mean-diff          : " + self[10] + "\n"
-            return s
-
-        def __repr__(self):
-            s = "<ObjectRelationFeatures list instance (" + str(len(self)) + \
-                " items)>"
-            return s
-
-        def as_dict(self):
-            zip_obj = zip(self.keys, self)
-            new_dict = dict(zip_obj)
-            return new_dict
-
-    class Observation():
-        def __init__(self,
-                     id,
-                     sensor_name,
-                     objects_id,
-                     features,
-                     scan_features):
-            self.id = id
-            self.sensor_name = sensor_name
-            self.objects_id = objects_id
-            self.features = features
-            self.scan_features = scan_features
-
-        def __str__(self):
-            s = "\t" + self.id + " : " + self.sensor_name + " : (" + \
-                str(len(self.objects_id)) + \
-                ") observed objects, (" + \
-                str(len(self.features)) + \
-                ") observation features, (" + \
-                str(len(self.scan_features)) + \
-                ") scan features"
-            return s
-
-        def __repr__(self):
-            s = "<Observation instance (" + str(self.id) + ":" + \
-                self.sensor_name + ")>"
-            return s
-
-        def as_list(self):
-            return [self.id,
-                    self.sensor_name,
-                    self.objects_id,
-                    self.features,
-                    self.scan_features]
-
-        def as_dict(self):
-            new_dict = {
-                'id': self.id,
-                'sensor_name': self.sensor_name,
-                'objects_id': self.objects_id,
-                'features': self.features,
-                'scan_features': self.scan_features
-            }
-            return new_dict
-
-    class Observations(list):
-
-        def __init__(self):
-            pass
-
-        def __str__(self):
-            s = ''
-            for item in self:
-                s += str(item) + "\n"
-            return s
-
-        def __repr__(self):
-            s = "<Observations list instance (" + str(len(self)) + \
-                " items)>"
-            return s
-
-        def get_sensor_names(self):
-            return [observation.sensor_name for observation in self]
-
-        def get_ids(self):
-            return [observation.id for observation in self]
-
-        def as_dict_id(self):
-            keys = [observation.id for observation in self]
-            zip_obj = zip(keys, self)
-            new_dict = dict(zip_obj)
-            return new_dict
-
-        def as_dict_sensor_name(self):
-            keys = [observation.sensor_name for observation in self]
-            zip_obj = zip(keys, self)
-            new_dict = dict(zip_obj)
-            return new_dict
-
-    class ObservationFeatures(list):
-        """
-        The feature list follows this structure:
-            0 : <mean-hue>
-            1 : <mean-saturation>
-            2 : <mean-value>
-            3 : <hue-stdv>
-            4 : <saturation-stdv>
-            5 : <value-stdv>
-         6:10 : <hue-histogram(5)>
-        11:15 : <saturation-histogram(5)>
-        16:20 : <value-histogram(5)>
-           21 : <distance>
-           22 : <foot-print>
-           23 : <volume>
-           24 : <mean-mean-hue>
-           25 : <mean-mean-saturation>
-           26 : <mean-mean-value>
-           27 : <mean-hue-stdv>
-           28 : <mean-saturation-stdv>
-           29 : <mean-value-stdv>
-        30:34 : <mean-hue-histogram(5)>
-        35:39 : <mean-saturation-histogram(5)>
-        40:44 : <mean-value-histogram(5)>
-           45 : <mean-distance>
-           46 : <mean-foot-print>
-           47 : <mean-volume>
-            0 : <area>
-            1 : <elongation>
-            2 : <mean-distance>
-            3 : <distance-stdv>
-            4 : <num-of-points>
-            5 : <compactness>
-            6 : <compactness2>
-            7 : <linearity>
-            8 : <scatter>
-        """
-
-        keys = ['mean-hue',
-                'mean-saturation',
-                'mean-value',
-                'hue-stdv',
-                'saturation-stdv',
-                'value-stdv',
-                'hue-histogram',
-                'saturation-histogram',
-                'value-histogram',
-                'distance',
-                'foot-print',
-                'volume',
-                'mean-mean-hue',
-                'mean-mean-saturation',
-                'mean-mean-value',
-                'mean-hue-stdv',
-                'mean-saturation-stdv',
-                'mean-value-stdv',
-                'mean-hue-histogram',
-                'mean-saturation-histogram',
-                'mean-value-histogram',
-                'mean-distance',
-                'mean-foot-print',
-                'mean-volume']
-
-        def __init__(self):
-            pass
-
-        def __str__(self):
-            s = "\t" + "mean-hue                  : " + self[0] + "\n" + \
-                "\t" + "mean-saturation           : " + self[1] + "\n" + \
-                "\t" + "mean-value                : " + self[2] + "\n" + \
-                "\t" + "hue-stdv                  : " + self[3] + "\n" + \
-                "\t" + "saturation-stdv           : " + self[4] + "\n" + \
-                "\t" + "value-stdv                : " + self[5] + "\n" + \
-                "\t" + "hue-histogram             : " + str(self[6:11]) + "\n" + \
-                "\t" + "saturation-histogram      : " + str(self[11:16]) + "\n" + \
-                "\t" + "value-histogram           : " + str(self[16:21]) + "\n" + \
-                "\t" + "distance                  : " + self[21] + "\n" + \
-                "\t" + "foot-print                : " + self[22] + "\n" + \
-                "\t" + "volume                    : " + self[23] + "\n" + \
-                "\t" + "mean-mean-hue             : " + self[24] + "\n" + \
-                "\t" + "mean-mean-saturation      : " + self[25] + "\n" + \
-                "\t" + "mean-mean-value           : " + self[26] + "\n" + \
-                "\t" + "mean-hue-stdv             : " + self[27] + "\n" + \
-                "\t" + "mean-saturation-stdv      : " + self[28] + "\n" + \
-                "\t" + "mean-value-stdv           : " + self[29] + "\n" + \
-                "\t" + "mean-hue-histogram        : " + str(self[30:35]) + "\n" + \
-                "\t" + "mean-saturation-histogram : " + str(self[35:40]) + "\n" + \
-                "\t" + "mean-value-histogram      : " + str(self[40:45]) + "\n" + \
-                "\t" + "mean-distance             : " + self[45] + "\n" + \
-                "\t" + "mean-foot-print           : " + self[46] + "\n" + \
-                "\t" + "mean-volume               : " + self[47] + "\n"
-            return s
-
-        def __repr__(self):
-            s = "<ObservationFeatures list instance (" + \
-                str(len(self)) + " items)>"
-            return s
-
-        def as_dict(self):
-            new_list = self[0:6] + \
-                       [self[6:11]] + [self[11:16]] + [self[16:21]] + \
-                       self[21:30] + \
-                       [self[30:35]] + [self[35:40]] + [self[40:45]] + \
-                       self[45:]
-            zip_obj = zip(self.keys, new_list)
-            new_dict = dict(zip_obj)
-            return new_dict
-
-    class ObservationScanFeatures(list):
-        """
-        The feature list follows this structure:
-            0 : <area>
-            1 : <elongation>
-            2 : <mean-distance>
-            3 : <distance-stdv>
-            4 : <num-of-points>
-            5 : <compactness>
-            6 : <compactness2>
-            7 : <linearity>
-            8 : <scatter>
-        """
-        keys = ['area',
-                'elongation',
-                'mean-distance',
-                'distance-stdv',
-                'num-of-points',
-                'compactness',
-                'compactness2',
-                'linearity',
-                'scatter']
-
-        def __init__(self):
-            pass
-
-        def __str__(self):
-            s = "\t" + "area          : " + self[0] + "\n" + \
-                "\t" + "elongation    : " + self[1] + "\n" + \
-                "\t" + "mean-distance : " + self[2] + "\n" + \
-                "\t" + "distance-stdv : " + self[3] + "\n" + \
-                "\t" + "num-of-points : " + self[4] + "\n" + \
-                "\t" + "compactness   : " + self[5] + "\n" + \
-                "\t" + "compactness2  : " + self[6] + "\n" + \
-                "\t" + "linearity     : " + self[7] + "\n" + \
-                "\t" + "scatter       : " + self[8]
-            return s
-
-        def __repr__(self):
-            s = "<ObservationScanFeatures list instance (" + str(len(self)) + " items)>"
-            return s
-
-        def as_dict(self):
-            zip_obj = zip(self.keys, self)
-            new_dict = dict(zip_obj)
-            return new_dict
 
     class DatasetUnit():
 
@@ -848,6 +152,702 @@ class Dataset():
             return hashfunc(index.encode('utf-8')).hexdigest()
 
     class DatasetUnitCharacterizedElements(DatasetUnit):
+        class HomeSession():
+            keys = ['id',
+                    'name',
+                    'rooms']
+
+            def __init__(self, id, name, rooms):
+                self.id = id
+                self.name = name
+                self.rooms = rooms
+
+            def __str__(self):
+                s = "\t" + str(self.id) + ", " + self.name + ", (" + \
+                    str(len(self.rooms)) + " rooms)"
+                return s
+
+            def __repr__(self):
+                s = "<HomeSession instance (" + str(self.id) + ":" + self.name + ")>"
+                return s
+
+            def as_list(self):
+                return [self.id, self.name, self.rooms]
+
+            def as_dict(self):
+                new_dict = {
+                    'id': self.id,
+                    'name': self.name,
+                    'rooms': self.rooms
+                }
+                return new_dict
+
+        class HomeSessions(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<HomeSessions list instance (" + str(len(self)) + " items)>"
+                return s
+
+            def get_names(self):
+                return [home.name for home in self]
+
+            def get_ids(self):
+                return [home.id for home in self]
+
+            def as_dict_id(self):
+                keys = [home.id for home in self]
+                zip_obj = zip(keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+            def as_dict_name(self):
+                keys = [home.name for home in self]
+                zip_obj = zip(keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+        class Room():
+            def __init__(self, id, name,
+                         type_id, type_name,
+                         home_id,
+                         objects, relations, observations):
+                self.id = id
+                self.name = name
+                self.type_id = type_id
+                self.type_name = type_name
+                self.home_id = home_id
+                self.objects = objects
+                self.relations = relations
+                self.observations = observations
+
+            def __str__(self):
+                s = "\t" + str(self.id) + ", " + self.name + ", " + \
+                    str(self.type_id) + ", " + self.type_name + ", " + \
+                    str(self.home_id) + ", (" + \
+                    str(len(self.objects)) + " objects), (" + \
+                    str(len(self.relations)) + " relations), (" + \
+                    str(len(self.observations)) + " observations)"
+                return s
+
+            def __repr__(self):
+                s = "<Room instance (" + str(self.id) + ":" + self.name + ")>"
+                return s
+
+            def as_list(self):
+                return [self.id,
+                        self.name,
+                        self.type_id,
+                        self.type_name,
+                        self.home_id,
+                        self.objects,
+                        self.relations,
+                        self.observations]
+
+            def as_dict(self):
+                new_dict = {
+                    'id': self.id,
+                    'name': self.name,
+                    'type_id': self.type_id,
+                    'type_name': self.type_name,
+                    'home_id': self.home_id,
+                    'objects': self.objects,
+                    'relations': self.relations,
+                    'observations': self.observations
+                }
+                return new_dict
+
+        class Rooms(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<Room list instance (" + str(len(self)) + " items)>"
+                return s
+
+            def get_names(self):
+                return [room.name for room in self]
+
+            def get_ids(self):
+                return [room.id for room in self]
+
+            def as_dict_id(self):
+                keys = [room.id for room in self]
+                zip_obj = zip(keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+            def as_dict_name(self):
+                keys = [room.name for room in self]
+                zip_obj = zip(keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+        class Object():
+            def __init__(self, id, name, type_id, type_name, room_id, features):
+                self.id = id
+                self.name = name
+                self.type_id = type_id
+                self.type_name = type_name
+                self.room_id = room_id
+                self.features = features
+
+            def __str__(self):
+                s = "\t" + str(self.id) + ", " + self.name + ", " + \
+                    str(self.type_id) + ", " + self.type_name + ", " + \
+                    str(self.room_id) + ", (" + \
+                    str(len(self.features)) + " features)"
+                return s
+
+            def __repr__(self):
+                s = "<Object instance (" + str(self.id) + ":" + self.name + ")>"
+                return s
+
+            def as_list(self):
+                return [self.id,
+                        self.name,
+                        self.type_id,
+                        self.type_name,
+                        self.room_id,
+                        self.features]
+
+            def as_dict(self):
+                new_dict = {
+                    'id': self.id,
+                    'name': self.name,
+                    'type_id': self.type_id,
+                    'type_name': self.type_name,
+                    'room_id': self.room_id,
+                    'features': self.features
+                }
+                return new_dict
+
+        class Objects(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<Objects list instance (" + str(len(self)) + " items)>"
+                return s
+
+            def get_names(self):
+                return [object.name for object in self]
+
+            def get_ids(self):
+                return [object.id for object in self]
+
+            def as_dict_id(self):
+                keys = [object.id for object in self]
+                zip_obj = zip(keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+            def as_dict_name(self):
+                keys = [object.name for object in self]
+                zip_obj = zip(keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+        class ObjectFeatures(list):
+            """
+            The feature list follows this structure:
+            0 : <planarity>
+            1 : <scatter>
+            2 : <linearity>
+            3 : <min-height>
+            4 : <max-height>
+            5 : <centroid-x>
+            6 : <centroid-y>
+            7 : <centroid-z>
+            8 : <volume>
+            9 : <biggest-area>
+            10 : <orientation>
+            11 : <hue-mean>
+            12 : <sturation-mean>
+            13 : <vlue-mean>
+            14 : <hue-stdv>
+            15 : <saturation-stdv>
+            16 : <value-stdv>
+            17 : <hue-histogram(5)>
+            18 : <hue-histogram(5)>
+            19 : <hue-histogram(5)>
+            20 : <hue-histogram(5)>
+            21 : <hue-histogram(5)>
+            22 : <value-histogram(5)>
+            23 : <value-histogram(5)>
+            24 : <value-histogram(5)>
+            25 : <value-histogram(5)>
+            26 : <value-histogram(5)>
+            27 :<saturation-histogram(0)>
+            28 :<saturation-histogram(1)>
+            29 :<saturation-histogram(2)>
+            30 :<saturation-histogram(3)>
+            31 :<saturation-histogram(4)>
+            """
+
+            keys = ['planarity',
+                    'scatter',
+                    'linearity',
+                    'min-height',
+                    'max-height',
+                    'centroid-xyz',
+                    'volume',
+                    'biggest-area',
+                    'orientation',
+                    'hue-mean',
+                    'sturation-mean',
+                    'vlue-mean',
+                    'hue-stdv',
+                    'saturation-stdv',
+                    'value-stdv',
+                    'hue-histogram',
+                    'value-histogram',
+                    'saturation-histogram']
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = "\t" + "planarity            : " + self[0] + "\n" + \
+                    "\t" + "scatter              : " + self[1] + "\n" + \
+                    "\t" + "linearity            : " + self[2] + "\n" + \
+                    "\t" + "min-height           : " + self[3] + "\n" + \
+                    "\t" + "max-height           : " + self[4] + "\n" + \
+                    "\t" + "centroid-xyz         : " + str(self[5:8]) + "\n" + \
+                    "\t" + "volume               : " + self[8] + "\n" + \
+                    "\t" + "biggest-area         : " + self[9] + "\n" + \
+                    "\t" + "orientation          : " + self[10] + "\n" + \
+                    "\t" + "hue-mean             : " + self[11] + "\n" + \
+                    "\t" + "saturation-mean      : " + self[12] + "\n" + \
+                    "\t" + "value-men            : " + self[13] + "\n" + \
+                    "\t" + "hue-stdy             : " + self[14] + "\n" + \
+                    "\t" + "saturation-stdy      : " + self[15] + "\n" + \
+                    "\t" + "value-stdy           : " + self[16] + "\n" + \
+                    "\t" + "hue-histogram        : " + str(self[17:22]) + "\n" + \
+                    "\t" + "value-histogram      : " + str(self[22:27]) + "\n" + \
+                    "\t" + "saturation-histogram : " + str(self[27:32])
+                return s
+
+            def __repr__(self):
+                s = "<ObjectFeatures list instance (" + str(len(self)) + " items)>"
+                return s
+
+            def as_dict(self):
+                new_list = self[0:5] + \
+                           [self[5:8]] + \
+                           self[8:17] + \
+                           [self[17:22]] + [self[22:27]] + [self[27:]]
+
+                zip_obj = zip(self.keys, new_list)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+        class ObjectRelation():
+            def __init__(self, id,
+                         obj1_id, obj1_name, obj1_type,
+                         obj2_id, obj2_name, obj2_type,
+                         features):
+                self.id = id
+                self.obj1_id = obj1_id
+                self.obj1_name = obj1_name
+                self.obj1_type = obj1_type
+                self.obj2_id = obj2_id
+                self.obj2_name = obj2_name
+                self.obj2_type = obj2_type
+                self.features = features
+
+            def __str__(self):
+                s = "\t" + self.id + ", " + \
+                    "(" + self.obj1_name + ", " + \
+                    self.obj1_id + ", " + \
+                    self.obj1_type + ")-" + \
+                    "(" + self.obj2_name + ", " + \
+                    self.obj2_id + ", " + \
+                    self.obj2_type + "), (" + \
+                    str(len(self.features)) + ") features"
+                return s
+
+            def __repr__(self):
+                s = "<ObjectRelation instance (" + str(self.id) + ":" + \
+                    self.obj1_id + "-" + self.obj2_id + ")>"
+                return s
+
+            def as_list(self):
+                return [self.id,
+                        self.obj1_id,
+                        self.obj1_name,
+                        self.obj1_type,
+                        self.obj2_id,
+                        self.obj2_name,
+                        self.obj2_type,
+                        self.features]
+
+            def as_dict(self):
+                new_dict = {
+                    'id': self.id,
+                    'obj1_id': self.obj1_id,
+                    'obj1_name': self.obj1_name,
+                    'obj1_type': self.obj1_type,
+                    'obj2_id': self.obj2_id,
+                    'obj2_name': self.obj2_name,
+                    'obj2_type': self.obj2_type,
+                    'features': self.features
+                }
+                return new_dict
+
+        class ObjectRelations(list):
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<ObjectRelations list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+            def get_ids(self):
+                return [relation.id for relation in self]
+
+            def get_obj1_ids(self):
+                return [relation.obj1_id for relation in self]
+
+            def get_obj2_ids(self):
+                return [relation.obj2_id for relation in self]
+
+            def as_dict_id(self):
+                keys = [relation.id for relation in self]
+                zip_obj = zip(keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+            def as_dict_obj1_id(self):
+                keys = [relation.obj1_id for relation in self]
+                zip_obj = zip(keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+            def as_dict_obj2_id(self):
+                keys = [relation.obj2_id for relation in self]
+                zip_obj = zip(keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+        class ObjectRelationFeatures(list):
+            """
+            The feature list follows this structure:
+
+            0 : <minimum-distance>
+            1 : <perpendicularity>
+            2 : <vertical-distance>
+            3 : <volume-ratio>
+            4 : <is-on>
+            5 : <abs-hue-stdv-diff>
+            6 : <abs-saturation-stdv-diff>
+            7 : <abs-value-stdv-diff>
+            8 : <abs-hue-mean-diff>
+            9 : <abs-saturation-mean-diff>
+            10 : <abs-value-mean-diff>
+            """
+
+            keys = ['minimum-distance',
+                    'perpendicularity',
+                    'vertical-distance',
+                    'volume-ratio',
+                    'is-on',
+                    'abs-hue-stdv-diff',
+                    'abs-saturation-stdv-diff',
+                    'abs-value-stdv-diff',
+                    'abs-hue-mean-diff',
+                    'abs-saturation-mean-diff',
+                    'abs-value-mean-diff']
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = "\t" + "minimum-distance             : " + self[0] + "\n" + \
+                    "\t" + "perpendicularity             : " + self[1] + "\n" + \
+                    "\t" + "vertical-distance            : " + self[2] + "\n" + \
+                    "\t" + "volume-ratio                 : " + self[3] + "\n" + \
+                    "\t" + "is-on                        : " + self[4] + "\n" + \
+                    "\t" + "abs-hue-stdv-diff            : " + self[5] + "\n" + \
+                    "\t" + "abs-saturation-stdv-diff     : " + self[6] + "\n" + \
+                    "\t" + "abs-value-stdv-diff          : " + self[7] + "\n" + \
+                    "\t" + "abs-hue-mean-difforientation : " + self[8] + "\n" + \
+                    "\t" + "abs-saturation-mean-diff     : " + self[9] + "\n" + \
+                    "\t" + "abs-value-mean-diff          : " + self[10] + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<ObjectRelationFeatures list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+            def as_dict(self):
+                zip_obj = zip(self.keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+        class Observation():
+            def __init__(self,
+                         id,
+                         sensor_name,
+                         objects_id,
+                         features,
+                         scan_features):
+                self.id = id
+                self.sensor_name = sensor_name
+                self.objects_id = objects_id
+                self.features = features
+                self.scan_features = scan_features
+
+            def __str__(self):
+                s = "\t" + self.id + " : " + self.sensor_name + " : (" + \
+                    str(len(self.objects_id)) + \
+                    ") observed objects, (" + \
+                    str(len(self.features)) + \
+                    ") observation features, (" + \
+                    str(len(self.scan_features)) + \
+                    ") scan features"
+                return s
+
+            def __repr__(self):
+                s = "<Observation instance (" + str(self.id) + ":" + \
+                    self.sensor_name + ")>"
+                return s
+
+            def as_list(self):
+                return [self.id,
+                        self.sensor_name,
+                        self.objects_id,
+                        self.features,
+                        self.scan_features]
+
+            def as_dict(self):
+                new_dict = {
+                    'id': self.id,
+                    'sensor_name': self.sensor_name,
+                    'objects_id': self.objects_id,
+                    'features': self.features,
+                    'scan_features': self.scan_features
+                }
+                return new_dict
+
+        class Observations(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<Observations list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+            def get_sensor_names(self):
+                return [observation.sensor_name for observation in self]
+
+            def get_ids(self):
+                return [observation.id for observation in self]
+
+            def as_dict_id(self):
+                keys = [observation.id for observation in self]
+                zip_obj = zip(keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+            def as_dict_sensor_name(self):
+                keys = [observation.sensor_name for observation in self]
+                zip_obj = zip(keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+        class ObservationFeatures(list):
+            """
+            The feature list follows this structure:
+                0 : <mean-hue>
+                1 : <mean-saturation>
+                2 : <mean-value>
+                3 : <hue-stdv>
+                4 : <saturation-stdv>
+                5 : <value-stdv>
+             6:10 : <hue-histogram(5)>
+            11:15 : <saturation-histogram(5)>
+            16:20 : <value-histogram(5)>
+               21 : <distance>
+               22 : <foot-print>
+               23 : <volume>
+               24 : <mean-mean-hue>
+               25 : <mean-mean-saturation>
+               26 : <mean-mean-value>
+               27 : <mean-hue-stdv>
+               28 : <mean-saturation-stdv>
+               29 : <mean-value-stdv>
+            30:34 : <mean-hue-histogram(5)>
+            35:39 : <mean-saturation-histogram(5)>
+            40:44 : <mean-value-histogram(5)>
+               45 : <mean-distance>
+               46 : <mean-foot-print>
+               47 : <mean-volume>
+                0 : <area>
+                1 : <elongation>
+                2 : <mean-distance>
+                3 : <distance-stdv>
+                4 : <num-of-points>
+                5 : <compactness>
+                6 : <compactness2>
+                7 : <linearity>
+                8 : <scatter>
+            """
+
+            keys = ['mean-hue',
+                    'mean-saturation',
+                    'mean-value',
+                    'hue-stdv',
+                    'saturation-stdv',
+                    'value-stdv',
+                    'hue-histogram',
+                    'saturation-histogram',
+                    'value-histogram',
+                    'distance',
+                    'foot-print',
+                    'volume',
+                    'mean-mean-hue',
+                    'mean-mean-saturation',
+                    'mean-mean-value',
+                    'mean-hue-stdv',
+                    'mean-saturation-stdv',
+                    'mean-value-stdv',
+                    'mean-hue-histogram',
+                    'mean-saturation-histogram',
+                    'mean-value-histogram',
+                    'mean-distance',
+                    'mean-foot-print',
+                    'mean-volume']
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = "\t" + "mean-hue                  : " + self[0] + "\n" + \
+                    "\t" + "mean-saturation           : " + self[1] + "\n" + \
+                    "\t" + "mean-value                : " + self[2] + "\n" + \
+                    "\t" + "hue-stdv                  : " + self[3] + "\n" + \
+                    "\t" + "saturation-stdv           : " + self[4] + "\n" + \
+                    "\t" + "value-stdv                : " + self[5] + "\n" + \
+                    "\t" + "hue-histogram             : " + str(self[6:11]) + "\n" + \
+                    "\t" + "saturation-histogram      : " + str(self[11:16]) + "\n" + \
+                    "\t" + "value-histogram           : " + str(self[16:21]) + "\n" + \
+                    "\t" + "distance                  : " + self[21] + "\n" + \
+                    "\t" + "foot-print                : " + self[22] + "\n" + \
+                    "\t" + "volume                    : " + self[23] + "\n" + \
+                    "\t" + "mean-mean-hue             : " + self[24] + "\n" + \
+                    "\t" + "mean-mean-saturation      : " + self[25] + "\n" + \
+                    "\t" + "mean-mean-value           : " + self[26] + "\n" + \
+                    "\t" + "mean-hue-stdv             : " + self[27] + "\n" + \
+                    "\t" + "mean-saturation-stdv      : " + self[28] + "\n" + \
+                    "\t" + "mean-value-stdv           : " + self[29] + "\n" + \
+                    "\t" + "mean-hue-histogram        : " + str(self[30:35]) + "\n" + \
+                    "\t" + "mean-saturation-histogram : " + str(self[35:40]) + "\n" + \
+                    "\t" + "mean-value-histogram      : " + str(self[40:45]) + "\n" + \
+                    "\t" + "mean-distance             : " + self[45] + "\n" + \
+                    "\t" + "mean-foot-print           : " + self[46] + "\n" + \
+                    "\t" + "mean-volume               : " + self[47] + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<ObservationFeatures list instance (" + \
+                    str(len(self)) + " items)>"
+                return s
+
+            def as_dict(self):
+                new_list = self[0:6] + \
+                           [self[6:11]] + [self[11:16]] + [self[16:21]] + \
+                           self[21:30] + \
+                           [self[30:35]] + [self[35:40]] + [self[40:45]] + \
+                           self[45:]
+                zip_obj = zip(self.keys, new_list)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+        class ObservationScanFeatures(list):
+            """
+            The feature list follows this structure:
+                0 : <area>
+                1 : <elongation>
+                2 : <mean-distance>
+                3 : <distance-stdv>
+                4 : <num-of-points>
+                5 : <compactness>
+                6 : <compactness2>
+                7 : <linearity>
+                8 : <scatter>
+            """
+            keys = ['area',
+                    'elongation',
+                    'mean-distance',
+                    'distance-stdv',
+                    'num-of-points',
+                    'compactness',
+                    'compactness2',
+                    'linearity',
+                    'scatter']
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = "\t" + "area          : " + self[0] + "\n" + \
+                    "\t" + "elongation    : " + self[1] + "\n" + \
+                    "\t" + "mean-distance : " + self[2] + "\n" + \
+                    "\t" + "distance-stdv : " + self[3] + "\n" + \
+                    "\t" + "num-of-points : " + self[4] + "\n" + \
+                    "\t" + "compactness   : " + self[5] + "\n" + \
+                    "\t" + "compactness2  : " + self[6] + "\n" + \
+                    "\t" + "linearity     : " + self[7] + "\n" + \
+                    "\t" + "scatter       : " + self[8]
+                return s
+
+            def __repr__(self):
+                s = "<ObservationScanFeatures list instance (" + str(len(self)) + " items)>"
+                return s
+
+            def as_dict(self):
+                zip_obj = zip(self.keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
 
         def __init__(self, name="", url="", path="", expected_hash_code="",
                      expected_size=0):
@@ -860,7 +860,7 @@ class Dataset():
             self.__object_key_string = "object"
             self.categories = self.__load_categories()
             self.home_files = self.__get_home_files()
-            self.homes = self.__load_home_files()
+            self.home_sessions = self.__load_home_files()
 
         def __str__(self):
             """ Categories """
@@ -941,17 +941,25 @@ class Dataset():
                     line = file_handler.readline()
             return categories
 
-        def get_homes(self):
+        def get_category_home_sessions(self):
             for key in self.categories.keys():
                 if self.__home_key_string in key.lower():
                     return self.categories[key]
 
-        def get_rooms(self):
+        def get_home_names(self):
+            category_homes = []
+            for key in self.get_category_home_sessions().values():
+                splitted_key = key.split('-s')
+                if splitted_key[0] not in category_homes:
+                    category_homes.append(str(splitted_key[0]))
+            return category_homes
+
+        def get_category_rooms(self):
             for key in self.categories.keys():
                 if self.__room_key_string in key.lower():
                     return self.categories[key]
 
-        def get_objects(self):
+        def get_category_objects(self):
             for key in self.categories.keys():
                 if self.__object_key_string in key.lower():
                     return self.categories[key]
@@ -964,7 +972,7 @@ class Dataset():
 
             """
             home_file = {}
-            home_list = list(self.get_homes().values())
+            home_list = list(self.get_category_home_sessions().values())
             for home in home_list:
                 home_file[home] = os.listdir(self.path + '/' + home)
             return home_file
@@ -972,15 +980,15 @@ class Dataset():
         def __load_home_files(self):
             """
             """
-            home_list = Dataset.Homes()
-            home_dict = self.get_homes()
-            reversed_home_dict = dict(map(reversed, home_dict.items()))
+            home_sessions_list = self.HomeSessions()
+            home_sessions_dict = self.get_category_home_sessions()
+            reversed_home_sessions_dict = dict(map(reversed, home_sessions_dict.items()))
 
             for home_files_key, home_files_value in self.home_files.items():
                 home_name = home_files_key
-                home_id = int(reversed_home_dict[home_files_key])
-                room_list = Dataset.Rooms()
-                home = Dataset.Home(home_id, home_name, room_list)
+                home_id = int(reversed_home_sessions_dict[home_files_key])
+                room_list = self.Rooms()
+                home_session = self.HomeSession(home_id, home_name, room_list)
                 """
                 Loop a file per room
                 """
@@ -1017,10 +1025,10 @@ class Dataset():
                         room_type_name  = words[4]
                         num_of_objects  = int(words[9])
                         num_of_features = int(words[11])
-                        objects         = Dataset.Objects()
-                        relations       = Dataset.ObjectRelations()
-                        observations    = Dataset.Observations()
-                        room = Dataset.Room(room_id, room_name,
+                        objects         = self.Objects()
+                        relations       = self.ObjectRelations()
+                        observations    = self.Observations()
+                        room = self.Room(room_id, room_name,
                                             room_type_id, room_type_name,
                                             home_id,
                                             objects, relations, observations)
@@ -1073,10 +1081,10 @@ class Dataset():
                             object_name = words[0]
                             object_type_id = int(words[3])
                             object_type_name = words[2]
-                            object_feature_list = Dataset.ObjectFeatures()
+                            object_feature_list = self.ObjectFeatures()
                             object_feature_list += words[4:]
                             # print(len(object_feature_list))
-                            object = Dataset.Object(object_id,
+                            object = self.Object(object_id,
                                                     object_name,
                                                     object_type_id,
                                                     object_type_name,
@@ -1131,10 +1139,10 @@ class Dataset():
                             object_relation_obj2_id   = words[4]
                             object_relation_obj2_name = words[1]
                             object_relation_obj2_type = words[6]
-                            object_relation_feature_list = Dataset.ObjectRelationFeatures()
+                            object_relation_feature_list = self.ObjectRelationFeatures()
                             object_relation_feature_list += words[7:]
 
-                            object_relation = Dataset.ObjectRelation(
+                            object_relation = self.ObjectRelation(
                                 object_relation_id,
                                 object_relation_obj1_id,
                                 object_relation_obj1_name,
@@ -1224,15 +1232,15 @@ class Dataset():
 
                             observation_objects_id = words[obj_id_range_begin:obj_id_range_end]
 
-                            observation_features = Dataset.ObservationFeatures()
+                            observation_features = self.ObservationFeatures()
                             observation_features += words[obs_feat_range_begin:obs_feat_range_end]
                             # print(len(observation_features))
 
-                            observation_scan_features = Dataset.ObservationScanFeatures()
+                            observation_scan_features = self.ObservationScanFeatures()
                             observation_scan_features += words[obs_scan_range_begin:obs_scan_range_end]
                             # print(len(observation_scan_features))
 
-                            observation = Dataset.Observation(
+                            observation = self.Observation(
                                 observation_id,
                                 observation_sensor_name,
                                 observation_objects_id,
@@ -1241,19 +1249,155 @@ class Dataset():
                             )
 
                             room.observations.append(observation)
-                        home.rooms.append(room)
-                home_list.append(home)
-            return home_list
+                        home_session.rooms.append(room)
+                home_sessions_list.append(home_session)
+            return home_sessions_list
 
-            # print(self.home_files)
+    class DatasetUnit2DGeometricMaps(DatasetUnit):
+        class Home():
+            def __init__(self, name, rooms):
+                self.name = name
+                self.rooms = rooms
 
-            """
-            home_files_key = "alma-s1"
-            home_file_name = "features_alma-s1_bathroom1.txt"
-            path = self.path + "/" + home_files_key + "/" + home_file_name
-            print(path)
-            """
+            def __str__(self):
+                s = '\t' + self.name
+                return s
 
+            def __repr__(self):
+                s = "<Home instance (" + self.name + ")>"
+                return s
+
+        class Homes(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<Homes list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+            def get_names(self):
+                return [home.name for home in self]
+
+        class Room():
+            def __init__(self, name, points):
+                self.name = name
+                self.points = points
+
+            def __str__(self):
+                s = '\t' + self.name
+                return s
+
+            def __repr__(self):
+                s = "<Room instance (" + self.name + ")>"
+                return s
+
+        class Rooms(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<Rooms list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+        class Point():
+            def __init__(self, x, y, z):
+                self.x = x
+                self.y = y
+                self.z = z
+
+            def __str__(self):
+                s = '\t' + '(' + self.x + ',' + self.y + ',' + self.z + ')'
+                return s
+
+            def __repr__(self):
+                s = "<Point instance>"
+                return s
+
+            def get_list(self):
+                return [self.x, self.y, self.z]
+
+        class Points(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<Points list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+
+        def __init__(self, name="", url="", path="", expected_hash_code="",
+                     expected_size=0):
+            """ Calls the super class __init__"""
+            super().__init__(name, url, path, expected_hash_code,
+                             expected_size)
+
+            self.homes = self.__load_data()
+
+        def __load_data(self):
+            homes = self.Homes()
+            home_folders = os.listdir(self.path + '/' + self.path)
+            # print(home_folders)
+            for home_folder in home_folders:
+                # print(home_folder)
+                rooms = self.Rooms()
+                room_files = os.listdir(self.path + '/' + self.path + '/' +
+                                        home_folder)
+                # print(room_files)
+                for room_file in room_files:
+                    # print(room_file)
+                    room_file_splitted = room_file.split('_')
+                    path = self.path + '/' + self.path + '/' + \
+                           home_folder + '/' + \
+                           room_file
+                    points = self.Points()
+                    with open(path, "r") as file_handler:
+                        for line in file_handler:
+                            words = line.strip().split()
+                            # print(line)
+                            # print(words)
+                            point = self.Point(words[0], words[1], words[2])
+                            points.append(point)
+                            # print(point)
+
+                    room = self.Room(room_file_splitted[0], points)
+                    rooms.append(room)
+                # print(rooms)
+                home = self.Home(home_folder, rooms)
+                homes.append(home)
+
+            return homes
+
+
+            #with open(self.path+'/'+self.path, "r") as file_handler:
+            return 0
+
+        def __str__(self):
+            s = ""
+            return super().__str__() + s
 
     def __init__(self, name=""):
         """
@@ -1321,7 +1465,7 @@ class Dataset():
             33345659
         )
 
-        self.unit["2dgeomap"] = self.DatasetUnit(
+        self.unit["2dgeomap"] = self.DatasetUnit2DGeometricMaps(
           "2D geometric maps",
           "https://ananas.isa.uma.es:10002/sharing/PUZHG28p6",
           "Robot@Home-dataset_2d_geometric_maps",
@@ -1342,8 +1486,8 @@ class Dataset():
           "652087d30c05ff4eaec9a0770307a2ced7fe5064",
           40872)
 
-        # self.categories = self.unit["chelmnts"].load_categories()
         self.categories = self.unit["chelmnts"].categories
+        self.home_sessions = self.unit["chelmnts"].home_sessions
 
     def __str__(self):
 
@@ -1375,23 +1519,31 @@ def main():
 
     rhds = Dataset("MyRobot@Home")
 
-    # print(rhds)
 
+
+    """ About data units """
     """
+    print(rhds)
     print(rhds["hometopo"].check_integrity(verbose=True))
     print(rhds["hometopo"].hash_for_directory())
     rhds["hometopo"].download()
     """
-    # print(rhds.unit["chelmnts"])
-    # home_dict = rhds.unit["chelmnts"].get_homes()
-    # reversed_home_dict = dict(map(reversed, home_dict.items()))
-    # print(home_dict)
-    # print(reversed_home_dict)
-    # print(rhds.unit["chelmnts"].get_rooms())
-    # print(rhds.unit["chelmnts"].get_objects())
+
+
+    """  About categories """
+    """
+    print(rhds.unit["chelmnts"])
+    print(rhds.unit["chelmnts"].get_home_names())
+    home_dict = rhds.unit["chelmnts"].get_category_home_sessions()
+    reversed_home_dict = dict(map(reversed, home_dict.items()))
+    print(home_dict)
+    print(reversed_home_dict)
+    print(rhds.unit["chelmnts"].get_category_rooms())
+    print(rhds.unit["chelmnts"].get_category_objects())
+    """
 
     """
-    homes = rhds.unit["chelmnts"].homes
+    homes = rhds.unit["chelmnts"].home_sessions
     tab = 4
     for home in homes:
         print(str(home).expandtabs(0))
@@ -1413,28 +1565,30 @@ def main():
                 print(observation.scan_features.as_dict())
     """
 
+    """ About Home sessions, room, objects, relations and observations"""
+    """
     print('######## HOME #########')
-    home = rhds.unit["chelmnts"].homes[0]
-    print(home)
-    print(home.as_list())
-    print(home.as_dict())
+    home_session = rhds.unit["chelmnts"].home_sessions[0]
+    print(home_session)
+    print(home_session.as_list())
+    print(home_session.as_dict())
 
     print('######## HOMES #########')
-    homes = rhds.unit["chelmnts"].homes
-    print(homes)
-    print(homes.get_ids())
-    print(homes.get_names())
-    print(homes.as_dict_id())
-    print(homes.as_dict_name())
+    home_sessions = rhds.unit["chelmnts"].home_sessions
+    print(home_sessions)
+    print(home_sessions.get_ids())
+    print(home_sessions.get_names())
+    print(home_sessions.as_dict_id())
+    print(home_sessions.as_dict_name())
 
     print('######## HOME.ROOM #########')
-    room = homes[0].rooms[0]
+    room = home_sessions[0].rooms[0]
     print(room)
     print(room.as_list())
     print(room.as_dict())
 
     print('######## HOME.ROOMS #########')
-    rooms = homes[0].rooms
+    rooms = home_sessions[0].rooms
     print(rooms)
     print(rooms.get_ids())
     print(rooms.get_names())
@@ -1442,17 +1596,17 @@ def main():
     print(rooms.as_dict_id())
 
     print('######## HOME.ROOM.OBJECT #########')
-    object = homes[0].rooms[0].objects[0]
+    object = home_sessions[0].rooms[0].objects[0]
     print(object)
     print(object.as_dict())
 
     print('######## HOME.ROOM.OBJECT.FEATURES #########')
-    object_features = homes[0].rooms[0].objects[0].features
+    object_features = home_sessions[0].rooms[0].objects[0].features
     print(object_features)
     print(object_features.as_dict())
 
     print('######## HOME.ROOM.OBJECTS #########')
-    objects = homes[0].rooms[0].objects
+    objects = home_sessions[0].rooms[0].objects
     print(objects)
     print(objects.get_ids())
     print(objects.get_names())
@@ -1460,18 +1614,18 @@ def main():
     print(objects.as_dict_id())
 
     print('######## HOME.ROOM.RELATION #########')
-    relation = homes[0].rooms[0].relations[0]
+    relation = home_sessions[0].rooms[0].relations[0]
     print(relation)
     print(relation.as_list())
     print(relation.as_dict())
 
     print('######## HOMES.ROOMS.RELATION.FEATURES #########')
-    relation_features = homes[0].rooms[0].relations[0].features
+    relation_features = home_sessions[0].rooms[0].relations[0].features
     print(relation_features)
     print(relation_features.as_dict())
 
     print('######## HOME.ROOM.RELATIONS #########')
-    relations = homes[0].rooms[0].relations
+    relations = home_sessions[0].rooms[0].relations
     print(relations)
     print(relations.get_ids())
     print(relations.get_obj1_ids())
@@ -1481,28 +1635,46 @@ def main():
     #print(relations.as_dict_obj2_id())
 
     print('######## HOME.ROOM.OBSERVATION #########')
-    observation = homes[0].rooms[0].observations[0]
+    observation = home_sessions[0].rooms[0].observations[0]
     print(observation)
     print(observation.as_list())
     print(observation.as_dict())
 
     print('######## HOME.ROOM.OBSERVATION.FEATURES #########')
-    observation_features = homes[0].rooms[0].observations[0].features
+    observation_features = home_sessions[0].rooms[0].observations[0].features
     print(observation_features)
     print(observation_features.as_dict())
 
     print('######## HOME.ROOM.OBSERVATION.SCAN_FEATURES #########')
-    observation_scan_features = homes[0].rooms[0].observations[0].scan_features
+    observation_scan_features = home_sessions[0].rooms[0].observations[0].scan_features
     print(observation_scan_features)
     print(observation_scan_features.as_dict())
 
     print('######## HOME.ROOM.OBSERVATIONS #########')
-    observations = homes[0].rooms[0].observations
+    observations = home_sessions[0].rooms[0].observations
     print(observations)
     print(observations.get_ids())
     print(observations.get_sensor_names())
     print(observations.as_dict_id())
     #print(observations.as_dict_sensor_name())
+    """
+
+    """ About 2d geometric maps """
+    """
+    tab = 4
+    print(rhds.unit["2dgeomap"])
+    homes = rhds.unit["2dgeomap"].homes
+    print(str(homes).expandtabs(0))
+    for home in homes:
+        print(str(home).expandtabs(0))
+        # print(str(home.rooms).expandtabs(tab*1))
+        for room in home.rooms:
+            print(str(room).expandtabs(tab*1))
+            print('        number of points: ' + str(len(room.points)))
+            #for point in room.points:
+            #    print(str(point).expandtabs(tab*2))
+    print(homes[0].rooms[0].points[0])
+    """
 
     return 0
 
