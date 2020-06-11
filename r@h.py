@@ -15,6 +15,7 @@ import hashlib
 import humanize
 import wget
 import ssl
+# import glob
 # import requests
 # import re
 
@@ -1399,6 +1400,119 @@ class Dataset():
             s = ""
             return super().__str__() + s
 
+    class DatasetUnitHomesTopologies(DatasetUnit):
+        class Home():
+            def __init__(self, name, topo_relations):
+                self.name = name
+                self.topo_relations = topo_relations
+
+            def __str__(self):
+                s = '\t' + self.name + ' (' + str(len(self.topo_relations)) + \
+                    ') topology relations' 
+                return s
+
+            def __repr__(self):
+                s = "<Home instance (" + self.name + ")>"
+                return s
+
+            def as_dict(self):
+                return {self.name: self.topo_relations}
+
+        class Homes(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<Homes list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+            def as_dict(self):
+                keys = [home.name for home in self]
+                values = [home.topo_relations for home in self]
+                zip_obj = zip(keys, values)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+
+            def get_names(self):
+                return [home.name for home in self]
+
+        class TopoRelation():
+            def __init__(self, room1_name, room2_name):
+                self.room1_name = room1_name
+                self.room2_name = room2_name
+
+            def __str__(self):
+                s = '\t' + self.room1_name + ' - ' + self.room2_name
+                return s
+
+            def __repr__(self):
+                s = "<TopoRelation instance (" + self.name + ")>"
+                return s
+
+            def as_list(self):
+                return [self.room1_name,self.room2_name]
+
+            def as_dict(self):
+                return {self.room1_name: self.room2_name}
+
+        class TopoRelations(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<TopoRelations list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+            def as_dict(self):
+                new_dict = {}
+                for topo_relation in self:
+                    new_dict[topo_relation.room1_name] = \
+                            topo_relation.room2_name
+                return new_dict
+
+        def __init__(self, name="", url="", path="", expected_hash_code="",
+                     expected_size=0):
+            """ Calls the super class __init__"""
+            super().__init__(name, url, path, expected_hash_code,
+                             expected_size)
+
+            self.homes = self.__load_data()
+
+        def __load_data(self):
+            homes = self.Homes()
+            home_files = os.listdir(self.path)
+            for home_file in home_files:
+                if home_file.endswith('.txt'):
+                    path = self.path + '/' + home_file
+                    home_name = home_file.split('.')[0]
+                    topo_relations = self.TopoRelations()
+                    with open(path, "r") as file_handler:
+                        for line in file_handler:
+                            words = line.strip().split('-')
+                            topo_relation = self.TopoRelation(words[0],
+                                                              words[1])
+                            topo_relations.append(topo_relation)
+                    home = self.Home(home_name, topo_relations)
+                    homes.append(home)
+            return homes
+
     def __init__(self, name=""):
         """
         Initializes the Dataset with supplied values
@@ -1479,7 +1593,7 @@ class Dataset():
           "f8b3dadd9181291a59f589033521708d4399d12b",
           216384106)
 
-        self.unit["hometopo"] = self.DatasetUnit(
+        self.unit["hometopo"] = self.DatasetUnitHomesTopologies(
           "Home's topologies",
           "https://ananas.isa.uma.es:10002/sharing/EBXypqYAV",
           "Robot@Home-dataset_homes-topologies",
@@ -1488,6 +1602,8 @@ class Dataset():
 
         self.categories = self.unit["chelmnts"].categories
         self.home_sessions = self.unit["chelmnts"].home_sessions
+        self.home_2dgeomaps = self.unit["2dgeomap"].homes
+        self.home_topologies = self.unit["hometopo"].homes
 
     def __str__(self):
 
@@ -1518,6 +1634,25 @@ def main():
     # /media/goyo/WDGREEN2TB-A/Users/goyo/Documents
 
     rhds = Dataset("MyRobot@Home")
+
+    """ About Home Topologies """
+    """
+    tab = 4
+    print(rhds.unit["hometopo"])
+    homes = rhds.unit["hometopo"].homes
+    print(str(homes).expandtabs(0))
+    for home in homes:
+        print(str(home.topo_relations).expandtabs(1))
+        for topo_relation in home.topo_relations:
+            print(str(topo_relation).expandtabs(tab*2))
+    print(homes[0])
+    print(homes[0].topo_relations[0].room1_name)
+    print(homes[0].topo_relations[0].room2_name)
+    print(homes[0].topo_relations[0].as_dict())
+    print(homes[0].topo_relations.as_dict())
+    print(homes[0].as_dict())
+    print(homes.as_dict())
+    """
 
 
 
