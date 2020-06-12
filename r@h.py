@@ -66,7 +66,7 @@ class Dataset():
 
         def check_folder_size(self, verbose=False):
             """
-            Check that the expected size match with the real folder size
+            Check that the expected size mawatch/?v=2607042769536912tch with the real folder size
             verbose  : it outputs additional printed details
             """
             real_folder_size = self.size(self.path)
@@ -1513,6 +1513,237 @@ class Dataset():
                     homes.append(home)
             return homes
 
+    class DatasetUnitRawData(DatasetUnit):
+        class HomeSession():
+            def __init__(self, name, rooms):
+                self.name = name
+                self.rooms = rooms
+
+            def __str__(self):
+                s = '\t' + self.name
+                return s
+
+            def __repr__(self):
+                s = "<HomeSession instance (" + self.name + ")>"
+                return s
+
+        class HomeSessions(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<HomesSessions list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+            def get_names(self):
+                return [home.name for home in self]
+
+        class Room():
+            def __init__(self, name, folder_path):
+                self.name = name
+                self.folder_path = folder_path
+
+            def __str__(self):
+                s = '\t' + self.name + '  folder: /' + self.folder_path
+                return s
+
+            def __repr__(self):
+                s = "<Room instance (" + self.name + ")>"
+                return s
+
+        class Rooms(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<Rooms list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+        class Sensor():
+            def __init__(self, name, path):
+                self.name = name
+                self.path = path
+
+            def __str__(self):
+                s = '\t' + self.name
+                return s
+
+            def __repr__(self):
+                s = "<Sensor instance (" + self.name + ")>"
+                return s
+
+        class Sensors(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<Sensors list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+        class SensorCamera(Sensor):
+            def __init__(self, name):
+                """ Calls the super class __init__"""
+                super().__init__(name)
+                self.name = name
+
+            def __str__(self):
+                s = '\t' + self.name
+                return s
+
+            def __repr__(self):
+                s = "<SensorCamera instance (" + self.name + ")>"
+                return s
+
+        class SensorCameras(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<SensorCameras list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+        class SensorLaserScanner(Sensor):
+            def __init__(self, name):
+                """ Calls the super class __init__"""
+                super().__init__(name)
+                self.name = name
+
+            def __str__(self):
+                s = '\t' + self.name
+                return s
+
+            def __repr__(self):
+                s = "<SensorLaserScanner instance (" + self.name + ")>"
+                return s
+
+        class SensorLaserScanners(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<SensorLaserScanners list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+        def __init__(self, name="", url="", path="", expected_hash_code="",
+                     expected_size=0):
+            """ Calls the super class __init__"""
+            super().__init__(name, url, path, expected_hash_code,
+                             expected_size)
+
+            self.home_sessions = self.__load_data()
+
+        def __load_data(self):
+            home_sessions = self.HomeSessions()
+            home_folders = os.listdir(self.path)
+            # print(home_folders)
+            for home_folder in home_folders:
+                words = home_folder.strip().split('-')
+                len_of_words = len(words)
+                home_subfolder = words[len_of_words-2] + '-' + \
+                                 words[len_of_words - 1]
+                # print(home_folder)
+                rooms = self.Rooms()
+                room_files = os.listdir(self.path + '/' + home_folder + '/' +
+                                          home_subfolder)
+                # print(room_files)
+                for room_file in room_files:
+                    if room_file.endswith('.txt'):
+                        #print(room_file)
+                        room_folder_path = self.path + '/' + home_folder + \
+                                           '/' + home_subfolder + '/' + \
+                                           room_file.split('.')[0]
+                        room_file_path = self.path + '/' + home_folder + \
+                                         '/' + home_subfolder + '/' + \
+                                         room_file
+                        sensor_observations_files = os.listdir(room_folder_path)
+                        # print(sensor_observations_files)
+                        with open(room_file_path, "r") as file_handler:
+                            for line in file_handler:
+                                words = line.strip().split()
+                                """
+                                # [Observation_id] [sensor_label] [sensor_pose_x] [sensor_pose_y] [sensor_pose_z] [sensor_pose_yaw] [sensor_pose_pitch] [sensor_pose_roll] [time-stamp] 
+                                # Units for the sensor pose are meters and radians. The tiem-stamp holds the the number of 100-nanosecond intervals since January 1, 1601 (UTC). 
+                                1 HOKUYO1 0 0 0 0 -0 0 130986335745233916
+                                """
+                                if words[0] != '#':
+                                    """
+                                    Read a line with the following structure:
+                                    words  0 : [Observation_id]
+                                    words  1 : [sensor_label]
+                                    words  2 : [sensor_pose_x]
+                                    words  3 : [sensor_pose_y]
+                                    words  4 : [sensor_pose_z]
+                                    words  5 : [sensor_pose_yaw]
+                                    words  6 : [sensor_pose_pitch]
+                                    words  7 : [sensor_pose_roll]
+                                    words  8 : [time-stamp]
+                                    """
+
+                                    print(words[0])
+                                    indexes = [i for i, j in enumerate(sensor_observations_files) if j.split('_')[0] == words[0]]
+                                    for i in indexes:
+                                        print(sensor_observations_files[i])
+                                    input("Press Enter to continue...")
+
+                                # print(line)
+                                # print(words)
+                                #point = self.Point(words[0], words[1], words[2])
+                                #points.append(point)
+                                # print(point)
+
+                        room = self.Room(room_file.split('.')[0],
+                                         room_folder_path)
+                        rooms.append(room)
+                        # print(rooms)
+                home_session = self.HomeSession(home_folder, rooms)
+                home_sessions.append(home_session)
+
+            return home_sessions
+
+        def __str__(self):
+            s = ""
+            return super().__str__() + s
+
     def __init__(self, name=""):
         """
         Initializes the Dataset with supplied values
@@ -1528,13 +1759,6 @@ class Dataset():
 
         self.name = name
         self.unit = {}
-
-        self.unit["raw"] = self.DatasetUnit(
-          "Raw data",
-          "https://ananas.isa.uma.es:10002/sharing/PAJxeUT0q",
-          "Robot@Home-dataset_raw_data-plain_text-all",
-          "4823b61180bbf8ce5458ad43ad709069edb0e8f3",
-          20002442369)
 
         self.unit["lsrscan"] = self.DatasetUnit(
           "Laser scans",
@@ -1600,6 +1824,13 @@ class Dataset():
           "652087d30c05ff4eaec9a0770307a2ced7fe5064",
           40872)
 
+        self.unit["raw"] = self.DatasetUnitRawData(
+          "Raw data",
+          "https://ananas.isa.uma.es:10002/sharing/PAJxeUT0q",
+          "Robot@Home-dataset_raw_data-plain_text-all",
+          "4823b61180bbf8ce5458ad43ad709069edb0e8f3",
+          20002442369)
+
         self.categories = self.unit["chelmnts"].categories
         self.home_sessions = self.unit["chelmnts"].home_sessions
         self.home_2dgeomaps = self.unit["2dgeomap"].homes
@@ -1635,27 +1866,6 @@ def main():
 
     rhds = Dataset("MyRobot@Home")
 
-    """ About Home Topologies """
-    """
-    tab = 4
-    print(rhds.unit["hometopo"])
-    homes = rhds.unit["hometopo"].homes
-    print(str(homes).expandtabs(0))
-    for home in homes:
-        print(str(home.topo_relations).expandtabs(1))
-        for topo_relation in home.topo_relations:
-            print(str(topo_relation).expandtabs(tab*2))
-    print(homes[0])
-    print(homes[0].topo_relations[0].room1_name)
-    print(homes[0].topo_relations[0].room2_name)
-    print(homes[0].topo_relations[0].as_dict())
-    print(homes[0].topo_relations.as_dict())
-    print(homes[0].as_dict())
-    print(homes.as_dict())
-    """
-
-
-
     """ About data units """
     """
     print(rhds)
@@ -1663,6 +1873,24 @@ def main():
     print(rhds["hometopo"].hash_for_directory())
     rhds["hometopo"].download()
     """
+
+    """ About raw data """
+    tab = 4
+    print(rhds.unit["raw"])
+    home_sessions = rhds.unit["raw"].home_sessions
+    print(str(home_sessions).expandtabs(0))
+    for home_session in home_sessions:
+        print(str(home_session.rooms).expandtabs(tab))
+        for room in home_session.rooms:
+            print(str(room.name).expandtabs(tab*2))
+    #print(homes[0])
+    #print(homes[0].topo_relations[0].room1_name)
+    #print(homes[0].topo_relations[0].room2_name)
+    #print(homes[0].topo_relations[0].as_dict())
+    #print(homes[0].topo_relations.as_dict())
+    #print(homes[0].as_dict())
+    #print(homes.as_dict())
+
 
 
     """  About categories """
@@ -1810,6 +2038,26 @@ def main():
             #    print(str(point).expandtabs(tab*2))
     print(homes[0].rooms[0].points[0])
     """
+
+    """ About Home Topologies """
+    """
+    tab = 4
+    print(rhds.unit["hometopo"])
+    homes = rhds.unit["hometopo"].homes
+    print(str(homes).expandtabs(0))
+    for home in homes:
+        print(str(home.topo_relations).expandtabs(1))
+        for topo_relation in home.topo_relations:
+            print(str(topo_relation).expandtabs(tab*2))
+    print(homes[0])
+    print(homes[0].topo_relations[0].room1_name)
+    print(homes[0].topo_relations[0].room2_name)
+    print(homes[0].topo_relations[0].as_dict())
+    print(homes[0].topo_relations.as_dict())
+    print(homes[0].as_dict())
+    print(homes.as_dict())
+    """
+
 
     return 0
 
