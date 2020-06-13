@@ -1547,12 +1547,14 @@ class Dataset():
                 return [home.name for home in self]
 
         class Room():
-            def __init__(self, name, folder_path):
+            def __init__(self, name, folder_path, sensor_observations):
                 self.name = name
                 self.folder_path = folder_path
+                self.sensor_observations = sensor_observations
 
             def __str__(self):
-                s = '\t' + self.name + '  folder: /' + self.folder_path
+                s = '\t' + self.name + '  folder: /' + self.folder_path + \
+                    ' # observations: ' + str(len(self.sensor_observations))
                 return s
 
             def __repr__(self):
@@ -1575,13 +1577,31 @@ class Dataset():
                     " items)>"
                 return s
 
+
         class Sensor():
-            def __init__(self, name, path):
+            def __init__(self, id, name,
+                         sensor_pose_x, sensor_pose_y, sensor_pose_z,
+                         sensor_pose_yaw, sensor_pose_pitch, sensor_pose_roll,
+                         time_stamp):
+                self.id = id
                 self.name = name
-                self.path = path
+                self.sensor_pose_x = sensor_pose_x
+                self.sensor_pose_y = sensor_pose_y
+                self.sensor_pose_z = sensor_pose_x
+                self.sensor_pose_yaw = sensor_pose_yaw
+                self.sensor_pose_pitch = sensor_pose_pitch
+                self.sensor_pose_roll = sensor_pose_roll
+                self.time_stamp = time_stamp
 
             def __str__(self):
-                s = '\t' + self.name
+                s = '\t' + self.id + ', ' + self.name + ', ' + \
+                    self.sensor_pose_x + ', ' + \
+                    self.sensor_pose_y + ', ' + \
+                    self.sensor_pose_z + ', ' + \
+                    self.sensor_pose_yaw + ', ' + \
+                    self.sensor_pose_pitch + ', ' + \
+                    self.sensor_pose_roll + ', ' + \
+                    self.time_stamp
                 return s
 
             def __repr__(self):
@@ -1605,14 +1625,13 @@ class Dataset():
                 return s
 
         class SensorCamera(Sensor):
-            def __init__(self, name):
+            def __init__(self, id, name, path, files):
                 """ Calls the super class __init__"""
-                super().__init__(name)
-                self.name = name
+                super().__init__(id, name, path, files)
 
             def __str__(self):
-                s = '\t' + self.name
-                return s
+                s = '\t' + 'Camera: '
+                return s + super().__str__()
 
             def __repr__(self):
                 s = "<SensorCamera instance (" + self.name + ")>"
@@ -1635,14 +1654,13 @@ class Dataset():
                 return s
 
         class SensorLaserScanner(Sensor):
-            def __init__(self, name):
+            def __init__(self, id, name, path, files):
                 """ Calls the super class __init__"""
-                super().__init__(name)
-                self.name = name
+                super().__init__(id, name, path, files)
 
             def __str__(self):
-                s = '\t' + self.name
-                return s
+                s = '\t' + 'Laser scanner: '
+                return s + super().__str__()
 
             def __repr__(self):
                 s = "<SensorLaserScanner instance (" + self.name + ")>"
@@ -1695,16 +1713,11 @@ class Dataset():
                         room_file_path = self.path + '/' + home_folder + \
                                          '/' + home_subfolder + '/' + \
                                          room_file
-                        sensor_observations_files = os.listdir(room_folder_path)
+                        sensors = self.Sensors()
                         # print(sensor_observations_files)
                         with open(room_file_path, "r") as file_handler:
                             for line in file_handler:
                                 words = line.strip().split()
-                                """
-                                # [Observation_id] [sensor_label] [sensor_pose_x] [sensor_pose_y] [sensor_pose_z] [sensor_pose_yaw] [sensor_pose_pitch] [sensor_pose_roll] [time-stamp] 
-                                # Units for the sensor pose are meters and radians. The tiem-stamp holds the the number of 100-nanosecond intervals since January 1, 1601 (UTC). 
-                                1 HOKUYO1 0 0 0 0 -0 0 130986335745233916
-                                """
                                 if words[0] != '#':
                                     """
                                     Read a line with the following structure:
@@ -1718,28 +1731,51 @@ class Dataset():
                                     words  7 : [sensor_pose_roll]
                                     words  8 : [time-stamp]
                                     """
+                                    # print(words[0])
+                                    sensor = self.Sensor(words[0],
+                                                         words[1],
+                                                         words[2],
+                                                         words[3],
+                                                         words[4],
+                                                         words[5],
+                                                         words[6],
+                                                         words[7],
+                                                         words[8])
 
-                                    print(words[0])
-                                    indexes = [i for i, j in enumerate(sensor_observations_files) if j.split('_')[0] == words[0]]
-                                    for i in indexes:
-                                        print(sensor_observations_files[i])
-                                    input("Press Enter to continue...")
-
-                                # print(line)
-                                # print(words)
-                                #point = self.Point(words[0], words[1], words[2])
-                                #points.append(point)
-                                # print(point)
-
+                                    sensors.append(sensor)
                         room = self.Room(room_file.split('.')[0],
-                                         room_folder_path)
+                                         room_folder_path, sensors)
                         rooms.append(room)
-                        # print(rooms)
-                home_session = self.HomeSession(home_folder, rooms)
+                        # print(room)
+                # print(rooms)
+                # input("Press Enter to continue...")
+                home_session = self.HomeSession(home_subfolder, rooms)
                 home_sessions.append(home_session)
 
             return home_sessions
-
+        def get_files():
+            pass
+            """
+            sensor_observation_files = os.listdir(room_folder_path)
+            indexes = [i for i, j in enumerate(sensor_observation_files) if j.split('_')[0] == words[0]]
+            sensor_type = 'unknown'
+            sensor_files = []
+            for i in indexes:
+                if 'scan' in sensor_observation_files[i]:
+                    # print(sensor_observation_files[i], ' -> laser')
+                    sensor_type = 'laser_scanner'
+                else:
+                    sensor_type = 'camera'
+                    # print('camera')
+                sensor_files.append(sensor_observation_files[i])
+            # print(sensor_files)
+            if sensor_type == 'laser_scanner':
+                sensor = self.SensorLaserScanner(words[0], words[1],room_folder_path, sensor_files)
+            elif sensor_type == 'camera':
+                sensor = self.SensorCamera(words[0], words[1],room_folder_path, sensor_files)
+            # print(sensor)
+            
+            """
         def __str__(self):
             s = ""
             return super().__str__() + s
@@ -1878,21 +1914,18 @@ def main():
     tab = 4
     print(rhds.unit["raw"])
     home_sessions = rhds.unit["raw"].home_sessions
+    """
     print(str(home_sessions).expandtabs(0))
     for home_session in home_sessions:
         print(str(home_session.rooms).expandtabs(tab))
         for room in home_session.rooms:
             print(str(room.name).expandtabs(tab*2))
-    #print(homes[0])
-    #print(homes[0].topo_relations[0].room1_name)
-    #print(homes[0].topo_relations[0].room2_name)
-    #print(homes[0].topo_relations[0].as_dict())
-    #print(homes[0].topo_relations.as_dict())
-    #print(homes[0].as_dict())
-    #print(homes.as_dict())
-
-
-
+    """
+    print(home_sessions[0].name)
+    print(home_sessions[0].rooms[0].name)
+    print(home_sessions[0].rooms[0].folder_path)
+    print(home_sessions[0].rooms[0].sensor_observations[0].__dict__)
+ 
     """  About categories """
     """
     print(rhds.unit["chelmnts"])
