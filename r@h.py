@@ -1577,12 +1577,11 @@ class Dataset():
                     " items)>"
                 return s
 
-
         class Sensor():
-            def __init__(self, id, name,
-                         sensor_pose_x, sensor_pose_y, sensor_pose_z,
-                         sensor_pose_yaw, sensor_pose_pitch, sensor_pose_roll,
-                         time_stamp):
+            def __init__(self, id='0', name='undefined',
+                         sensor_pose_x='0', sensor_pose_y='0', sensor_pose_z='0',
+                         sensor_pose_yaw='0', sensor_pose_pitch='0', sensor_pose_roll='0',
+                         time_stamp='0', files=[]):
                 self.id = id
                 self.name = name
                 self.sensor_pose_x = sensor_pose_x
@@ -1592,6 +1591,7 @@ class Dataset():
                 self.sensor_pose_pitch = sensor_pose_pitch
                 self.sensor_pose_roll = sensor_pose_roll
                 self.time_stamp = time_stamp
+                self.files = files
 
             def __str__(self):
                 s = '\t' + self.id + ', ' + self.name + ', ' + \
@@ -1601,12 +1601,49 @@ class Dataset():
                     self.sensor_pose_yaw + ', ' + \
                     self.sensor_pose_pitch + ', ' + \
                     self.sensor_pose_roll + ', ' + \
-                    self.time_stamp
+                    self.time_stamp + ', ' + \
+                    str(self.files)
                 return s
 
             def __repr__(self):
                 s = "<Sensor instance (" + self.name + ")>"
                 return s
+
+            def get_files(self, path):
+
+                """
+                The path should be the room.path of the room to which it
+                belongs
+                """
+                sensor_observation_files = os.listdir(path)
+                indexes = [i for i, j in enumerate(sensor_observation_files) if j.split('_')[0] == self.id]
+                """
+                If files is empty the file names are loaded
+                If not, file names are already loaded (cached)
+                """
+                if len(self.files) == 0:
+                    for i in indexes:
+                        self.files.append(sensor_observation_files[i])
+                    """
+                    According to some files features self instance is casted
+                    to a specialized one.
+                    """
+                    if 'scan' in sensor_observation_files[i]:
+                        self.__class__ = Dataset.DatasetUnitRawData.SensorLaserScanner
+                    else:
+                        self.__class__ = Dataset.DatasetUnitRawData.SensorCamera
+
+                return self.files
+
+            def get_type(self):
+                """
+                Example:
+                with a type like this:
+                <class '__main__.Dataset.DatasetUnitRawData.SensorCamera'>
+                return this:
+                SensorCamera
+                """
+                return str(type(self)).split('.')[-1][:-2]
 
         class Sensors(list):
 
@@ -1625,9 +1662,15 @@ class Dataset():
                 return s
 
         class SensorCamera(Sensor):
-            def __init__(self, id, name, path, files):
+            def __init__(self, id='0', name='undefined',
+                         sensor_pose_x='0', sensor_pose_y='0', sensor_pose_z='0',
+                         sensor_pose_yaw='0', sensor_pose_pitch='0', sensor_pose_roll='0',
+                         time_stamp='0', files=[]):
                 """ Calls the super class __init__"""
-                super().__init__(id, name, path, files)
+                super().__init__(id, name,
+                                 sensor_pose_x, sensor_pose_y, sensor_pose_z,
+                                 sensor_pose_yaw, sensor_pose_pitch, sensor_pose_roll,
+                                 time_stamp, files)
 
             def __str__(self):
                 s = '\t' + 'Camera: '
@@ -1636,6 +1679,14 @@ class Dataset():
             def __repr__(self):
                 s = "<SensorCamera instance (" + self.name + ")>"
                 return s
+
+            def get_depth_file(self):
+                index = [i for i, j in enumerate(self.files) if 'depth' in j]
+                return self.files[index[0]]
+
+            def get_intensity_file(self):
+                index = [i for i, j in enumerate(self.files) if 'intensity' in j]
+                return self.files[index[0]]
 
         class SensorCameras(list):
 
@@ -1654,9 +1705,15 @@ class Dataset():
                 return s
 
         class SensorLaserScanner(Sensor):
-            def __init__(self, id, name, path, files):
+            def __init__(self, id='0', name='undefined',
+                         sensor_pose_x='0', sensor_pose_y='0', sensor_pose_z='0',
+                         sensor_pose_yaw='0', sensor_pose_pitch='0', sensor_pose_roll='0',
+                         time_stamp='0', files=[]):
                 """ Calls the super class __init__"""
-                super().__init__(id, name, path, files)
+                super().__init__(id, name,
+                                 sensor_pose_x, sensor_pose_y, sensor_pose_z,
+                                 sensor_pose_yaw, sensor_pose_pitch, sensor_pose_roll,
+                                 time_stamp, files)
 
             def __str__(self):
                 s = '\t' + 'Laser scanner: '
@@ -1665,6 +1722,24 @@ class Dataset():
             def __repr__(self):
                 s = "<SensorLaserScanner instance (" + self.name + ")>"
                 return s
+
+            def get_laser_scan(self, path):
+                laser_scan = Dataset.DatasetUnitRawData.LaserScan()
+                with open(path + '/' + self.files[0], "r") as file_handler:
+                    line_number = 0
+                    for line in file_handler:
+                        words = line.strip().split()
+                        if words[0] != '#':
+                            line_number += 1
+                            if line_number == 1:
+                                laser_scan.aperture = words[0]
+                            elif line_number == 2:
+                                laser_scan.max_range = words[0]
+                            elif line_number == 4:
+                                laser_scan.vector_of_scans = words
+                            elif line_number == 5:
+                                laser_scan.vector_of_valid_scans = words
+                return laser_scan
 
         class SensorLaserScanners(list):
 
@@ -1679,6 +1754,41 @@ class Dataset():
 
             def __repr__(self):
                 s = "<SensorLaserScanners list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+        class LaserScan():
+            def __init__(self, aperture='0', max_range='0',
+                         vector_of_scans=[], vector_of_valid_scans=[]):
+                self.aperture = aperture
+                self.max_range = max_range
+                self.vector_of_scans = vector_of_scans
+                self.vector_of_valid_scans = vector_of_valid_scans
+
+            def __str__(self):
+                s = '\t' + 'Laser scan: ' +  self.aperture + ', ' + \
+                    self.max_range + ', num. of scans: ' + \
+                    str(len(self.vector_of_scans)) + ', valid: ' + \
+                    str(len(self.vector_of_valid_scans))
+                return s
+
+            def __repr__(self):
+                s = "<LaserScan instance (" + self.name + ")>"
+                return s
+
+        class LaserScans(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<LaserScans list instance (" + str(len(self)) + \
                     " items)>"
                 return s
 
@@ -1733,14 +1843,15 @@ class Dataset():
                                     """
                                     # print(words[0])
                                     sensor = self.Sensor(words[0],
-                                                         words[1],
-                                                         words[2],
-                                                         words[3],
-                                                         words[4],
-                                                         words[5],
-                                                         words[6],
-                                                         words[7],
-                                                         words[8])
+                                                              words[1],
+                                                              words[2],
+                                                              words[3],
+                                                              words[4],
+                                                              words[5],
+                                                              words[6],
+                                                              words[7],
+                                                              words[8],
+                                                              [])
 
                                     sensors.append(sensor)
                         room = self.Room(room_file.split('.')[0],
@@ -1753,29 +1864,7 @@ class Dataset():
                 home_sessions.append(home_session)
 
             return home_sessions
-        def get_files():
-            pass
-            """
-            sensor_observation_files = os.listdir(room_folder_path)
-            indexes = [i for i, j in enumerate(sensor_observation_files) if j.split('_')[0] == words[0]]
-            sensor_type = 'unknown'
-            sensor_files = []
-            for i in indexes:
-                if 'scan' in sensor_observation_files[i]:
-                    # print(sensor_observation_files[i], ' -> laser')
-                    sensor_type = 'laser_scanner'
-                else:
-                    sensor_type = 'camera'
-                    # print('camera')
-                sensor_files.append(sensor_observation_files[i])
-            # print(sensor_files)
-            if sensor_type == 'laser_scanner':
-                sensor = self.SensorLaserScanner(words[0], words[1],room_folder_path, sensor_files)
-            elif sensor_type == 'camera':
-                sensor = self.SensorCamera(words[0], words[1],room_folder_path, sensor_files)
-            # print(sensor)
-            
-            """
+
         def __str__(self):
             s = ""
             return super().__str__() + s
@@ -1924,8 +2013,38 @@ def main():
     print(home_sessions[0].name)
     print(home_sessions[0].rooms[0].name)
     print(home_sessions[0].rooms[0].folder_path)
-    print(home_sessions[0].rooms[0].sensor_observations[0].__dict__)
- 
+
+    path = home_sessions[0].rooms[0].folder_path
+
+    sensor = home_sessions[0].rooms[0].sensor_observations[0]
+    print(sensor)
+    print(type(sensor))
+    print(sensor.get_files(path))
+    print(sensor.get_type())
+    print(type(sensor))
+    laser_scan = sensor.get_laser_scan(path)
+    print(laser_scan)
+    #print(laser_scan.vector_of_scans)
+    #print(laser_scan.vector_of_valid_scans)
+
+    path   = home_sessions[0].rooms[0].folder_path
+    sensor = home_sessions[0].rooms[0].sensor_observations[24]
+    sensor.get_files(path)
+    intensity_file = './' + path + '/' + sensor.get_intensity_file()
+    depth_file = path + '/' + sensor.get_depth_file()
+    
+    import cv2
+    import sys
+
+    print(intensity_file)
+    img = cv2.imread(intensity_file, cv2.IMREAD_COLOR)
+    img_rot = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+    cv2.imshow("Intensity image", img_rot)
+    if img is None:
+        sys.exit("Could not read the image.")
+    k = cv2.waitKey(0)
+    # input('Press <enter> to continue')
+
     """  About categories """
     """
     print(rhds.unit["chelmnts"])
