@@ -15,12 +15,29 @@ import hashlib
 import humanize
 import wget
 import ssl
+import cv2
+import sys
 # import glob
 # import requests
 # import re
 
 
 class Dataset():
+
+    class refstr():
+        """
+        wrap string in object, so it is passed by reference rather than by
+        value
+        """
+        def __init__(self, s=""):
+            self.s = s
+
+        def __add__(self, s):
+            self.s += s
+            return self
+
+        def __str__(self):
+            return self.s
 
     class DatasetUnit():
 
@@ -1581,7 +1598,7 @@ class Dataset():
             def __init__(self, id='0', name='undefined',
                          sensor_pose_x='0', sensor_pose_y='0', sensor_pose_z='0',
                          sensor_pose_yaw='0', sensor_pose_pitch='0', sensor_pose_roll='0',
-                         time_stamp='0', files=[]):
+                         time_stamp='0', files=[], path=""):
                 self.id = id
                 self.name = name
                 self.sensor_pose_x = sensor_pose_x
@@ -1592,6 +1609,7 @@ class Dataset():
                 self.sensor_pose_roll = sensor_pose_roll
                 self.time_stamp = time_stamp
                 self.files = files
+                self.path = path
 
             def __str__(self):
                 s = '\t' + self.id + ', ' + self.name + ', ' + \
@@ -1609,13 +1627,13 @@ class Dataset():
                 s = "<Sensor instance (" + self.name + ")>"
                 return s
 
-            def get_files(self, path):
+            def load_files(self):
 
                 """
                 The path should be the room.path of the room to which it
                 belongs
                 """
-                sensor_observation_files = os.listdir(path)
+                sensor_observation_files = os.listdir(self.path)
                 indexes = [i for i, j in enumerate(sensor_observation_files) if j.split('_')[0] == self.id]
                 """
                 If files is empty the file names are loaded
@@ -1682,11 +1700,31 @@ class Dataset():
 
             def get_depth_file(self):
                 index = [i for i, j in enumerate(self.files) if 'depth' in j]
-                return self.files[index[0]]
+                return self.path + '/' + self.files[index[0]]
 
             def get_intensity_file(self):
                 index = [i for i, j in enumerate(self.files) if 'intensity' in j]
-                return self.files[index[0]]
+                return self.path + '/' + self.files[index[0]]
+
+            def show_intensity_file(self):
+                intensity_file = self.get_intensity_file()
+                img = cv2.imread(intensity_file, cv2.IMREAD_COLOR)
+                img_rot = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+                cv2.imshow("Intensity image " + "#" + self.id, img_rot)
+                if img is None:
+                    sys.exit("Could not read the image.")
+                print('Press a key to continue ...')
+                cv2.waitKey(0)
+
+            def show_depth_file(self):
+                depth_file = self.get_depth_file()
+                img = cv2.imread(depth_file, cv2.IMREAD_COLOR)
+                img_rot = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+                cv2.imshow("Depth image" + "#" + self.id, img_rot)
+                if img is None:
+                    sys.exit("Could not read the image.")
+                print('Press a key to continue ...')
+                cv2.waitKey(0)
 
         class SensorCameras(list):
 
@@ -1812,7 +1850,7 @@ class Dataset():
                 # print(home_folder)
                 rooms = self.Rooms()
                 room_files = os.listdir(self.path + '/' + home_folder + '/' +
-                                          home_subfolder)
+                                        home_subfolder)
                 # print(room_files)
                 for room_file in room_files:
                     if room_file.endswith('.txt'):
@@ -1843,15 +1881,16 @@ class Dataset():
                                     """
                                     # print(words[0])
                                     sensor = self.Sensor(words[0],
-                                                              words[1],
-                                                              words[2],
-                                                              words[3],
-                                                              words[4],
-                                                              words[5],
-                                                              words[6],
-                                                              words[7],
-                                                              words[8],
-                                                              [])
+                                                         words[1],
+                                                         words[2],
+                                                         words[3],
+                                                         words[4],
+                                                         words[5],
+                                                         words[6],
+                                                         words[7],
+                                                         words[8],
+                                                         [],
+                                                         room_folder_path)
 
                                     sensors.append(sensor)
                         room = self.Room(room_file.split('.')[0],
@@ -1884,13 +1923,6 @@ class Dataset():
 
         self.name = name
         self.unit = {}
-
-        self.unit["lsrscan"] = self.DatasetUnit(
-          "Laser scans",
-          "https://ananas.isa.uma.es:10002/sharing/pMVKQb5hl",
-          "Robot@Home-dataset_laser_scans-plain_text-all",
-          "0f188931b2bce1926d0faaac13be78614749ec72",
-          227829791)
 
         self.unit["rgbd"] = self.DatasetUnit(
           "RGB-D data",
@@ -1956,10 +1988,18 @@ class Dataset():
           "4823b61180bbf8ce5458ad43ad709069edb0e8f3",
           20002442369)
 
+        self.unit["lsrscan"] = self.DatasetUnitRawData(
+          "Laser scans",
+          "https://ananas.isa.uma.es:10002/sharing/pMVKQb5hl",
+          "Robot@Home-dataset_laser_scans-plain_text-all",
+          "0f188931b2bce1926d0faaac13be78614749ec72",
+          227829791)
+
         self.categories = self.unit["chelmnts"].categories
-        self.home_sessions = self.unit["chelmnts"].home_sessions
+        self.home_sessions_elements = self.unit["chelmnts"].home_sessions
         self.home_2dgeomaps = self.unit["2dgeomap"].homes
         self.home_topologies = self.unit["hometopo"].homes
+        self.home_sessions_sensor_observations = self.unit["raw"].home_sessions
 
     def __str__(self):
 
@@ -1999,16 +2039,41 @@ def main():
     rhds["hometopo"].download()
     """
 
+    """ About laser scans """
+    tab = 4
+    print(rhds.unit["lsrscan"])
+    home_sessions = rhds.unit["lsrscan"].home_sessions
+
+    print(home_sessions[0].name)
+    print(home_sessions[0].rooms[0].name)
+    print(home_sessions[0].rooms[0].folder_path)
+
+    path = home_sessions[0].rooms[0].folder_path
+
+    sensor = home_sessions[0].rooms[0].sensor_observations[0]
+    print(sensor)
+    print(type(sensor))
+    print(sensor.load_files())
+    print(sensor.get_type())
+    print(type(sensor))
+    laser_scan = sensor.get_laser_scan(path)
+    print(laser_scan)
+    #print(laser_scan.vector_of_scans)
+    #print(laser_scan.vector_of_valid_scans)
+
     """ About raw data """
+    """
     tab = 4
     print(rhds.unit["raw"])
     home_sessions = rhds.unit["raw"].home_sessions
+    """
     """
     print(str(home_sessions).expandtabs(0))
     for home_session in home_sessions:
         print(str(home_session.rooms).expandtabs(tab))
         for room in home_session.rooms:
             print(str(room.name).expandtabs(tab*2))
+    """
     """
     print(home_sessions[0].name)
     print(home_sessions[0].rooms[0].name)
@@ -2019,7 +2084,7 @@ def main():
     sensor = home_sessions[0].rooms[0].sensor_observations[0]
     print(sensor)
     print(type(sensor))
-    print(sensor.get_files(path))
+    print(sensor.load_files())
     print(sensor.get_type())
     print(type(sensor))
     laser_scan = sensor.get_laser_scan(path)
@@ -2027,22 +2092,20 @@ def main():
     #print(laser_scan.vector_of_scans)
     #print(laser_scan.vector_of_valid_scans)
 
-    path   = home_sessions[0].rooms[0].folder_path
     sensor = home_sessions[0].rooms[0].sensor_observations[24]
-    sensor.get_files(path)
-    intensity_file = './' + path + '/' + sensor.get_intensity_file()
-    depth_file = path + '/' + sensor.get_depth_file()
-    
-    import cv2
-    import sys
 
+    files = sensor.load_files()
+    intensity_file = sensor.get_intensity_file()
+    depth_file = sensor.get_depth_file()
+    print(files)
     print(intensity_file)
-    img = cv2.imread(intensity_file, cv2.IMREAD_COLOR)
-    img_rot = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
-    cv2.imshow("Intensity image", img_rot)
-    if img is None:
-        sys.exit("Could not read the image.")
-    k = cv2.waitKey(0)
+    print(depth_file)
+
+    sensor.show_intensity_file()
+    sensor.show_depth_file()
+    """
+
+
     # input('Press <enter> to continue')
 
     """  About categories """
