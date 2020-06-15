@@ -6,7 +6,7 @@
 __author__ = "Gregorio Ambrosio"
 __contact__ = "gambrosio[at]uma.es"
 __copyright__ = "Copyright 2020, Gregorio Ambrosio"
-__date__ = "2020/05/29"
+__date__ = "2020/06/16"
 __license__ = "GPLv3"
 
 import fire
