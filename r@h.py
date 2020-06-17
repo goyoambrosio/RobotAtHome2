@@ -16,6 +16,7 @@ import humanize
 import wget
 import ssl
 import cv2
+import numpy as np
 import sys
 # import glob
 # import requests
@@ -1706,25 +1707,103 @@ class Dataset():
                 index = [i for i, j in enumerate(self.files) if 'intensity' in j]
                 return self.path + '/' + self.files[index[0]]
 
-            def show_intensity_file(self):
+            def get_labels_file(self):
+                index = [i for i, j in enumerate(self.files) if 'labels' in j]
+                return self.path + '/' + self.files[index[0]]
+
+            def get_intensity_image(self):
                 intensity_file = self.get_intensity_file()
                 img = cv2.imread(intensity_file, cv2.IMREAD_COLOR)
                 img_rot = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
-                cv2.imshow("Intensity image " + "#" + self.id, img_rot)
-                if img is None:
-                    sys.exit("Could not read the image.")
-                print('Press a key to continue ...')
-                cv2.waitKey(0)
+                return img_rot
 
-            def show_depth_file(self):
+            def get_depth_image(self):
                 depth_file = self.get_depth_file()
                 img = cv2.imread(depth_file, cv2.IMREAD_COLOR)
                 img_rot = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
-                cv2.imshow("Depth image" + "#" + self.id, img_rot)
+                return img_rot
+
+            def get_labels(self):
+                labels = Dataset.DatasetUnitRawData.Labels()
+                labels_file = self.get_labels_file()
+                labels_file_path = labels_file
+                with open(labels_file_path, "r") as file_handler:
+                    line = file_handler.readline()
+                    while line:
+                        words = line.strip().split()
+                        if words[0][0] != '#':
+                            num_of_labels = int(words[0])
+                            break
+                        line = file_handler.readline()
+                    #print('num_of_labels: ' + str(num_of_labels))
+
+                    for i in range(num_of_labels):
+                        line = file_handler.readline()
+                        words = line.strip().split()
+                        # print(words)
+                        label = Dataset.DatasetUnitRawData.Label(words[0],
+                                                                 words[1])
+                        labels.append(label)
+
+                return labels
+
+            def __get_mask(self):
+                mask = []
+                labels_file = self.get_labels_file()
+                labels_file_path = labels_file
+                with open(labels_file_path, "r") as file_handler:
+                    line = file_handler.readline()
+                    while line:
+                        words = line.strip().split()
+                        if words[0][0] != '#':
+                            num_of_labels = int(words[0])
+                            break
+                        line = file_handler.readline()
+
+                    for i in range(num_of_labels):
+                        line = file_handler.readline()
+                        words = line.strip().split()
+
+                    num_of_rows = 0
+                    line = file_handler.readline()
+                    while line:
+                        num_of_rows += 1
+                        words = line.strip().split()
+                        mask.append(list(map(int, words)))
+                        line = file_handler.readline()
+                # h = len(mask)
+                # w = len(mask[0])
+
+                return mask
+
+            def get_label_mask(self, pos):
+                mask = self.__get_mask()
+                arr = np.array(mask)
+                arr = np.rot90(arr)
+                arr = arr & (2**(pos))
+                np.clip(arr, 0, 1, out=arr)
+                arr = np.uint8(arr)
+                arr = arr * 255
+                return arr
+
+            def show_intensity_image(self):
+                img = self.get_intensity_image()
+                cv2.imshow("Intensity image " + "#" + self.id, img)
                 if img is None:
                     sys.exit("Could not read the image.")
-                print('Press a key to continue ...')
-                cv2.waitKey(0)
+
+            def show_depth_image(self):
+                img = self.get_depth_image()
+                cv2.imshow("Depth image" + "#" + self.id, img)
+                if img is None:
+                    sys.exit("Could not read the image.")
+
+            def show_label_mask_image(self, pos):
+                img = self.get_label_mask(pos)
+                cv2.imshow("Label mask" + "#" + self.id +
+                           ' label: ' + str(pos), img)
+                if img is None:
+                    sys.exit("Could not read the image.")
 
         class SensorCameras(list):
 
@@ -1829,6 +1908,53 @@ class Dataset():
                 s = "<LaserScans list instance (" + str(len(self)) + \
                     " items)>"
                 return s
+
+        class Label():
+            def __init__(self, id='', name=''):
+                self.id = id
+                self.name = name
+
+            def __str__(self):
+                s = '\t' + 'Label: ' +  self.id + ', ' + self.name
+                return s
+
+            def __repr__(self):
+                s = "<Label instance (" + self.name + ")>"
+                return s
+
+        class Labels(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<Labels list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+            def get_names(self):
+                return [label.name for label in self]
+
+            def get_ids(self):
+                return [label.id for label in self]
+
+            def as_dict_id(self):
+                keys = [label.id for label in self]
+                zip_obj = zip(keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+            def as_dict_name(self):
+                keys = [label.name for label in self]
+                zip_obj = zip(keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
 
         def __init__(self, name="", url="", path="", expected_hash_code="",
                      expected_size=0):
@@ -2280,13 +2406,6 @@ class Dataset():
         self.name = name
         self.unit = {}
 
-        self.unit["rgbd"] = self.DatasetUnit(
-          "RGB-D data",
-          "https://ananas.isa.uma.es:10002/sharing/sJUC06jFJ",
-          "Robot@Home-dataset_rgbd_data-plain_text-all",
-          "b934e53d16580a62e0f4f1532d1efaa0567232ae",
-          19896608308)
-
         self.unit["recscn"] = self.DatasetUnit(
           "Reconstructed scenes",
           "https://ananas.isa.uma.es:10002/sharing/sFCGRu1LN",
@@ -2301,20 +2420,12 @@ class Dataset():
           "394dc6c8f4d19b2887007e6ee66f2e7cb64f930f",
           7947369064)
 
-        self.unit["lblrgbd"] = self.DatasetUnit(
-          "Labeled RGB-D data",
-          "https://ananas.isa.uma.es:10002/sharing/jVVI92AJn",
-          "Robot@Home-dataset_labelled-rgbd-data_plain-text_all",
-          "6834f930a16bb5d968d55b0b647703d952384e91",
-          16739353847)
-
         self.unit["chelmnts"] = self.DatasetUnitCharacterizedElements(
             "Characterized elements",
             "https://ananas.isa.uma.es:10002/sharing/t6zVblP3w",
             "Robot@Home-dataset_characterized-elements",
             "9d46bc3b33d2c6b84c04bd3db12cc415c17b4ae8",
-            33345659
-        )
+            33345659)
 
         self.unit["2dgeomap"] = self.DatasetUnit2DGeometricMaps(
           "2D geometric maps",
@@ -2351,12 +2462,28 @@ class Dataset():
           "0f188931b2bce1926d0faaac13be78614749ec72",
           227829791)
 
+        self.unit["rgbd"] = self.DatasetUnitRawData(
+          "RGB-D data",
+          "https://ananas.isa.uma.es:10002/sharing/sJUC06jFJ",
+          "Robot@Home-dataset_rgbd_data-plain_text-all",
+          "b934e53d16580a62e0f4f1532d1efaa0567232ae",
+          19896608308)
+
+        self.unit["lblrgbd"] = self.DatasetUnitRawData(
+          "Labeled RGB-D data",
+          "https://ananas.isa.uma.es:10002/sharing/jVVI92AJn",
+          "Robot@Home-dataset_labelled-rgbd-data_plain-text_all",
+          "6834f930a16bb5d968d55b0b647703d952384e91",
+          16739353847)
+
         self.categories = self.unit["chelmnts"].categories
         self.home_sessions_elements = self.unit["chelmnts"].home_sessions
         self.home_2dgeomaps = self.unit["2dgeomap"].homes
         self.home_topologies = self.unit["hometopo"].homes
         self.home_sessions_sensor_observations = self.unit["raw"].home_sessions
         self.home_sessions_laser_scans = self.unit["lsrscan"].home_sessions
+        self.home_sessions_rgbd_images = self.unit["rgbd"].home_sessions
+        self.home_sessions_labeled_rgbd_images = self.unit["lblrgbd"].home_sessions
 
     def __str__(self):
 
@@ -2396,7 +2523,85 @@ def main():
     rhds["hometopo"].download()
     """
 
+    """ About labelled rgbd data """
+    tab = 4
+    print(rhds.unit["lblrgbd"])
+    home_sessions = rhds.unit["lblrgbd"].home_sessions
+    #print(str(home_sessions).expandtabs(0))
+    #for home_session in home_sessions:
+    #    print(str(home_session.rooms).expandtabs(tab))
+    #    for room in home_session.rooms:
+    #        print(str(room.name).expandtabs(tab*2))
+    print(home_sessions[0].name)
+    print(home_sessions[0].rooms[0].name)
+    print(home_sessions[0].rooms[0].folder_path)
+
+    path = home_sessions[0].rooms[0].folder_path
+
+    # print(home_sessions[0].rooms[0].sensor_observations)
+
+    sensor = home_sessions[0].rooms[0].sensor_observations[0]
+
+    files = sensor.load_files()
+    intensity_file = sensor.get_intensity_file()
+    depth_file = sensor.get_depth_file()
+    labels_file = sensor.get_labels_file()
+    print(files)
+    print(intensity_file)
+    print(depth_file)
+    print(labels_file)
+
+    labels = sensor.get_labels()
+    print(labels)
+    #print(labels.as_dict_name())
+    #print(labels.as_dict_id())
+    # mask = sensor.__get_mask()
+    #label_mask = sensor.get_label_mask(10)
+    sensor.show_intensity_image()
+    sensor.show_depth_image()
+    sensor.show_label_mask_image(10)
+    print('Press a key to continue ...')
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+    
+
+
+
+    """ About rgbd data """
+    """
+    tab = 4
+    print(rhds.unit["rgbd"])
+    home_sessions = rhds.unit["rgbd"].home_sessions
+    #print(str(home_sessions).expandtabs(0))
+    #for home_session in home_sessions:
+    #    print(str(home_session.rooms).expandtabs(tab))
+    #    for room in home_session.rooms:
+    #        print(str(room.name).expandtabs(tab*2))
+    print(home_sessions[0].name)
+    print(home_sessions[0].rooms[0].name)
+    print(home_sessions[0].rooms[0].folder_path)
+
+    path = home_sessions[0].rooms[0].folder_path
+
+    # print(home_sessions[0].rooms[0].sensor_observations)
+
+    sensor = home_sessions[0].rooms[0].sensor_observations[926]
+
+    files = sensor.load_files()
+    intensity_file = sensor.get_intensity_file()
+    depth_file = sensor.get_depth_file()
+    print(files)
+    print(intensity_file)
+    print(depth_file)
+
+    sensor.show_intensity_file()
+    sensor.show_depth_file()
+    """
+
+
     """ About laser scans """
+    """
     tab = 4
     print(rhds.unit["lsrscan"])
     home_sessions = rhds.unit["lsrscan"].home_sessions
@@ -2418,6 +2623,8 @@ def main():
     print(laser_scan)
     # print(laser_scan.vector_of_scans)
     # print(laser_scan.vector_of_valid_scans)
+    """
+
 
     """ About raw data """
     """
