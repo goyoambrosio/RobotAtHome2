@@ -1,9 +1,5 @@
 # Robot@Home Dataset API #
 
-[Robot@Home webpage](http://mapir.isa.uma.es/mapirwebsite/index.php/mapir-downloads/203-robot-at-home-dataset.html)
-
-# Robot@Home dataset #
-
 The Robot-at-Home dataset (Robot@Home, paper here) is a collection of raw and
 processed data from five domestic settings compiled by a mobile robot equipped
 with 4 RGB-D cameras and a 2D laser scanner. Its main purpose is to serve as a
