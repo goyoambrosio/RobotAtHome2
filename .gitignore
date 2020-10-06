@@ -52,6 +52,8 @@ _deps
 
 **/bin
 **/build
+**/dist
+**/robotathome.egg-info
 
 # Ignore hidden files
 # except .gitignore
