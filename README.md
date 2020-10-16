@@ -1,4 +1,4 @@
-# Robot@Home Dataset API 0.1.4 (pre)#
+# Robot@Home Dataset API 0.1.4 (pre) #
 
 The Robot-at-Home dataset (Robot@Home, paper
 [here](http://mapir.uma.es/papersrepo/2017/2017-raul-IJRR-Robot_at_home_dataset.pdf))
