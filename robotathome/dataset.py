@@ -28,8 +28,12 @@ class Dataset():
         """
         roar = "I'm a dataset"
 
-        def __init__(self, name="", url="", path="", expected_hash_code="",
-                     expected_size=0):
+        def __init__(self,
+                     name = "",
+                     path = "",
+                     url = "",
+                     expected_hash_code="",
+                     expected_size = 0):
             """
             Initializes the DatasetUnit with supplied values
 
@@ -37,15 +41,16 @@ class Dataset():
             =========
 
             name : Human name of
-            url  : url string to download it
             path : root path of
+            url  : url string to download it
             expected_hash_code : the hash code the downloaded unit must have
             expected_size      : the number of bytes the downloaded copy must
                                  have
             """
+        
             self.name = name
-            self.url = url
             self.path = path
+            self.url = url
             self.expected_hash_code = expected_hash_code
             self.expected_size = expected_size
 
@@ -88,21 +93,28 @@ class Dataset():
             verbose  : it outputs additional printed details
             """
             if verbose:
-                print('Checking      : ' + self.name)
-                print('folder        : ' + self.path)
+                print('Unit          : ' + self.name)
+                print('Folder path   : ' + self.path)
             folder_exist = os.path.isdir(self.path)
             if verbose:
-                print('folder exist  : ' + str(folder_exist))
+                print('Folder exist  : ' + str(folder_exist))
             if folder_exist:
                 correct_size = self.check_folder_size(verbose)
                 if verbose:
-                    print('correct size  : ' + str(correct_size))
+                    print('Correct size  : ' + str(correct_size))
             return folder_exist and correct_size
 
         def download(self):
             """ignore SSL certificate verification!"""
-            ssl._create_default_https_context = ssl._create_unverified_context
-            wget.download(self.url)
+            #ssl._create_default_https_context = ssl._create_unverified_context
+            downloaded_file = wget.download(self.url,os.path.dirname(self.path)+"/")
+            if self.expected_hash_code != "":
+                checksum = self.get_md5_from_file(downloaded_file)
+                if checksum != self.expected_hash_code:
+                    raise ValueError(
+                        'The MD5 checksum of local file %s differs from %s, please manually remove \
+                        the file and try again.' %
+                        (downloaded_file, self.expected_hash_code))
 
         def size(self, path, *, follow_symlinks=True):
             """
@@ -115,6 +127,17 @@ class Dataset():
                                for entry in it)
             except NotADirectoryError:
                 return os.stat(path, follow_symlinks=follow_symlinks).st_size
+
+        def get_md5_from_file(self, filename):
+            BLOCKSIZE = 65536
+            hasher = hashlib.md5()
+            with open(filename, 'rb') as afile:
+                buf = afile.read(BLOCKSIZE)
+                while len(buf) > 0:
+                    hasher.update(buf)
+                    buf = afile.read(BLOCKSIZE)
+            print("\nMD5 checksum for %s : %s"  % (filename, hasher.hexdigest()))
+            return hasher.hexdigest()
 
         def hash_for_directory(self, hashfunc=hashlib.sha1):
             """
@@ -849,18 +872,21 @@ class Dataset():
                 new_dict = dict(zip_obj)
                 return new_dict
 
-        def __init__(self, name="", url="", path="", expected_hash_code="",
+        def __init__(self, name="",
+                     path="",
+                     url="",
+                     expected_hash_code="",
                      expected_size=0):
             """ Calls the super class __init__"""
-            super().__init__(name, url, path, expected_hash_code,
+            super().__init__(name, path, url, expected_hash_code,
                              expected_size)
             self.__categories_file = "types.txt"
             self.__home_key_string = "home"
             self.__room_key_string = "room"
             self.__object_key_string = "object"
-            self.categories = self.__load_categories()
-            self.home_files = self.__get_home_files()
-            self.home_sessions = self.__load_home_files()
+            # self.categories = self.__load_categories()
+            # self.home_files = self.__get_home_files()
+            # self.home_sessions = self.__load_home_files()
 
         def __str__(self):
             """ Categories """
@@ -875,6 +901,20 @@ class Dataset():
                     s += item + ", " + self.categories[category][item] + "\n"
                 s += "\n"
             return super().__str__() + s
+
+        def load_data(self):
+            try:
+                print()
+                print("Dataset Unit: Characterized elements")
+                print("====================================")
+                print("Trying to load data from: " + self.path)
+                self.categories = self.__load_categories()
+                self.home_files = self.__get_home_files()
+                self.home_sessions = self.__load_home_files()
+                print("Success !")
+            except:
+                print("Something went wrong")
+                self.check_integrity(verbose=True)
 
         def __get_type(self):
             """
@@ -2371,7 +2411,11 @@ class Dataset():
             s = ""
             return super().__str__() + s
 
-    def __init__(self, name=""):
+    def __init__(self,
+                 name="",
+                 path=os.path.abspath("."),
+                 url=""):
+
         """
         Initializes the Dataset with supplied values
 
@@ -2384,6 +2428,7 @@ class Dataset():
         types : dict with homes, room categories and object categories
         """
 
+        """
         self.name = name
         self.unit = {}
 
@@ -2465,6 +2510,22 @@ class Dataset():
         self.home_sessions_laser_scans = self.unit["lsrscan"].home_sessions
         self.home_sessions_rgbd_images = self.unit["rgbd"].home_sessions
         self.home_sessions_labeled_rgbd_images = self.unit["lblrgbd"].home_sessions
+        """
+
+        self.name = name
+        self.path = path
+        self.url = url
+
+        self.unit = {}
+
+
+        self.unit["chelmnts"] = self.DatasetUnitCharacterizedElements(
+            "Characterized elements",
+            os.path.abspath(self.path + "/"+ "Robot@Home-dataset_characterized-elements"),  
+            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_characterized-elements.tgz?download=1",
+            "a351580e4f791c21dfc7dbcfd88914b5",
+            33345659)
+
 
     def __str__(self):
 
