@@ -17,6 +17,8 @@ import ssl
 import cv2
 import numpy as np
 import sys
+import tarfile
+import click
 
 
 class Dataset():
@@ -47,12 +49,13 @@ class Dataset():
             expected_size      : the number of bytes the downloaded copy must
                                  have
             """
-        
+
             self.name = name
             self.path = path
             self.url = url
             self.expected_hash_code = expected_hash_code
             self.expected_size = expected_size
+            self.__data_loaded__ = False
 
         def __repr__(self):
             return {'name': self.name, 'url': self.url}
@@ -70,7 +73,7 @@ class Dataset():
 
         def check_folder_size(self, verbose=False):
             """
-            Check that the expected size mawatch/?v=2607042769536912tch with the real folder size
+            Check that the expected size match with the real folder size
             verbose  : it outputs additional printed details
             """
             real_folder_size = self.size(self.path)
@@ -78,7 +81,7 @@ class Dataset():
                 print('expected size : ' + str(self.expected_size) +
                       ' bytes (' +
                       humanize.naturalsize(self.expected_size) + ')')
-                print('counted       : ' + str(real_folder_size) +
+                print('computed size : ' + str(real_folder_size) +
                       ' bytes (' +
                       humanize.naturalsize(real_folder_size) + ')')
             return self.expected_size == real_folder_size
@@ -108,6 +111,7 @@ class Dataset():
             """ignore SSL certificate verification!"""
             #ssl._create_default_https_context = ssl._create_unverified_context
             downloaded_file = wget.download(self.url,os.path.dirname(self.path)+"/")
+            downloaded_file = os.path.normpath(downloaded_file)
             if self.expected_hash_code != "":
                 checksum = self.get_md5_from_file(downloaded_file)
                 if checksum != self.expected_hash_code:
@@ -115,6 +119,11 @@ class Dataset():
                         'The MD5 checksum of local file %s differs from %s, please manually remove \
                         the file and try again.' %
                         (downloaded_file, self.expected_hash_code))
+                else:
+                    print("Extracting files from %s",(os.path.basename(downloaded_file)))
+                    tf = tarfile.open(downloaded_file)
+                    tf.extractall(os.path.dirname(downloaded_file))
+                    os.remove(downloaded_file)
 
         def size(self, path, *, follow_symlinks=True):
             """
@@ -136,7 +145,7 @@ class Dataset():
                 while len(buf) > 0:
                     hasher.update(buf)
                     buf = afile.read(BLOCKSIZE)
-            print("\nMD5 checksum for %s : %s"  % (filename, hasher.hexdigest()))
+            print("\nMD5 checksum for %s : %s"  % (os.path.basename(filename), hasher.hexdigest()))
             return hasher.hexdigest()
 
         def hash_for_directory(self, hashfunc=hashlib.sha1):
@@ -173,6 +182,10 @@ class Dataset():
                                              hashfunc(open(fn, 'rb').read()).
                                              hexdigest()) for fn in filenames)
             return hashfunc(index.encode('utf-8')).hexdigest()
+
+        def is_loaded(self):
+            return self.__data_loaded__
+
 
     class DatasetUnitCharacterizedElements(DatasetUnit):
         class HomeSession():
@@ -884,9 +897,6 @@ class Dataset():
             self.__home_key_string = "home"
             self.__room_key_string = "room"
             self.__object_key_string = "object"
-            # self.categories = self.__load_categories()
-            # self.home_files = self.__get_home_files()
-            # self.home_sessions = self.__load_home_files()
 
         def __str__(self):
             """ Categories """
@@ -903,18 +913,31 @@ class Dataset():
             return super().__str__() + s
 
         def load_data(self):
-            try:
-                print()
-                print("Dataset Unit: Characterized elements")
-                print("====================================")
-                print("Trying to load data from: " + self.path)
-                self.categories = self.__load_categories()
-                self.home_files = self.__get_home_files()
-                self.home_sessions = self.__load_home_files()
-                print("Success !")
-            except:
-                print("Something went wrong")
-                self.check_integrity(verbose=True)
+
+            print()
+            print("Dataset Unit: Characterized elements")
+            print("====================================")
+            while True:
+                try:
+                    print("Trying to load data from: " + self.path)
+                    self.categories = self.__load_categories()
+                    self.home_files = self.__get_home_files()
+                    self.home_sessions = self.__load_home_files()
+                    print("Success ! Now data is loaded in memory. Use the API to access data")
+                    self.__data_loaded__ = True
+                    return self.__data_loaded__
+                except:
+                    print("Something went wrong")
+                    print("Checking the integrity. It can take some time, please be patient")
+                    if (self.check_integrity(verbose=True)):
+                        print("Seems to have passed the integrity check but some unknown error persists.")
+                        print("It must be due to some external factor unrelated to this software.")
+                    if click.confirm('Do you want to download ' + os.path.basename(self.path) + ' ?', default=True):
+                        self.download()
+                    else:
+                        print("Data was not loaded. Trying to access data through API will raise errors")
+                        self.__data_loaded__ = False
+                        return self.__data_loaded__
 
         def __get_type(self):
             """
@@ -2516,6 +2539,9 @@ class Dataset():
         self.path = path
         self.url = url
 
+        print ("Robot@Home Dataset (v0.1.4)")
+        print ("===========================")
+
         self.unit = {}
 
 
@@ -2524,24 +2550,30 @@ class Dataset():
             os.path.abspath(self.path + "/"+ "Robot@Home-dataset_characterized-elements"),  
             "https://zenodo.org/record/3901564/files/Robot@Home-dataset_characterized-elements.tgz?download=1",
             "a351580e4f791c21dfc7dbcfd88914b5",
-            33345659)
-
+            31448194)
 
     def __str__(self):
 
         """ Units """
+
         total_expected_size = 0
 
-        s = "\n" + self.name + "\n" + "*" * len(self.name) + "\n"*2
-        s += "Units" + "\n" + "=====" + "\n"*2
-        for unit in self.unit.values():
-            s += unit.__str__()
+        s = "\n" + self.name + " Dataset Units" + "\n" + "=" * len(self.name+" Dataset Units") +"\n"
+        # s += "Units" + "\n" + "=====" + "\n"*2
+        for index, unit in self.unit.items():
+            s += index + " : " + unit.name + " "
+            if unit.__data_loaded__:
+                s += "(loaded " + humanize.naturalsize(unit.expected_size) + ")\n"
+            else:
+                s += "(unloaded)\n"
+            #s += unit.__str__()
             total_expected_size += unit.expected_size
 
         s += "\n"
-        s += 'Total expected size = ' + str(total_expected_size) + \
+        s += 'Total expected size = ' + str(total_expected_size) + " bytes"\
              ' (' + humanize.naturalsize(total_expected_size) + ')'
         s += "\n"
+
 
         return s
 
