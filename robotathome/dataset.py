@@ -28,7 +28,6 @@ class Dataset():
         """
         A plain text Robot@Home dataset
         """
-        roar = "I'm a dataset"
 
         def __init__(self,
                      name = "",
@@ -186,6 +185,31 @@ class Dataset():
         def is_loaded(self):
             return self.__data_loaded__
 
+        def load_data(self):
+
+            title = "Dataset Unit: " + self.name
+            print()
+            print(title)
+            print("=" * len(title))
+            while True:
+                try:
+                    print("Trying to load data from: " + self.path)
+                    self._load_function()  # this function must be defined in child class
+                    print("Success ! Now data is loaded in memory. Use the API to access data")
+                    self.__data_loaded__ = True
+                    return self.__data_loaded__
+                except:
+                    print("Something went wrong")
+                    print("Checking the integrity. It can take some time, please be patient")
+                    if (self.check_integrity(verbose=True)):
+                        print("Seems to have passed the integrity check but some unknown error persists.")
+                        print("It must be due to some external factor unrelated to this software.")
+                    if click.confirm('Do you want to download ' + os.path.basename(self.path) + ' ?', default=True):
+                        self.download()
+                    else:
+                        print("Data was not loaded. Trying to access data through API will raise errors")
+                        self.__data_loaded__ = False
+                        return self.__data_loaded__
 
     class DatasetUnitCharacterizedElements(DatasetUnit):
         class HomeSession():
@@ -912,32 +936,10 @@ class Dataset():
                 s += "\n"
             return super().__str__() + s
 
-        def load_data(self):
-
-            print()
-            print("Dataset Unit: Characterized elements")
-            print("====================================")
-            while True:
-                try:
-                    print("Trying to load data from: " + self.path)
-                    self.categories = self.__load_categories()
-                    self.home_files = self.__get_home_files()
-                    self.home_sessions = self.__load_home_files()
-                    print("Success ! Now data is loaded in memory. Use the API to access data")
-                    self.__data_loaded__ = True
-                    return self.__data_loaded__
-                except:
-                    print("Something went wrong")
-                    print("Checking the integrity. It can take some time, please be patient")
-                    if (self.check_integrity(verbose=True)):
-                        print("Seems to have passed the integrity check but some unknown error persists.")
-                        print("It must be due to some external factor unrelated to this software.")
-                    if click.confirm('Do you want to download ' + os.path.basename(self.path) + ' ?', default=True):
-                        self.download()
-                    else:
-                        print("Data was not loaded. Trying to access data through API will raise errors")
-                        self.__data_loaded__ = False
-                        return self.__data_loaded__
+        def _load_function(self):
+            self.categories = self.__load_categories()
+            self.home_files = self.__get_home_files()
+            self.home_sessions = self.__load_home_files()
 
         def __get_type(self):
             """
@@ -1412,32 +1414,35 @@ class Dataset():
                 return s
 
 
-        def __init__(self, name="", url="", path="", expected_hash_code="",
+        def __init__(self, name="",
+                     url="",
+                     path="",
+                     expected_hash_code="",
                      expected_size=0):
             """ Calls the super class __init__"""
             super().__init__(name, url, path, expected_hash_code,
                              expected_size)
 
-            self.homes = self.__load_data()
+        def _load_function(self):
 
-        def __load_data(self):
-            homes = self.Homes()
-            home_folders = os.listdir(self.path + '/' + self.path)
+            self.homes = self.Homes()
+            # print(self.path + '/' + os.path.basename(self.path))
+            home_folders_path = self.path + '/' + os.path.basename(self.path)
+            home_folders = os.listdir(home_folders_path)
             # print(home_folders)
             for home_folder in home_folders:
                 # print(home_folder)
                 rooms = self.Rooms()
-                room_files = os.listdir(self.path + '/' + self.path + '/' +
-                                        home_folder)
+                room_files_path = home_folders_path + '/' + home_folder
+                # print(room_files_path)
+                room_files = os.listdir(room_files_path)
                 # print(room_files)
                 for room_file in room_files:
                     # print(room_file)
                     room_file_splitted = room_file.split('_')
-                    path = self.path + '/' + self.path + '/' + \
-                           home_folder + '/' + \
-                           room_file
+                    room_file_path = room_files_path + '/' + room_file
                     points = self.Points()
-                    with open(path, "r") as file_handler:
+                    with open(room_file_path, "r") as file_handler:
                         for line in file_handler:
                             words = line.strip().split()
                             # print(line)
@@ -1450,16 +1455,18 @@ class Dataset():
                     rooms.append(room)
                 # print(rooms)
                 home = self.Home(home_folder, rooms)
-                homes.append(home)
-
-            return homes
-
-
-            #with open(self.path+'/'+self.path, "r") as file_handler:
-            return 0
+                self.homes.append(home)
 
         def __str__(self):
+            tab = 4
             s = ""
+            # s = str(self.homes).expandtabs(0) + "\n"
+            for home in self.homes:
+                s += str(home).expandtabs(0) + "\n"
+                # print(str(home.rooms).expandtabs(tab*1))
+                for room in home.rooms:
+                    s += str(room).expandtabs(tab*1) + "\n"
+                    s += '        number of points: ' + str(len(room.points)) + "\n"
             return super().__str__() + s
 
     class DatasetUnitHomesTopologies(DatasetUnit):
@@ -2549,13 +2556,22 @@ class Dataset():
 
         self.unit["chelmnts"] = self.DatasetUnitCharacterizedElements(
             "Characterized elements",
-            os.path.abspath(self.path + "/"+ "Robot@Home-dataset_characterized-elements"),  
+            os.path.abspath(self.path + "/"+ "Robot@Home-dataset_characterized-elements"),
             "https://zenodo.org/record/3901564/files/Robot@Home-dataset_characterized-elements.tgz?download=1",
             "a351580e4f791c21dfc7dbcfd88914b5",
             31448194)
 
+        self.unit["2dgeomap"] = self.DatasetUnit2DGeometricMaps(
+            "2D geometric maps",
+            os.path.abspath(self.path + "/"+ "Robot@Home-dataset_2d_geometric_maps"),
+            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_2d_geometric_maps.tgz?download=1",
+            "cf622ee997bc620e297bff8d3a2491d3",
+            8240734)
+
+
         if self.autoload:
             self.unit["chelmnts"].load_data()
+            self.unit["2dgeomap"].load_data()
 
     def __str__(self):
 

@@ -7,13 +7,17 @@ __copyright__ = "Copyright 2020, Gregorio Ambrosio"
 __date__ = "2020/10/12"
 __license__ = "MIT"
 
-#import robotathome.dataset
+# import robotathome.dataset
+
 from robotathome.dataset import Dataset
-import os
 
-rhds = Dataset("MyRobot@Home",autoload=False)
+rhds = Dataset("MyRobot@Home")
 
-rhds.unit["chelmnts"].load_data()
+# rhds = Dataset("MyRobot@Home", autoload=False)
+# rhds.unit["chelmnts"].load_data()
+# rhds.unit["2dgeomap"].load_data()
+
+# print(rhds.unit["chelmnts"])
+# print(rhds.unit["2dgeomap"])
 
 print(rhds)
-
