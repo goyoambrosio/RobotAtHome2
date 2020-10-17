@@ -1562,10 +1562,10 @@ class Dataset():
             super().__init__(name, url, path, expected_hash_code,
                              expected_size)
 
-            self.homes = self.__load_data()
+            # self.homes = self.__load_data()
 
-        def __load_data(self):
-            homes = self.Homes()
+        def _load_function(self):
+            self.homes = self.Homes()
             home_files = os.listdir(self.path)
             for home_file in home_files:
                 if home_file.endswith('.txt'):
@@ -1579,8 +1579,20 @@ class Dataset():
                                                               words[1])
                             topo_relations.append(topo_relation)
                     home = self.Home(home_name, topo_relations)
-                    homes.append(home)
-            return homes
+                    self.homes.append(home)
+            # return homes
+
+        def __str__(self):
+            tab = 4
+            s = ""
+            # s = str(self.homes).expandtabs(0) + "\n"
+            for home in self.homes:
+                s += str(home).expandtabs(0) + "\n"
+                for home in self.homes:
+                    s += str(home.topo_relations).expandtabs(1) + "\n"
+                    for topo_relation in home.topo_relations:
+                        s += str(topo_relation).expandtabs(tab*2) + "\n"
+            return super().__str__() + s
 
     class DatasetUnitRawData(DatasetUnit):
         class HomeSession():
@@ -2568,10 +2580,18 @@ class Dataset():
             "cf622ee997bc620e297bff8d3a2491d3",
             8240734)
 
+        self.unit["hometopo"] = self.DatasetUnitHomesTopologies(
+           "Home's topologies",
+            os.path.abspath(self.path + "/"+ "Robot@Home-dataset_homes-topologies"),
+           "https://zenodo.org/record/3901564/files/Robot@Home-dataset_homes-topologies.tgz?download=1",
+           "eac54dacae77070d1b4722e64968921e",
+           40872)
+
 
         if self.autoload:
             self.unit["chelmnts"].load_data()
             self.unit["2dgeomap"].load_data()
+            self.unit["hometopo"].load_data()
 
     def __str__(self):
 

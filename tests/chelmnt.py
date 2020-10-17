@@ -16,8 +16,10 @@ rhds = Dataset("MyRobot@Home")
 # rhds = Dataset("MyRobot@Home", autoload=False)
 # rhds.unit["chelmnts"].load_data()
 # rhds.unit["2dgeomap"].load_data()
+# rhds.unit["hometopo"].load_data()
 
 # print(rhds.unit["chelmnts"])
 # print(rhds.unit["2dgeomap"])
+# print(rhds.unit["hometopo"])
 
 print(rhds)
