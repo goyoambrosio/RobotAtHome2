@@ -11,7 +11,7 @@ __license__ = "MIT"
 from robotathome.dataset import Dataset
 import os
 
-rhds = Dataset("MyRobot@Home")
+rhds = Dataset("MyRobot@Home",autoload=False)
 
 rhds.unit["chelmnts"].load_data()
 

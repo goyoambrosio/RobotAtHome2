@@ -2437,7 +2437,8 @@ class Dataset():
     def __init__(self,
                  name="",
                  path=os.path.abspath("."),
-                 url=""):
+                 url="",
+                 autoload="True"):
 
         """
         Initializes the Dataset with supplied values
@@ -2538,6 +2539,7 @@ class Dataset():
         self.name = name
         self.path = path
         self.url = url
+        self.autoload = autoload
 
         print ("Robot@Home Dataset (v0.1.4)")
         print ("===========================")
@@ -2552,13 +2554,16 @@ class Dataset():
             "a351580e4f791c21dfc7dbcfd88914b5",
             31448194)
 
+        if self.autoload:
+            self.unit["chelmnts"].load_data()
+
     def __str__(self):
 
         """ Units """
 
         total_expected_size = 0
 
-        s = "\n" + self.name + " Dataset Units" + "\n" + "=" * len(self.name+" Dataset Units") +"\n"
+        s = "\n" + self.name + " Dataset Units" + "\n" + "=" * len(self.name+" Dataset Units") +"\n"*2
         # s += "Units" + "\n" + "=====" + "\n"*2
         for index, unit in self.unit.items():
             s += index + " : " + unit.name + " "
