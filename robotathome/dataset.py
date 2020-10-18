@@ -23,6 +23,7 @@ from urllib.request import urlopen
 import cgi
 import progressbar
 import io
+# from memory_profiler import profile
 
 
 class Dataset():
@@ -79,6 +80,7 @@ class Dataset():
             Check that the expected size match with the real folder size
             verbose  : it outputs additional printed details
             """
+            print("Computing use disk space for folder: \n%s \nIt may take some time for huge data units" % self.path)
             real_folder_size = self.size(self.path)
             if verbose:
                 print('expected size : ' + str(self.expected_size) +
@@ -196,6 +198,7 @@ class Dataset():
                 if os.path.exists(local_filename) is False:
                     print("Downloading ", local_filename)
                     urlretrieve(self.url, local_filename, reporthook)
+                    print("\n")
                 else:
                     print ("It seems the file ", remote_filename, " already exists")
 
@@ -2565,6 +2568,8 @@ class Dataset():
                         s += "\t\t" + self.sensor_session.name + " (" + str(len(self.sensor_session.sensor_observations)) + " observations)" + "\n"
             return super().__str__() + s
 
+
+    # @profile
     def __init__(self,
                  name="",
                  path=os.path.abspath("."),
@@ -2693,11 +2698,11 @@ class Dataset():
             8240734)
 
         self.unit["hometopo"] = self.DatasetUnitHomesTopologies(
-           "Home's topologies",
+            "Home's topologies",
             os.path.abspath(self.path + "/" + "Robot@Home-dataset_homes-topologies"),
            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_homes-topologies.tgz?download=1",
            "eac54dacae77070d1b4722e64968921e",
-           40872)
+            40871)
 
         self.unit["raw"] = self.DatasetUnitRawData(
             "Raw data",
@@ -2707,18 +2712,26 @@ class Dataset():
             20002442369)
 
         self.unit["lsrscan"] = self.DatasetUnitLaserScans(
-           "Laser scans",
+            "Laser scans",
             os.path.abspath(self.path + "/" + "Robot@Home-dataset_laser_scans-plain_text-all"),
-           "https://zenodo.org/record/3901564/files/Robot%40Home-dataset_laser_scans-plain_text-all.tgz?download=1",
-           "34cf2cb72028e9f203fae449ce4a8270",
-           227829791)
+            "https://zenodo.org/record/3901564/files/Robot%40Home-dataset_laser_scans-plain_text-all.tgz?download=1",
+            "34cf2cb72028e9f203fae449ce4a8270",
+            227829791)
 
         self.unit["rgbd"] = self.DatasetUnitRawData(
-           "RGB-D data",
+            "RGB-D data",
             os.path.abspath(self.path + "/" + "Robot@Home-dataset_rgbd_data-plain_text-all"),
             "https://zenodo.org/record/3901564/files/Robot%40Home-dataset_rgbd_data-plain_text-all.tgz?download=1",
-           "f4ad609d0368fe89e3050510c95892b0",
-           19896608308)
+            "f4ad609d0368fe89e3050510c95892b0",
+            19896608308)
+
+        self.unit["lblrgbd"] = self.DatasetUnitRawData(
+            "Labeled RGB-D data",
+            os.path.abspath(self.path + "/" + "Robot@Home-dataset_labelled-rgbd-data_plain-text_all"),
+            "https://zenodo.org/record/3901564/files/Robot%40Home-dataset_labelled-rgbd-data_plain-text_all.tgz?download=1",
+            "e562d4e494a5ac1c83ef0edd6a768f90",
+            16739353847)
+
 
 
         if self.autoload:
@@ -2728,6 +2741,21 @@ class Dataset():
             self.unit["raw"].load_data()
             self.unit["lsrscan"].load_data()
             self.unit["rgbd"].load_data()
+            self.unit["lblrgbd"].load_data()
+            
+            """
+            Memory profile
+            2737    102.3 MiB      0.0 MiB           if self.autoload:
+            2738    557.0 MiB    454.8 MiB               self.unit["chelmnts"].load_data()
+            2739    661.8 MiB    104.7 MiB               self.unit["2dgeomap"].load_data()
+            2740    661.9 MiB      0.2 MiB               self.unit["hometopo"].load_data()
+            2741    714.8 MiB     52.9 MiB               self.unit["raw"].load_data()
+            2742    741.9 MiB     27.1 MiB               self.unit["lsrscan"].load_data()
+            2743    784.4 MiB     42.5 MiB               self.unit["rgbd"].load_data()
+            2744    812.9 MiB     28.5 MiB               self.unit["lblrgbd"].load_data()
+            Total                710.7 MiB
+            """
+
 
     def __str__(self):
 
@@ -2747,7 +2775,7 @@ class Dataset():
             total_expected_size += unit.expected_size
 
         s += "\n"
-        s += 'Total expected size = ' + str(total_expected_size) + " bytes"\
+        s += 'Total expected size on disk = ' + str(total_expected_size) + " bytes"\
              ' (' + humanize.naturalsize(total_expected_size) + ')'
         s += "\n"
 

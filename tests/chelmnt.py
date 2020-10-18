@@ -12,15 +12,16 @@ __license__ = "MIT"
 from robotathome.dataset import Dataset
 import cv2
 
-# rhds = Dataset("MyRobot@Home")
+rhds = Dataset("MyRobot@Home", path="..")
 
-rhds = Dataset("MyRobot@Home", autoload=False)
+# rhds = Dataset("MyRobot@Home", path="..", autoload=False)
 # rhds.unit["chelmnts"].load_data()
 # rhds.unit["2dgeomap"].load_data()
 # rhds.unit["hometopo"].load_data()
 # rhds.unit["raw"].load_data()
 # rhds.unit["lsrscan"].load_data()
-rhds.unit["rgbd"].load_data()
+# rhds.unit["rgbd"].load_data()
+# rhds.unit["lblrgbd"].load_data()
 
 # print(rhds.unit["chelmnts"])
 # print(rhds.unit["2dgeomap"])
@@ -28,6 +29,14 @@ rhds.unit["rgbd"].load_data()
 # print(rhds.unit["raw"])
 # print(rhds.unit["lsrscan"])
 # print(rhds.unit["rgbd"])
+# print(rhds.unit["lblrgbd"])
 
-rhds.unit["rgbd"].check_folder_size(True)
+# rhds.unit["chelmnts"].check_folder_size(True)
+# rhds.unit["2dgeomap"].check_folder_size(True)
+# rhds.unit["hometopo"].check_folder_size(True)
+# rhds.unit["raw"].check_folder_size(True)
+# rhds.unit["lsrscan"].check_folder_size(True)
+# rhds.unit["rgbd"].check_folder_size(True)
+# rhds.unit["lblrgbd"].check_folder_size(True)
+
 print(rhds)
