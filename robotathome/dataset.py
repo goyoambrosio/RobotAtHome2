@@ -6,26 +6,23 @@
 __author__ = "Gregorio Ambrosio"
 __contact__ = "gambrosio[at]uma.es"
 __copyright__ = "Copyright 2020, Gregorio Ambrosio"
-__date__ = "2020/06/17"
-__license__ = "GPLv3"
+__date__ = "2020/10/18"
+__license__ = "MIT"
 
 import os
 import hashlib
 import humanize
-import wget
-import ssl
 import cv2
 import numpy as np
 import sys
 import time
 import tarfile
 import click
-import requests
-from clint.textui import progress
 from urllib.request import urlretrieve
 from urllib.request import urlopen
 import cgi
 import progressbar
+import io
 
 
 class Dataset():
@@ -114,9 +111,11 @@ class Dataset():
             return folder_exist and correct_size
 
         def download(self):
+
+            # Old method. Just for reference. To remove in a near future.
+            #
             # downloaded_file = wget.download(self.url,os.path.dirname(self.path)+"/")
             # downloaded_file = os.path.normpath(downloaded_file)
-
             # session = requests.Session()
             # response = session.get(self.url, stream=True)
             # response.raise_for_status()
@@ -126,6 +125,9 @@ class Dataset():
             #         if ch:
             #             downloaded_file.write(ch)
 
+            downloaded = False
+
+            # urlretrieve progression stuff
             def reporthook(count, block_size, total_size):
                 global start_time
                 if count == 0:
@@ -133,9 +135,10 @@ class Dataset():
                     return
                 duration = time.time() - start_time
                 progress_size = int(count * block_size)
-                speed = int(progress_size / (1024 * duration))
+                speed = int(progress_size * 8 / 1024 / (1024 * duration))
                 percent = min(int(count * block_size * 100 / total_size), 100)
-                sys.stdout.write("\rProgress: %d%%, %d MB / %d MB, %d KB/s, %d seconds passed" % (percent, progress_size / (1024 * 1024), total_size, speed, duration))
+                expected_duration = (total_size / 1048576 * 8) / speed - duration
+                sys.stdout.write("\rProgress: %d%%, %d MB / %d MB, %d Mb/s, %d seconds , %d seconds left" % (percent, progress_size / 1048576, total_size / 1048576, speed, duration, expected_duration))
                 sys.stdout.flush()
 
             bar = None
@@ -150,29 +153,80 @@ class Dataset():
                      pbar = progressbar.ProgressBar(widgets=widgets, maxval=total_size).start()
                 pbar.update(min(block_num * block_size, total_size))
 
+
+            # print(filename)
+
+            # tar progression stuff
+            def get_file_progress_file_object_class(on_progress):
+                   class FileProgressFileObject(tarfile.ExFileObject):
+                       def read(self, size, *args):
+                         on_progress(self.name, self.position, self.size)
+                         return tarfile.ExFileObject.read(self, size, *args)
+                   return FileProgressFileObject
+
+            class TestFileProgressFileObject(tarfile.ExFileObject):
+                   def read(self, size, *args):
+                     on_progress(self.name, self.position, self.size)
+                     return tarfile.ExFileObject.read(self, size, *args)
+
+            class ProgressFileObject(io.FileIO):
+                   def __init__(self, path, *args, **kwargs):
+                       self._total_size = os.path.getsize(path)
+                       io.FileIO.__init__(self, path, *args, **kwargs)
+
+                   def read(self, size):
+                       sys.stdout.write("\rProcessing %d of %d MB (%d%%)" % (self.tell() / 1048576, self._total_size / 1048576, self.tell()*100/self._total_size))
+                       sys.stdout.flush()
+                       return io.FileIO.read(self, size)
+
+            def on_progress(filename, position, total_size):
+                   print("%s: %d of %s" %(filename, position, total_size))
+
+            # Main process
+
             # Get filename from remote
             remotefile = urlopen(self.url)
             blah = remotefile.info()['Content-Disposition']
             value, params = cgi.parse_header(blah)
-            filename = params["filename"]
+            remote_filename = params["filename"]
+            local_filename = os.path.dirname(self.path) + "/" + remote_filename
 
-            # print(filename)
-
-            downloaded_file = os.path.dirname(self.path) + "/" + filename
-            urlretrieve(self.url, downloaded_file, reporthook)
-
-            if self.expected_hash_code != "":
-                checksum = self.get_md5_from_file(downloaded_file)
-                if checksum != self.expected_hash_code:
-                    raise ValueError(
-                        'The MD5 checksum of local file %s differs from %s, please manually remove \
-                        the file and try again.' %
-                        (downloaded_file, self.expected_hash_code))
+            # main loop
+            while downloaded is not True:
+                if os.path.exists(local_filename) is False:
+                    print("Downloading ", local_filename)
+                    urlretrieve(self.url, local_filename, reporthook)
                 else:
-                    print("Extracting files from %s" % (os.path.basename(downloaded_file)))
-                    tf = tarfile.open(downloaded_file)
-                    tf.extractall(os.path.dirname(downloaded_file))
-                    os.remove(downloaded_file)
+                    print ("It seems the file ", remote_filename, " already exists")
+
+                if self.expected_hash_code != "":
+                    print("Computing MD5 checksum")
+                    checksum = self.get_md5_from_file(local_filename)
+                    if checksum != self.expected_hash_code:
+                        print('The MD5 checksum of local file %s differs from the remote %s.' %
+                              (os.path.basename(local_filename), self.expected_hash_code))
+                        if click.confirm('Do you want to remove ' + os.path.basename(local_filename) + ' ?', default=True):
+                            os.remove(local_filename)
+                        else:
+                            return downloaded
+                    else:
+                        print("The local file MD5 checksum match the remote one")
+                        # Extraction stuff
+                        try:
+                            print("Extracting files from %s: " % (os.path.basename(local_filename)))
+                            tarfile.TarFile.fileobject = get_file_progress_file_object_class(on_progress)
+                            tf = tarfile.open(fileobj=ProgressFileObject(local_filename))
+                            tf.extractall()
+                        except:
+                            print("Something went wrong with the extraction process. Data could be corrupted")
+                        else:
+                            tf.close()
+                            print()
+                            print("Extraction success. Don't forget to remove %s if you are not plenty of space." % (os.path.basename(local_filename)))
+                            downloaded = True
+                            # print ("Removing ", os.path.basename(local_filename))
+                            # os.remove(local_filename)
+            return downloaded
 
         def size(self, path, *, follow_symlinks=True):
             """
@@ -194,7 +248,7 @@ class Dataset():
                 while len(buf) > 0:
                     hasher.update(buf)
                     buf = afile.read(BLOCKSIZE)
-            print("\nMD5 checksum for %s : %s"  % (os.path.basename(filename), hasher.hexdigest()))
+            print("MD5 checksum for %s : %s" % (os.path.basename(filename), hasher.hexdigest()))
             return hasher.hexdigest()
 
         def hash_for_directory(self, hashfunc=hashlib.sha1):
@@ -2075,8 +2129,6 @@ class Dataset():
             super().__init__(name, url, path, expected_hash_code,
                              expected_size)
 
-            # self.home_sessions = self.__load_data()
-
         def _load_function(self):
             self.home_sessions = self.HomeSessions()
             home_folders = sorted(os.listdir(self.path))
@@ -2141,11 +2193,14 @@ class Dataset():
                 # input("Press Enter to continue...")
                 home_session = self.HomeSession(home_subfolder, rooms)
                 self.home_sessions.append(home_session)
-
             # return home_sessions
 
         def __str__(self):
             s = ""
+            for self.home_session in self.home_sessions:
+                s += self.home_session.name + "\n"
+                for self.room in self.home_session.rooms:
+                    s += "\t" + self.room.name + " (" + str(len(self.room.sensor_observations)) + " observations)" + "\n"
             return super().__str__() + s
 
     class DatasetUnitLaserScans(DatasetUnit):
@@ -2420,11 +2475,11 @@ class Dataset():
             super().__init__(name, url, path, expected_hash_code,
                              expected_size)
 
-            self.home_sessions = self.__load_data()
+            # self.home_sessions = self.__load_data()
 
-        def __load_data(self):
+        def _load_function(self):
             home_folders = sorted(os.listdir(self.path))
-            home_sessions = self.HomeSessions()
+            self.home_sessions = self.HomeSessions()
             # print(home_folders)
             for home_folder in home_folders:
                 words = home_folder.strip().split('-')
@@ -2495,12 +2550,19 @@ class Dataset():
                 # print(rooms)
                 # input("Press Enter to continue...")
                 home_session = self.HomeSession(home_subfolder, rooms)
-                home_sessions.append(home_session)
+                self.home_sessions.append(home_session)
 
-            return home_sessions
+            # return home_sessions
 
         def __str__(self):
             s = ""
+            s = ""
+            for self.home_session in self.home_sessions:
+                s += self.home_session.name + "\n"
+                for self.room in self.home_session.rooms:
+                    s += "\t" + self.room.name + " (" + str(len(self.room.sensor_sessions)) + " sessions)" + "\n"
+                    for self.sensor_session in self.room.sensor_sessions:
+                        s += "\t\t" + self.sensor_session.name + " (" + str(len(self.sensor_session.sensor_observations)) + " observations)" + "\n"
             return super().__str__() + s
 
     def __init__(self,
@@ -2644,12 +2706,28 @@ class Dataset():
             "d647d9757440bcb908349e624312a42d",
             20002442369)
 
+        self.unit["lsrscan"] = self.DatasetUnitLaserScans(
+           "Laser scans",
+            os.path.abspath(self.path + "/" + "Robot@Home-dataset_laser_scans-plain_text-all"),
+           "https://zenodo.org/record/3901564/files/Robot%40Home-dataset_laser_scans-plain_text-all.tgz?download=1",
+           "34cf2cb72028e9f203fae449ce4a8270",
+           227829791)
+
+        self.unit["rgbd"] = self.DatasetUnitRawData(
+           "RGB-D data",
+            os.path.abspath(self.path + "/" + "Robot@Home-dataset_rgbd_data-plain_text-all"),
+            "https://zenodo.org/record/3901564/files/Robot%40Home-dataset_rgbd_data-plain_text-all.tgz?download=1",
+           "f4ad609d0368fe89e3050510c95892b0",
+           19896608308)
+
 
         if self.autoload:
             self.unit["chelmnts"].load_data()
             self.unit["2dgeomap"].load_data()
             self.unit["hometopo"].load_data()
             self.unit["raw"].load_data()
+            self.unit["lsrscan"].load_data()
+            self.unit["rgbd"].load_data()
 
     def __str__(self):
 

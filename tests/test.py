@@ -103,8 +103,11 @@ def main():
     print(intensity_file)
     print(depth_file)
 
-    sensor.show_intensity_file()
-    sensor.show_depth_file()
+    sensor.show_intensity_image()
+    sensor.show_depth_image()
+    print('Press a key to continue ...')
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     """
 
 
