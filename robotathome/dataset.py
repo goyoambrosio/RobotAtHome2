@@ -17,8 +17,15 @@ import ssl
 import cv2
 import numpy as np
 import sys
+import time
 import tarfile
 import click
+import requests
+from clint.textui import progress
+from urllib.request import urlretrieve
+from urllib.request import urlopen
+import cgi
+import progressbar
 
 
 class Dataset():
@@ -107,10 +114,53 @@ class Dataset():
             return folder_exist and correct_size
 
         def download(self):
-            """ignore SSL certificate verification!"""
-            #ssl._create_default_https_context = ssl._create_unverified_context
-            downloaded_file = wget.download(self.url,os.path.dirname(self.path)+"/")
-            downloaded_file = os.path.normpath(downloaded_file)
+            # downloaded_file = wget.download(self.url,os.path.dirname(self.path)+"/")
+            # downloaded_file = os.path.normpath(downloaded_file)
+
+            # session = requests.Session()
+            # response = session.get(self.url, stream=True)
+            # response.raise_for_status()
+            # with open(self.path, "wb") as downloaded_file:
+            #     total_length = int(response.headers.get('content-length'))
+            #     for ch in progress.bar(response.iter_content(chunk_size = 8*1024), expected_size=(total_length/1024) + 1):
+            #         if ch:
+            #             downloaded_file.write(ch)
+
+            def reporthook(count, block_size, total_size):
+                global start_time
+                if count == 0:
+                    start_time = time.time()
+                    return
+                duration = time.time() - start_time
+                progress_size = int(count * block_size)
+                speed = int(progress_size / (1024 * duration))
+                percent = min(int(count * block_size * 100 / total_size), 100)
+                sys.stdout.write("\rProgress: %d%%, %d MB / %d MB, %d KB/s, %d seconds passed" % (percent, progress_size / (1024 * 1024), total_size, speed, duration))
+                sys.stdout.flush()
+
+            bar = None
+            def reporthook1(block_num, block_size, total_size):
+                pbar = bar
+                if pbar is None:
+                     widgets = ['Progress: ',
+                                progressbar.Percentage(),  ' ',
+                                progressbar.Bar(marker='#', left='[', right=']'), ' ',
+                                progressbar.ETA(), ' ',
+                                progressbar.FileTransferSpeed()]
+                     pbar = progressbar.ProgressBar(widgets=widgets, maxval=total_size).start()
+                pbar.update(min(block_num * block_size, total_size))
+
+            # Get filename from remote
+            remotefile = urlopen(self.url)
+            blah = remotefile.info()['Content-Disposition']
+            value, params = cgi.parse_header(blah)
+            filename = params["filename"]
+
+            # print(filename)
+
+            downloaded_file = os.path.dirname(self.path) + "/" + filename
+            urlretrieve(self.url, downloaded_file, reporthook)
+
             if self.expected_hash_code != "":
                 checksum = self.get_md5_from_file(downloaded_file)
                 if checksum != self.expected_hash_code:
@@ -119,7 +169,7 @@ class Dataset():
                         the file and try again.' %
                         (downloaded_file, self.expected_hash_code))
                 else:
-                    print("Extracting files from %s",(os.path.basename(downloaded_file)))
+                    print("Extracting files from %s" % (os.path.basename(downloaded_file)))
                     tf = tarfile.open(downloaded_file)
                     tf.extractall(os.path.dirname(downloaded_file))
                     os.remove(downloaded_file)
@@ -2025,10 +2075,10 @@ class Dataset():
             super().__init__(name, url, path, expected_hash_code,
                              expected_size)
 
-            self.home_sessions = self.__load_data()
+            # self.home_sessions = self.__load_data()
 
-        def __load_data(self):
-            home_sessions = self.HomeSessions()
+        def _load_function(self):
+            self.home_sessions = self.HomeSessions()
             home_folders = sorted(os.listdir(self.path))
             # print(home_folders)
             for home_folder in home_folders:
@@ -2090,9 +2140,9 @@ class Dataset():
                 # print(rooms)
                 # input("Press Enter to continue...")
                 home_session = self.HomeSession(home_subfolder, rooms)
-                home_sessions.append(home_session)
+                self.home_sessions.append(home_session)
 
-            return home_sessions
+            # return home_sessions
 
         def __str__(self):
             s = ""
@@ -2568,30 +2618,38 @@ class Dataset():
 
         self.unit["chelmnts"] = self.DatasetUnitCharacterizedElements(
             "Characterized elements",
-            os.path.abspath(self.path + "/"+ "Robot@Home-dataset_characterized-elements"),
+            os.path.abspath(self.path + "/" + "Robot@Home-dataset_characterized-elements"),
             "https://zenodo.org/record/3901564/files/Robot@Home-dataset_characterized-elements.tgz?download=1",
             "a351580e4f791c21dfc7dbcfd88914b5",
             31448194)
 
         self.unit["2dgeomap"] = self.DatasetUnit2DGeometricMaps(
             "2D geometric maps",
-            os.path.abspath(self.path + "/"+ "Robot@Home-dataset_2d_geometric_maps"),
+            os.path.abspath(self.path + "/" + "Robot@Home-dataset_2d_geometric_maps"),
             "https://zenodo.org/record/3901564/files/Robot@Home-dataset_2d_geometric_maps.tgz?download=1",
             "cf622ee997bc620e297bff8d3a2491d3",
             8240734)
 
         self.unit["hometopo"] = self.DatasetUnitHomesTopologies(
            "Home's topologies",
-            os.path.abspath(self.path + "/"+ "Robot@Home-dataset_homes-topologies"),
+            os.path.abspath(self.path + "/" + "Robot@Home-dataset_homes-topologies"),
            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_homes-topologies.tgz?download=1",
            "eac54dacae77070d1b4722e64968921e",
            40872)
+
+        self.unit["raw"] = self.DatasetUnitRawData(
+            "Raw data",
+            os.path.abspath(self.path + "/" + "Robot@Home-dataset_raw_data-plain_text-all"),
+            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_raw_data-plain_text-all.tgz?download=1",
+            "d647d9757440bcb908349e624312a42d",
+            20002442369)
 
 
         if self.autoload:
             self.unit["chelmnts"].load_data()
             self.unit["2dgeomap"].load_data()
             self.unit["hometopo"].load_data()
+            self.unit["raw"].load_data()
 
     def __str__(self):
 
