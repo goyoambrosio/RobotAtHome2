@@ -6,7 +6,7 @@
 __author__ = "Gregorio Ambrosio"
 __contact__ = "gambrosio[at]uma.es"
 __copyright__ = "Copyright 2020, Gregorio Ambrosio"
-__date__ = "2020/10/18"
+__date__ = "2020/10/19"
 __license__ = "MIT"
 
 import os
@@ -21,8 +21,8 @@ import click
 from urllib.request import urlretrieve
 from urllib.request import urlopen
 import cgi
-import progressbar
 import io
+#import progressbar
 # from memory_profiler import profile
 
 
@@ -143,17 +143,17 @@ class Dataset():
                 sys.stdout.write("\rProgress: %d%%, %d MB / %d MB, %d Mb/s, %d seconds , %d seconds left" % (percent, progress_size / 1048576, total_size / 1048576, speed, duration, expected_duration))
                 sys.stdout.flush()
 
-            bar = None
-            def reporthook1(block_num, block_size, total_size):
-                pbar = bar
-                if pbar is None:
-                     widgets = ['Progress: ',
-                                progressbar.Percentage(),  ' ',
-                                progressbar.Bar(marker='#', left='[', right=']'), ' ',
-                                progressbar.ETA(), ' ',
-                                progressbar.FileTransferSpeed()]
-                     pbar = progressbar.ProgressBar(widgets=widgets, maxval=total_size).start()
-                pbar.update(min(block_num * block_size, total_size))
+            # bar = None
+            # def reporthook1(block_num, block_size, total_size):
+            #     pbar = bar
+            #     if pbar is None:
+            #          widgets = ['Progress: ',
+            #                     progressbar.Percentage(),  ' ',
+            #                     progressbar.Bar(marker='#', left='[', right=']'), ' ',
+            #                     progressbar.ETA(), ' ',
+            #                     progressbar.FileTransferSpeed()]
+            #          pbar = progressbar.ProgressBar(widgets=widgets, maxval=total_size).start()
+            #     pbar.update(min(block_num * block_size, total_size))
 
 
             # print(filename)
@@ -2677,7 +2677,7 @@ class Dataset():
         self.url = url
         self.autoload = autoload
 
-        print ("Robot@Home Dataset (v0.1.4)")
+        print ("Robot@Home Dataset (v0.2.7)")
         print ("===========================")
 
         self.unit = {}

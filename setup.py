@@ -12,7 +12,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="robotathome",
-    version="0.1.4",
+    version="0.2.7",
     author="G. Ambrosio-Cestero",
     author_email="gambrosio@uma.es",
     description="'This package provides Python API that assists in loading, parsing, and visualizing the annotations in Robot@Home Dataset",
@@ -25,5 +25,12 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    python_requires='>=3.6',
+    install_requires=[
+        "humanize >= 3.0.0",
+        "opencv",
+        "numpy",
+        "click >= 7.1.2",
+        "urllib3 >= 1.25.10"
+    ],
+    python_requires='>=3.7',
 )

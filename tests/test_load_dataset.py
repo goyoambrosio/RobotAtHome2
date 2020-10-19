@@ -12,7 +12,8 @@ __license__ = "MIT"
 from robotathome.dataset import Dataset
 import cv2
 
-rhds = Dataset("MyRobot@Home", path="..")
+rhds = Dataset("MyRobot@Home")
+# rhds = Dataset("MyRobot@Home", path="..")
 
 # rhds = Dataset("MyRobot@Home", path="..", autoload=False)
 # rhds.unit["chelmnts"].load_data()
