@@ -2677,7 +2677,7 @@ class Dataset():
         self.url = url
         self.autoload = autoload
 
-        print ("Robot@Home Dataset (v0.2.7)")
+        print ("Robot@Home Dataset (v0.2.9)")
         print ("===========================")
 
         self.unit = {}
