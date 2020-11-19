@@ -6,7 +6,7 @@
 __author__ = "Gregorio Ambrosio"
 __contact__ = "gambrosio[at]uma.es"
 __copyright__ = "Copyright 2020, Gregorio Ambrosio"
-__date__ = "2020/10/19"
+__date__ = "2020/11/19"
 __license__ = "MIT"
 
 import os
@@ -1747,7 +1747,7 @@ class Dataset():
 
             def __repr__(self):
                 s = "<Room instance (" + self.name + ")>"
-                return s
+                return g
 
         class Rooms(list):
 
@@ -2677,7 +2677,7 @@ class Dataset():
         self.url = url
         self.autoload = autoload
 
-        print ("Robot@Home Dataset (v0.2.9)")
+        print ("Robot@Home Dataset (v0.2.10)")
         print ("===========================")
 
         self.unit = {}

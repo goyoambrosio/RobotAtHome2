@@ -10,7 +10,7 @@ __date__ = "2020/06/17"
 __license__ = "GPLv3"
 
 import cv2
-from RobotAtHome import Dataset
+from robotathome.dataset import Dataset
 
 
 def main():
@@ -65,14 +65,13 @@ def main():
     #print(labels.as_dict_id())
     # mask = sensor.__get_mask()
     #label_mask = sensor.get_label_mask(10)
+
     sensor.show_intensity_image()
-    sensor.show_depth_image()
-    sensor.show_label_mask_image(10)
+    #sensor.show_depth_image()
+    #sensor.show_label_mask_image(10)
     print('Press a key to continue ...')
     cv2.waitKey(0)
     cv2.destroyAllWindows()
-
-    
 
 
 
@@ -348,3 +347,8 @@ def main():
     print(homes[0].as_dict())
     print(homes.as_dict())
     """
+
+
+if __name__ == "__main__":
+    main()
+
