@@ -61,14 +61,14 @@ def main():
 
     labels = sensor.get_labels()
     print(labels)
-    #print(labels.as_dict_name())
+    # print(labels.as_dict_name())
     #print(labels.as_dict_id())
     # mask = sensor.__get_mask()
     #label_mask = sensor.get_label_mask(10)
 
     sensor.show_intensity_image()
-    #sensor.show_depth_image()
-    #sensor.show_label_mask_image(10)
+    # sensor.show_depth_image()
+    # sensor.show_label_mask_image(10)
     print('Press a key to continue ...')
     cv2.waitKey(0)
     cv2.destroyAllWindows()

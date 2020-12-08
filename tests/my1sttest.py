@@ -3,5 +3,4 @@
 
 import robotathome
 
-print ("all is ok, for now ...")
-
+print("all is ok, for now ...")

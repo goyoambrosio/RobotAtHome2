@@ -349,6 +349,9 @@ class Dataset():
                 }
                 return new_dict
 
+            def get_home_name(self):
+                return self.name.split('-s')[0]
+
         class HomeSessions(list):
 
             def __init__(self):
@@ -1192,7 +1195,7 @@ class Dataset():
                         File record does not contain a name for the room so
                         the type_name is given as name.
                         """
-                        room_name       = words[4]
+                        room_name       = home_file_name.split('.')[0][len('features_')+len(home_name)+1:]
                         room_type_id    = int(words[5])
                         room_type_name  = words[4]
                         num_of_objects  = int(words[9])
@@ -2677,7 +2680,7 @@ class Dataset():
         self.url = url
         self.autoload = autoload
 
-        print ("Robot@Home Dataset (v0.2.10)")
+        print ("Robot@Home Dataset (v0.2.11)")
         print ("===========================")
 
         self.unit = {}
