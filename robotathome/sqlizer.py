@@ -10,8 +10,8 @@ __date__ = "2020/12/05"
 __license__ = "MIT"
 
 
-from robotathome.dataset import Dataset
 import sqlite3
+from robotathome.dataset import Dataset
 
 def sql_connection():
 
@@ -28,22 +28,8 @@ def sql_connection():
         print(NameError)
 
 
+def create_tables(con):
 
-
-
-def main():
-    # rhds = Dataset("MyRobot@Home")
-    rhds = Dataset("MyRobot@Home", autoload=False)
-
-    # Characterized elements
-
-    rhds.unit["chelmnts"].load_data()
-    # rhds.unit["rgbd"].load_data()
-
-    sensors = rhds.unit["rgbd"].Sensors()
-    print(sensors)
-
-    con = sql_connection()
     cursor_obj = con.cursor()
 
     # Table creation
@@ -226,6 +212,12 @@ def main():
 
     con.commit()
 
+
+def set_extra_data(con):
+
+    # Get a cursor to execute SQLite statements
+    cursor_obj = con.cursor()
+
     # ================
     #   Sensor types
     # ================
@@ -245,6 +237,45 @@ def main():
                     [4, 1, "RGBD_4"]]
     cursor_obj.executemany("INSERT INTO sensors VALUES(?, ?, ?)", sensors_list)
     sensors_dict_reversed = dict((x[2], x[0]) for x in sensors_list)
+
+    return sensor_types_dict, sensors_list, sensors_dict_reversed
+
+def main():
+
+    # ===================
+    #     Robot@Home
+    # ===================
+
+    # rhds = Dataset("MyRobot@Home")
+    rhds = Dataset("MyRobot@Home", autoload=False)
+
+    # Characterized elements
+    rhds.unit["chelmnts"].load_data()
+    # Labeled RGB-D data
+    rhds.unit["rgbd"].load_data()
+
+    # =====================
+    #   SQLite initialize
+    # =====================
+    con = sql_connection()
+
+    # =====================
+    #    Tables creation
+    # =====================
+
+    create_tables(con)
+
+    # Set some needed tables with no explicit data
+    # ============================================
+    sensor_types_dict, sensors_list, sensors_dict_reversed = set_extra_data(con)
+
+    # =====================
+    #    Filling tables
+    # =====================
+
+    # Get a cursor to execute SQLite statements
+    cursor_obj = con.cursor()
+
 
     # ================
     #      Homes
@@ -482,7 +513,7 @@ def main():
                                     observation.scan_features)
                                    )
                 # print(observation.objects_id)
-                my_whatever = zip(observation.objects_id,
+                objects_in_observation_list = zip(observation.objects_id,
                                   [observation.id]*len(observation.objects_id))
                 # print(list(my_whatever))
                 sql_str = ("INSERT INTO objects_in_observation("
@@ -490,9 +521,13 @@ def main():
                            "observation_id) "
                            "VALUES(?, ?) "
                            )
-                cursor_obj.executemany(sql_str, my_whatever)
+                # Temporarily deactivate to get a faster development
+                # cursor_obj.executemany(sql_str, objects_in_observation_list)
 
     con.commit()
+
+
+
 
     return 0
 
