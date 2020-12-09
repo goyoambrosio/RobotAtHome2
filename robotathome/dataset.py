@@ -555,8 +555,8 @@ class Dataset():
             9 : <biggest-area>
             10 : <orientation>
             11 : <hue-mean>
-            12 : <sturation-mean>
-            13 : <vlue-mean>
+            12 : <saturation-mean>
+            13 : <value-mean>
             14 : <hue-stdv>
             15 : <saturation-stdv>
             16 : <value-stdv>
@@ -587,8 +587,8 @@ class Dataset():
                     'biggest-area',
                     'orientation',
                     'hue-mean',
-                    'sturation-mean',
-                    'vlue-mean',
+                    'saturation-mean',
+                    'value-mean',
                     'hue-stdv',
                     'saturation-stdv',
                     'value-stdv',
@@ -611,10 +611,10 @@ class Dataset():
                     "\t" + "orientation          : " + self[10] + "\n" + \
                     "\t" + "hue-mean             : " + self[11] + "\n" + \
                     "\t" + "saturation-mean      : " + self[12] + "\n" + \
-                    "\t" + "value-men            : " + self[13] + "\n" + \
-                    "\t" + "hue-stdy             : " + self[14] + "\n" + \
-                    "\t" + "saturation-stdy      : " + self[15] + "\n" + \
-                    "\t" + "value-stdy           : " + self[16] + "\n" + \
+                    "\t" + "value-mean            : " + self[13] + "\n" + \
+                    "\t" + "hue-stdv             : " + self[14] + "\n" + \
+                    "\t" + "saturation-stdv      : " + self[15] + "\n" + \
+                    "\t" + "value-std           : " + self[16] + "\n" + \
                     "\t" + "hue-histogram        : " + str(self[17:22]) + "\n" + \
                     "\t" + "value-histogram      : " + str(self[22:27]) + "\n" + \
                     "\t" + "saturation-histogram : " + str(self[27:32])
