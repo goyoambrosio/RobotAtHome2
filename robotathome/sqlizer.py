@@ -276,6 +276,9 @@ def main():
     # Get a cursor to execute SQLite statements
     cursor_obj = con.cursor()
 
+    # =============================================================
+    #                           CHELMNTS
+    # =============================================================
 
     # ================
     #      Homes
@@ -521,12 +524,19 @@ def main():
                            "observation_id) "
                            "VALUES(?, ?) "
                            )
-                # Temporarily deactivate to get a faster development
+                # Temporarily deactivate to get a faster development !!!!!!!!!
                 # cursor_obj.executemany(sql_str, objects_in_observation_list)
 
     con.commit()
 
+    # =============================================================
+    #                           LBLRGBD
+    # =============================================================
 
+
+
+
+    con.commit()
 
 
     return 0

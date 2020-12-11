@@ -1718,6 +1718,9 @@ class Dataset():
                 s = "<HomeSession instance (" + self.name + ")>"
                 return s
 
+            def get_home_name(self):
+                return self.name.split('-s')[0]
+
         class HomeSessions(list):
 
             def __init__(self):
@@ -1777,7 +1780,7 @@ class Dataset():
                 self.name = name
                 self.sensor_pose_x = sensor_pose_x
                 self.sensor_pose_y = sensor_pose_y
-                self.sensor_pose_z = sensor_pose_x
+                self.sensor_pose_z = sensor_pose_z
                 self.sensor_pose_yaw = sensor_pose_yaw
                 self.sensor_pose_pitch = sensor_pose_pitch
                 self.sensor_pose_roll = sensor_pose_roll
