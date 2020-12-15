@@ -10,10 +10,15 @@ __date__ = "2020/12/05"
 __license__ = "MIT"
 
 
+import os.path
+import sys
 import sqlite3
 from robotathome.dataset import Dataset
 
+
 def sql_connection():
+
+    """ Docstring """
 
     try:
 
@@ -29,6 +34,8 @@ def sql_connection():
 
 
 def create_tables(con):
+
+    """ Docstring """
 
     cursor_obj = con.cursor()
 
@@ -211,14 +218,25 @@ def create_tables(con):
                        "object_id)")
 
     cursor_obj.execute("DROP TABLE IF EXISTS raw")
-    sql_str = ("CREATE TABLE observations("
+    sql_str = ("CREATE TABLE raw("
                "id integer PRIMARY KEY, "
                "room_id integer, "
                "home_session_id integer, "
                "home_id integer, "
                "name text, "
-               
-               "scan_scatter real)"
+               "sensor_id integer, "
+               "sensor_pose_x real, "
+               "sensor_pose_y real, "
+               "sensor_pose_z real, "
+               "sensor_pose_yaw real, "
+               "sensor_pose_pitch real, "
+               "sensor_pose_roll real, "
+               "time_stamp integer, "
+               "sensor_type integer, "
+               "sensor_file_1 text, "
+               "sensor_file_2 text, "
+               "files_path text"
+               ")"
                )
     # print(sql_str)
     cursor_obj.execute(sql_str)
@@ -228,6 +246,8 @@ def create_tables(con):
 
 
 def set_extra_data(con):
+
+    """ Docstring """
 
     # Get a cursor to execute SQLite statements
     cursor_obj = con.cursor()
@@ -244,7 +264,7 @@ def set_extra_data(con):
     #     Sensors
     # ================
 
-    sensors_list = [[0, 0, "LASER"],
+    sensors_list = [[0, 0, "HOKUYO1"],
                     [1, 1, "RGBD_1"],
                     [2, 1, "RGBD_2"],
                     [3, 1, "RGBD_3"],
@@ -254,38 +274,10 @@ def set_extra_data(con):
 
     return sensor_types_dict, sensors_list, sensors_dict_reversed
 
-def main():
 
-    # ===================
-    #     Robot@Home
-    # ===================
+def chelmnts(con, dataunit, sensors_dict_reversed):
 
-    # rhds = Dataset("MyRobot@Home")
-    rhds = Dataset("MyRobot@Home", autoload=False)
-
-    # Characterized elements
-    rhds.unit["chelmnts"].load_data()
-    # Labeled RGB-D data
-    # rhds.unit["rgbd"].load_data()
-
-    # =====================
-    #   SQLite initialize
-    # =====================
-    con = sql_connection()
-
-    # =====================
-    #    Tables creation
-    # =====================
-
-    create_tables(con)
-
-    # Set some needed tables with no explicit data
-    # ============================================
-    sensor_types_dict, sensors_list, sensors_dict_reversed = set_extra_data(con)
-
-    # =====================
-    #    Filling tables
-    # =====================
+    """ Docstring """
 
     # Get a cursor to execute SQLite statements
     cursor_obj = con.cursor()
@@ -298,7 +290,7 @@ def main():
     #      Homes
     # ================
 
-    homes = rhds.unit["chelmnts"].get_home_names()
+    homes = dataunit.get_home_names()
     # for home in homes:
     #     sql_str = "INSERT INTO homes(name) VALUES('" + home + "')"
     #     cursor_obj.execute(sql_str)
@@ -314,7 +306,7 @@ def main():
     #    Room types
     # ================
 
-    room_types = rhds.unit["chelmnts"].get_category_rooms()
+    room_types = dataunit.get_category_rooms()
     # print(room_types)
     cursor_obj.executemany("INSERT INTO room_types VALUES(?,?)",
                            room_types.items())
@@ -331,7 +323,7 @@ def main():
     #    Object types
     # ================
 
-    object_types = rhds.unit["chelmnts"].get_category_objects()
+    object_types = dataunit.get_category_objects()
     cursor_obj.executemany("INSERT INTO object_types VALUES(?,?)",
                            object_types.items())
     con.commit()
@@ -346,7 +338,7 @@ def main():
     homes_dict_reversed = dict(map(reversed, homes_dict.items()))
     # print(homes_dict_reversed)
 
-    home_sessions = rhds.unit["chelmnts"].home_sessions
+    home_sessions = dataunit.home_sessions
     for home_session in home_sessions:
         home_id = homes_dict_reversed[home_session.get_home_name()]-1
         # print(home_id, home_session.id, home_session.name)
@@ -550,11 +542,178 @@ def main():
 
     con.commit()
 
-    # =============================================================
-    #                           LBLRGBD
-    # =============================================================
+
+def test():
+    """ Docstring """
 
 
+def raw(con, dataunit, dataunit_name, homes_dict_reversed, sensors_dict_reversed):
+
+    """ Docstring """
+
+    # Get a cursor to execute SQLite statements
+    cursor_obj = con.cursor()
+
+
+    # print(dataunit)
+    # input('Press a key to continue ...')
+
+    home_sessions = dataunit.home_sessions
+
+
+    # num_observations = 0
+    # num_rooms = 0
+    sensor_observation_id = 0
+    for home_session_id, home_session in enumerate(home_sessions, start=0):
+        # num_rooms += len(home_session.rooms)
+        home_id = homes_dict_reversed[home_session.name.split('-s')[0]]-1
+        for room_id, room in enumerate(home_session.rooms):
+            # time_zero = int(room.sensor_observations[0].time_stamp)
+            # previous_time = 0
+            # num_observations += len(room.sensor_observations)
+            # change room_id by autoincremental
+            # print(room_id, home_session_id, home_id, room.name, len(room.sensor_observations))
+            for sensor_observation in room.sensor_observations:
+                sensor_observation.load_files()
+                # files = sensor_observation.files
+                # print(sensor_observation_id,  # sensor_observation.id repeats id range for each room
+                #       room_id,
+                #       home_session_id,
+                #       home_id,
+                #       sensor_observation.name,
+                #       sensors_dict_reversed[sensor_observation.name],
+                #       sensor_observation.sensor_pose_x,
+                #       sensor_observation.sensor_pose_y,
+                #       sensor_observation.sensor_pose_z,
+                #       sensor_observation.sensor_pose_yaw,
+                #       sensor_observation.sensor_pose_pitch,
+                #       sensor_observation.sensor_pose_roll,
+                #       int(sensor_observation.time_stamp),
+                #       # int(sensor_observation.time_stamp)-time_zero,
+                #       # int(sensor_observation.time_stamp)-previous_time if previous_time != 0 else 0,
+                #       0 if sensor_observation.get_type() == 'SensorLaserScanner' else 1,
+                #       sensor_observation.files[0],
+                #       sensor_observation.files[1] if (len(sensor_observation.files) > 1) else '',
+                #       # os.path.relpath(sensor_observation.path)
+                #       )
+                sql_str = ("INSERT INTO " + dataunit_name +  "("
+                           "id, "
+                           "room_id, "
+                           "home_session_id, "
+                           "home_id, "
+                           "name, "
+                           "sensor_id, "
+                           "sensor_pose_x, "
+                           "sensor_pose_y, "
+                           "sensor_pose_z, "
+                           "sensor_pose_yaw, "
+                           "sensor_pose_pitch, "
+                           "sensor_pose_roll, "
+                           "time_stamp, "
+                           "sensor_type, "
+                           "sensor_file_1, "
+                           "sensor_file_2, "
+                           "files_path"
+                           ") "
+                           "VALUES( ?, ?, ?, ?, ?, "
+                           "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )"
+                           )
+
+                # print(sql_str)
+                cursor_obj.execute(sql_str,
+                                   (
+                                       sensor_observation_id,
+                                       room_id,
+                                       home_session_id,
+                                       home_id,
+                                       sensor_observation.name,
+                                       sensors_dict_reversed[sensor_observation.name],
+                                       sensor_observation.sensor_pose_x,
+                                       sensor_observation.sensor_pose_y,
+                                       sensor_observation.sensor_pose_z,
+                                       sensor_observation.sensor_pose_yaw,
+                                       sensor_observation.sensor_pose_pitch,
+                                       sensor_observation.sensor_pose_roll,
+                                       int(sensor_observation.time_stamp),
+                                       0 if sensor_observation.get_type() == 'SensorLaserScanner' else 1,
+                                       sensor_observation.files[0],
+                                       sensor_observation.files[1] if (len(sensor_observation.files) > 1) else '',
+                                       os.path.relpath(sensor_observation.path)
+                                   )
+                                   )
+                # print(os.path.relpath(sensor_observation.path))
+                # previous_time = int(sensor_observation.time_stamp)
+                sensor_observation_id += 1
+                sys.stdout.write("\rsensor_observation: %d" % (sensor_observation_id))
+
+    # print(num_observations)
+    # print(num_rooms)
+
+    con.commit()
+
+
+def main():
+
+    """ Docstring """
+
+    # ===================
+    #     Robot@Home
+    # ===================
+
+    # rhds = Dataset("MyRobot@Home")
+    rhds = Dataset("MyRobot@Home", autoload=False)
+
+    # Characterized elements
+    # rhds.unit["chelmnts"].load_data()
+    # Labeled RGB-D data
+    # rhds.unit["rgbd"].load_data()
+
+    # =====================
+    #   SQLite initialize
+    # =====================
+    con = sql_connection()
+
+    # =====================
+    #    Tables creation
+    # =====================
+    create_tables(con)
+
+    # Set some needed tables with no explicit data
+    # ============================================
+    sensor_types_dict, sensors_list, sensors_dict_reversed = set_extra_data(con)
+
+    # =====================
+    #    Filling tables
+    # =====================
+
+    # =============================================================
+    #                           CHELMNTS
+    # =============================================================
+    # dataunit_name = "chelmnts"
+    # if rhds.unit[dataunit_name].load_data():
+    #     chelmnts(con,
+    #              rhds.unit[dataunit_name],
+    #              sensors_dict_reversed)
+
+
+    # =============================================================
+    #                           RAW
+    # =============================================================
+    dataunit_name = "chelmnts"
+    rhds.unit[dataunit_name].load_data()
+    homes = rhds.unit["chelmnts"].get_home_names()
+    homes_dict = dict(enumerate(homes, start=1))
+    homes_dict_reversed = dict(map(reversed, homes_dict.items()))
+
+    dataunit_name = "raw"
+    # dataunit_name = "rgbd"
+    # dataunit_name = "lblrgbd"
+    if rhds.unit[dataunit_name].load_data():
+        raw(con,
+            rhds.unit[dataunit_name],
+            dataunit_name,
+            homes_dict_reversed,
+            sensors_dict_reversed)
 
 
     con.commit()
