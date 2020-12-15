@@ -210,6 +210,20 @@ def create_tables(con):
                        "observation_id integer, "
                        "object_id)")
 
+    cursor_obj.execute("DROP TABLE IF EXISTS raw")
+    sql_str = ("CREATE TABLE observations("
+               "id integer PRIMARY KEY, "
+               "room_id integer, "
+               "home_session_id integer, "
+               "home_id integer, "
+               "name text, "
+               
+               "scan_scatter real)"
+               )
+    # print(sql_str)
+    cursor_obj.execute(sql_str)
+
+
     con.commit()
 
 
@@ -252,7 +266,7 @@ def main():
     # Characterized elements
     rhds.unit["chelmnts"].load_data()
     # Labeled RGB-D data
-    rhds.unit["rgbd"].load_data()
+    # rhds.unit["rgbd"].load_data()
 
     # =====================
     #   SQLite initialize
@@ -304,6 +318,13 @@ def main():
     # print(room_types)
     cursor_obj.executemany("INSERT INTO room_types VALUES(?,?)",
                            room_types.items())
+    # Adding ad-hoc values that appear 
+    cursor_obj.execute("INSERT INTO room_types(id,name) VALUES(" +
+                       str(len(room_types)) +
+                       ",'dressingroom')")
+    cursor_obj.execute("INSERT INTO room_types(id,name) VALUES(" +
+                       str(len(room_types)+1) +
+                       ",'fullhouse')")
     con.commit()
 
     # ================
@@ -525,7 +546,7 @@ def main():
                            "VALUES(?, ?) "
                            )
                 # Temporarily deactivate to get a faster development !!!!!!!!!
-                # cursor_obj.executemany(sql_str, objects_in_observation_list)
+                cursor_obj.executemany(sql_str, objects_in_observation_list)
 
     con.commit()
 
