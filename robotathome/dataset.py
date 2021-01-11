@@ -1828,7 +1828,7 @@ class Dataset():
                     else:
                         self.__class__ = Dataset.DatasetUnitRawData.SensorCamera
 
-                return self.files
+                return self.files.sort()
 
             def get_type(self):
                 """
@@ -2016,9 +2016,27 @@ class Dataset():
                 s = "<SensorLaserScanner instance (" + self.name + ")>"
                 return s
 
-            def get_laser_scan(self, path):
+            def get_laser_scan_bak(self, path):
                 laser_scan = Dataset.DatasetUnitRawData.LaserScan()
                 with open(path + '/' + self.files[0], "r") as file_handler:
+                    line_number = 0
+                    for line in file_handler:
+                        words = line.strip().split()
+                        if words[0] != '#':
+                            line_number += 1
+                            if line_number == 1:
+                                laser_scan.aperture = words[0]
+                            elif line_number == 2:
+                                laser_scan.max_range = words[0]
+                            elif line_number == 4:
+                                laser_scan.vector_of_scans = words
+                            elif line_number == 5:
+                                laser_scan.vector_of_valid_scans = words
+                return laser_scan
+
+            def get_laser_scan(self):
+                laser_scan = Dataset.DatasetUnitRawData.LaserScan()
+                with open(self.path + '/' + self.files[0], "r") as file_handler:
                     line_number = 0
                     for line in file_handler:
                         words = line.strip().split()
@@ -2316,7 +2334,7 @@ class Dataset():
                 self.name = name
                 self.sensor_pose_x = sensor_pose_x
                 self.sensor_pose_y = sensor_pose_y
-                self.sensor_pose_z = sensor_pose_x
+                self.sensor_pose_z = sensor_pose_z
                 self.sensor_pose_yaw = sensor_pose_yaw
                 self.sensor_pose_pitch = sensor_pose_pitch
                 self.sensor_pose_roll = sensor_pose_roll

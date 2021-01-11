@@ -231,11 +231,125 @@ def create_tables(con):
                "sensor_pose_yaw real, "
                "sensor_pose_pitch real, "
                "sensor_pose_roll real, "
+               "laser_aperture real, "
+               "laser_max_range real, "
+               "laser_num_of_scans integer,"
                "time_stamp integer, "
                "sensor_type integer, "
                "sensor_file_1 text, "
                "sensor_file_2 text, "
+               "sensor_file_3 text, "
                "files_path text"
+               ")"
+               )
+    # print(sql_str)
+    cursor_obj.execute(sql_str)
+
+    cursor_obj.execute("DROP TABLE IF EXISTS rgbd")
+    sql_str = ("CREATE TABLE rgbd("
+               "id integer PRIMARY KEY, "
+               "room_id integer, "
+               "home_session_id integer, "
+               "home_id integer, "
+               "name text, "
+               "sensor_id integer, "
+               "sensor_pose_x real, "
+               "sensor_pose_y real, "
+               "sensor_pose_z real, "
+               "sensor_pose_yaw real, "
+               "sensor_pose_pitch real, "
+               "sensor_pose_roll real, "
+               "laser_aperture real, "
+               "laser_max_range real, "
+               "laser_num_of_scans integer,"
+               "time_stamp integer, "
+               "sensor_type integer, "
+               "sensor_file_1 text, "
+               "sensor_file_2 text, "
+               "sensor_file_3 text, "
+               "files_path text"
+               ")"
+               )
+    # print(sql_str)
+    cursor_obj.execute(sql_str)
+
+    cursor_obj.execute("DROP TABLE IF EXISTS lblrgbd")
+    sql_str = ("CREATE TABLE lblrgbd("
+               "id integer PRIMARY KEY, "
+               "room_id integer, "
+               "home_session_id integer, "
+               "home_id integer, "
+               "name text, "
+               "sensor_id integer, "
+               "sensor_pose_x real, "
+               "sensor_pose_y real, "
+               "sensor_pose_z real, "
+               "sensor_pose_yaw real, "
+               "sensor_pose_pitch real, "
+               "sensor_pose_roll real, "
+               "laser_aperture real, "
+               "laser_max_range real, "
+               "laser_num_of_scans integer,"
+               "time_stamp integer, "
+               "sensor_type integer, "
+               "sensor_file_1 text, "
+               "sensor_file_2 text, "
+               "sensor_file_3 text, "
+               "files_path text"
+               ")"
+               )
+    # print(sql_str)
+    cursor_obj.execute(sql_str)
+
+    cursor_obj.execute("DROP TABLE IF EXISTS lblrgbd_labels")
+    sql_str = ("CREATE TABLE lblrgbd_labels("
+               "id integer PRIMARY KEY, "
+               "local_id integer, "
+               "name text, "
+               "sensor_observation_id integer, "
+               "object_type_id integer"
+               ")"
+               )
+    # print(sql_str)
+    cursor_obj.execute(sql_str)
+
+    cursor_obj.execute("DROP TABLE IF EXISTS lsrscan")
+    sql_str = ("CREATE TABLE lsrscan("
+               "id integer PRIMARY KEY, "
+               "room_id integer, "
+               "home_session_id integer, "
+               "home_id integer, "
+               "name text, "
+               "sensor_id integer, "
+               "sensor_pose_x real, "
+               "sensor_pose_y real, "
+               "sensor_pose_z real, "
+               "sensor_pose_yaw real, "
+               "sensor_pose_pitch real, "
+               "sensor_pose_roll real, "
+               "laser_aperture real, "
+               "laser_max_range real, "
+               "laser_num_of_scans integer,"
+               "time_stamp integer, "
+               "sensor_type integer, "
+               "sensor_file_1 text, "
+               "sensor_file_2 text, "
+               "sensor_file_3 text, "
+               "files_path text"
+               ")"
+               )
+    # print(sql_str)
+    cursor_obj.execute(sql_str)
+
+
+    cursor_obj.execute("DROP TABLE IF EXISTS lsrscan_scans")
+    sql_str = ("CREATE TABLE lsrscan_scans("
+               "id integer PRIMARY KEY, "
+               "shot_id, integer, "
+               "scan real, "
+               "valid_scan integer, "
+               "sensor_observation_id integer, "
+               "session"
                ")"
                )
     # print(sql_str)
@@ -547,7 +661,13 @@ def test():
     """ Docstring """
 
 
-def raw(con, dataunit, dataunit_name, homes_dict_reversed, sensors_dict_reversed):
+def raw_bak(con,
+        dataunit,
+        dataunit_name,
+        homes_dict_reversed,
+        sensors_dict_reversed,
+        labels_table_name="labels"
+        ):
 
     """ Docstring """
 
@@ -564,6 +684,7 @@ def raw(con, dataunit, dataunit_name, homes_dict_reversed, sensors_dict_reversed
     # num_observations = 0
     # num_rooms = 0
     sensor_observation_id = 0
+    label_id = 0
     for home_session_id, home_session in enumerate(home_sessions, start=0):
         # num_rooms += len(home_session.rooms)
         home_id = homes_dict_reversed[home_session.name.split('-s')[0]]-1
@@ -594,6 +715,7 @@ def raw(con, dataunit, dataunit_name, homes_dict_reversed, sensors_dict_reversed
                 #       0 if sensor_observation.get_type() == 'SensorLaserScanner' else 1,
                 #       sensor_observation.files[0],
                 #       sensor_observation.files[1] if (len(sensor_observation.files) > 1) else '',
+                #       sensor_observation.files[2] if (len(sensor_observation.files) > 2) else ''
                 #       # os.path.relpath(sensor_observation.path)
                 #       )
                 sql_str = ("INSERT INTO " + dataunit_name +  "("
@@ -613,10 +735,11 @@ def raw(con, dataunit, dataunit_name, homes_dict_reversed, sensors_dict_reversed
                            "sensor_type, "
                            "sensor_file_1, "
                            "sensor_file_2, "
+                           "sensor_file_3, "
                            "files_path"
                            ") "
                            "VALUES( ?, ?, ?, ?, ?, "
-                           "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )"
+                           "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )"
                            )
 
                 # print(sql_str)
@@ -638,9 +761,41 @@ def raw(con, dataunit, dataunit_name, homes_dict_reversed, sensors_dict_reversed
                                        0 if sensor_observation.get_type() == 'SensorLaserScanner' else 1,
                                        sensor_observation.files[0],
                                        sensor_observation.files[1] if (len(sensor_observation.files) > 1) else '',
+                                       sensor_observation.files[2] if (len(sensor_observation.files) > 2) else '',
                                        os.path.relpath(sensor_observation.path)
                                    )
                                    )
+                if len(sensor_observation.files) > 2:
+                    labels = sensor_observation.get_labels()
+                    # print(labels)
+                    for label in labels:
+                        # print(label_id, # global label id
+                        #       label.id, # local label id inside the sensor_observation
+                        #       label.name,
+                        #       sensor_observation_id,
+                        #       -1        # object_type.id -> to be set in the integration phase
+                        #       )
+                        sql_str = ("INSERT INTO " + labels_table_name +  "("
+                                   "id, "
+                                   "local_id, "
+                                   "name, "
+                                   "sensor_observation_id, "
+                                   "object_type_id"
+                                   ") "
+                                   "VALUES( ?, ?, ?, ?, ? )"
+                                   )
+                        # print(sql_str)
+                        cursor_obj.execute(sql_str,
+                                           (
+                                               label_id,
+                                               label.id,
+                                               label.name,
+                                               sensor_observation_id,
+                                               -1
+                                           )
+                                           )
+                        label_id += 1
+
                 # print(os.path.relpath(sensor_observation.path))
                 # previous_time = int(sensor_observation.time_stamp)
                 sensor_observation_id += 1
@@ -650,6 +805,181 @@ def raw(con, dataunit, dataunit_name, homes_dict_reversed, sensors_dict_reversed
     # print(num_rooms)
 
     con.commit()
+
+    sql_str = "create index idx_" + dataunit_name + "_timestamp on " + dataunit_name + "(time_stamp);"
+    print(sql_str)
+    cursor_obj.execute(sql_str)
+
+    con.commit()
+
+
+def sensor_data_2D(con,
+                   dataunit,
+                   dataunit_name,
+                   homes_dict_reversed,
+                   sensors_dict_reversed,
+                   extra_data_table_name="extra_data",
+                   sensor_session=0
+                   ):
+
+    """ Docstring """
+
+    # Get a cursor to execute SQLite statements
+    cursor_obj = con.cursor()
+
+
+    # print(dataunit)
+    # input('Press a key to continue ...')
+
+    home_sessions = dataunit.home_sessions
+
+
+    # num_observations = 0
+    # num_rooms = 0
+    sensor_observation_id = 0
+    label_id = 0
+    scan_id = 0
+
+    sql_str_sensor_observation = (
+        "INSERT INTO " + dataunit_name + "("
+        # "id, "
+        "room_id, "
+        "home_session_id, "
+        "home_id, "
+        "name, "
+        "sensor_id, "
+        "sensor_pose_x, "
+        "sensor_pose_y, "
+        "sensor_pose_z, "
+        "sensor_pose_yaw, "
+        "sensor_pose_pitch, "
+        "sensor_pose_roll, "
+        "laser_aperture, "
+        "laser_max_range, "
+        "laser_num_of_scans, "
+        "time_stamp, "
+        "sensor_type, "
+        "sensor_file_1, "
+        "sensor_file_2, "
+        "sensor_file_3, "
+        "files_path"
+        ") "
+        "VALUES( ?, ?, ?, ?, "
+        "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )"
+        )
+
+    sql_str_labels = (
+        "INSERT INTO " + extra_data_table_name + "("
+        "id, "
+        "local_id, "
+        "name, "
+        "sensor_observation_id, "
+        "object_type_id"
+        ") "
+        "VALUES( ?, ?, ?, ?, ? )"
+        )
+
+    sql_str_scans = (
+        "INSERT INTO " + extra_data_table_name + "("
+        # "id, "
+        "shot_id, "
+        "scan, "
+        "valid_scan, "
+        "sensor_observation_id, "
+        "session"
+        ") "
+        "VALUES( ?, ?, ?, ?, ? )"
+        )
+
+
+    for home_session_id, home_session in enumerate(home_sessions, start=0):
+        # num_rooms += len(home_session.rooms)
+        home_id = homes_dict_reversed[home_session.name.split('-s')[0]]-1
+        for room_id, room in enumerate(home_session.rooms):
+            # time_zero = int(room.sensor_observations[0].time_stamp)
+            # previous_time = 0
+            # num_observations += len(room.sensor_observations)
+            # change room_id by autoincremental
+            # print(room_id, home_session_id, home_id, room.name, len(room.sensor_observations))
+            try:
+                # The observation is a laser scan
+                sensor_observations = room.sensor_sessions[sensor_session].sensor_observations
+            except:
+                # The observation is a cam shot
+                sensor_observations = room.sensor_observations
+
+            for sensor_observation in sensor_observations:
+                sensor_observation.load_files()
+                cursor_obj.execute(sql_str_sensor_observation,
+                                   (
+                                       # sensor_observation_id,
+                                       room_id,
+                                       home_session_id,
+                                       home_id,
+                                       sensor_observation.name,
+                                       sensors_dict_reversed[sensor_observation.name],
+                                       sensor_observation.sensor_pose_x,
+                                       sensor_observation.sensor_pose_y,
+                                       sensor_observation.sensor_pose_z,
+                                       sensor_observation.sensor_pose_yaw,
+                                       sensor_observation.sensor_pose_pitch,
+                                       sensor_observation.sensor_pose_roll,
+                                       4.1847,
+                                       5.6,
+                                       682,
+                                       int(sensor_observation.time_stamp),
+                                       0 if sensor_observation.get_type() == 'SensorLaserScanner' else 1,
+                                       sensor_observation.files[0],
+                                       sensor_observation.files[1] if (len(sensor_observation.files) > 1) else '',
+                                       sensor_observation.files[2] if (len(sensor_observation.files) > 2) else '',
+                                       os.path.relpath(sensor_observation.path)
+                                   )
+                                   )
+                if len(sensor_observation.files) > 2:
+                    labels = sensor_observation.get_labels()
+                    for label in labels:
+                        cursor_obj.execute(sql_str_labels,
+                                           (
+                                               label_id,
+                                               label.id,
+                                               label.name,
+                                               sensor_observation_id,
+                                               -1
+                                           )
+                                           )
+                        label_id += 1
+
+                if sensor_observation.get_type() == "SensorLaserScanner":
+                    laser_scan = sensor_observation.get_laser_scan()
+                    for shot_id in range(0, len(laser_scan.vector_of_scans)-1):
+                        cursor_obj.execute(sql_str_scans,
+                                           (
+                                               # scan_id,
+                                               shot_id,
+                                               laser_scan.vector_of_scans[shot_id],
+                                               laser_scan.vector_of_valid_scans[shot_id],
+                                               sensor_observation_id,
+                                               sensor_session
+                                           )
+                                           )
+                        scan_id += 1
+
+                # print(os.path.relpath(sensor_observation.path))
+                # previous_time = int(sensor_observation.time_stamp)
+                sensor_observation_id += 1
+                sys.stdout.write("\rsensor_observation: %d" % (sensor_observation_id))
+
+    # print(num_observations)
+    # print(num_rooms)
+
+    con.commit()
+
+    sql_str = "create index idx_" + dataunit_name + "_timestamp on " + dataunit_name + "(time_stamp);"
+    print(sql_str)
+    cursor_obj.execute(sql_str)
+
+    con.commit()
+
 
 
 def main():
@@ -689,36 +1019,76 @@ def main():
     # =============================================================
     #                           CHELMNTS
     # =============================================================
-    # dataunit_name = "chelmnts"
-    # if rhds.unit[dataunit_name].load_data():
-    #     chelmnts(con,
-    #              rhds.unit[dataunit_name],
-    #              sensors_dict_reversed)
-
-
-    # =============================================================
-    #                           RAW
-    # =============================================================
     dataunit_name = "chelmnts"
-    rhds.unit[dataunit_name].load_data()
+    if rhds.unit[dataunit_name].load_data():
+        chelmnts(con,
+                 rhds.unit[dataunit_name],
+                 sensors_dict_reversed)
+
+    # Pre RAW
     homes = rhds.unit["chelmnts"].get_home_names()
     homes_dict = dict(enumerate(homes, start=1))
     homes_dict_reversed = dict(map(reversed, homes_dict.items()))
 
-    dataunit_name = "raw"
+    # # =============================================================
+    # #                           RAW
+    # # =============================================================
+
+    # dataunit_name = "raw"
+    # if rhds.unit[dataunit_name].load_data():
+    #     sensor_data_2D(con,
+    #         rhds.unit[dataunit_name],
+    #         dataunit_name,
+    #         homes_dict_reversed,
+    #         sensors_dict_reversed)
+
+    # # =============================================================
+    # #                           RGBD
+    # # =============================================================
     # dataunit_name = "rgbd"
+    # if rhds.unit[dataunit_name].load_data():
+    #     sensor_data_2D(con,
+    #         rhds.unit[dataunit_name],
+    #         dataunit_name,
+    #         homes_dict_reversed,
+    #         sensors_dict_reversed)
+
+    # =============================================================
+    #                         LBLRGBD
+    # =============================================================
     # dataunit_name = "lblrgbd"
+    # if rhds.unit[dataunit_name].load_data():
+    #     sensor_data_2D(con,
+    #                    rhds.unit[dataunit_name],
+    #                    dataunit_name,
+    #                    homes_dict_reversed,
+    #                    sensors_dict_reversed,
+    #                    "lblrgbd_labels")
+
+    # # main return
+    # return 0
+
+    # =============================================================
+    #                         LSRSCAN
+    # =============================================================
+    dataunit_name = "lsrscan"
     if rhds.unit[dataunit_name].load_data():
-        raw(con,
-            rhds.unit[dataunit_name],
-            dataunit_name,
-            homes_dict_reversed,
-            sensors_dict_reversed)
+        sensor_data_2D(con,
+                       rhds.unit[dataunit_name],
+                       dataunit_name,
+                       homes_dict_reversed,
+                       sensors_dict_reversed,
+                       "lsrscan_scans")
+
+        sensor_data_2D(con,
+                       rhds.unit[dataunit_name],
+                       dataunit_name,
+                       homes_dict_reversed,
+                       sensors_dict_reversed,
+                       "lsrscan_scans",1)
 
 
-    con.commit()
-
-
+    # main return
     return 0
 
 
