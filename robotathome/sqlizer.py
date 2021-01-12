@@ -245,6 +245,19 @@ def create_tables(con):
     # print(sql_str)
     cursor_obj.execute(sql_str)
 
+    cursor_obj.execute("DROP TABLE IF EXISTS raw_scans")
+    sql_str = ("CREATE TABLE raw_scans("
+               "id integer PRIMARY KEY, "
+               "shot_id, integer, "
+               "scan real, "
+               "valid_scan integer, "
+               "sensor_observation_id integer, "
+               "session"
+               ")"
+               )
+    # print(sql_str)
+    cursor_obj.execute(sql_str)
+
     cursor_obj.execute("DROP TABLE IF EXISTS rgbd")
     sql_str = ("CREATE TABLE rgbd("
                "id integer PRIMARY KEY, "
@@ -894,6 +907,7 @@ def sensor_data_2D(con,
 
     for home_session_id, home_session in enumerate(home_sessions, start=0):
         # num_rooms += len(home_session.rooms)
+        # print(home_session.name)
         home_id = homes_dict_reversed[home_session.name.split('-s')[0]]-1
         for room_id, room in enumerate(home_session.rooms):
             # time_zero = int(room.sensor_observations[0].time_stamp)
@@ -901,12 +915,24 @@ def sensor_data_2D(con,
             # num_observations += len(room.sensor_observations)
             # change room_id by autoincremental
             # print(room_id, home_session_id, home_id, room.name, len(room.sensor_observations))
+
             try:
-                # The observation is a laser scan
-                sensor_observations = room.sensor_sessions[sensor_session].sensor_observations
-            except:
                 # The observation is a cam shot
                 sensor_observations = room.sensor_observations
+            except AttributeError:
+                # The observation is a laser scan
+                try: 
+                    sensor_observations = room.sensor_sessions[sensor_session].sensor_observations
+                except IndexError:
+                    # The observation is a laser scan but it hasn't any
+                    # other extra scan session. This circumstance occurs in:
+                    # anto-s1  ->  corridor1
+                    # pare-s1  ->  corridor1
+                    # sarmis-s1  ->  fullhouse
+                    # sarmis-s2  ->  fullhouse
+                    # sarmis-s3  ->  fullhouse
+                    # print("\n", home_session.name, " -> ", room.name, "\n")
+                    pass
 
             for sensor_observation in sensor_observations:
                 sensor_observation.load_files()
@@ -971,11 +997,13 @@ def sensor_data_2D(con,
 
     # print(num_observations)
     # print(num_rooms)
+    print("\n")
 
     con.commit()
 
+    cursor_obj.execute("DROP INDEX IF EXISTS " + "idx_" + dataunit_name + "_timestamp")
     sql_str = "create index idx_" + dataunit_name + "_timestamp on " + dataunit_name + "(time_stamp);"
-    print(sql_str)
+    # print(sql_str)
     cursor_obj.execute(sql_str)
 
     con.commit()
@@ -1030,47 +1058,48 @@ def main():
     homes_dict = dict(enumerate(homes, start=1))
     homes_dict_reversed = dict(map(reversed, homes_dict.items()))
 
-    # # =============================================================
-    # #                           RAW
-    # # =============================================================
+    # =============================================================
+    #                           RAW
+    # =============================================================
 
-    # dataunit_name = "raw"
-    # if rhds.unit[dataunit_name].load_data():
-    #     sensor_data_2D(con,
-    #         rhds.unit[dataunit_name],
-    #         dataunit_name,
-    #         homes_dict_reversed,
-    #         sensors_dict_reversed)
+    dataunit_name = "raw"
+    if rhds.unit[dataunit_name].load_data():
+        sensor_data_2D(con,
+                       rhds.unit[dataunit_name],
+                       dataunit_name,
+                       homes_dict_reversed,
+                       sensors_dict_reversed,
+                       "raw_scans")
 
-    # # =============================================================
-    # #                           RGBD
-    # # =============================================================
-    # dataunit_name = "rgbd"
-    # if rhds.unit[dataunit_name].load_data():
-    #     sensor_data_2D(con,
-    #         rhds.unit[dataunit_name],
-    #         dataunit_name,
-    #         homes_dict_reversed,
-    #         sensors_dict_reversed)
+    # =============================================================
+    #                           RGBD
+    # =============================================================
+
+    dataunit_name = "rgbd"
+    if rhds.unit[dataunit_name].load_data():
+        sensor_data_2D(con,
+                       rhds.unit[dataunit_name],
+                       dataunit_name,
+                       homes_dict_reversed,
+                       sensors_dict_reversed)
 
     # =============================================================
     #                         LBLRGBD
     # =============================================================
-    # dataunit_name = "lblrgbd"
-    # if rhds.unit[dataunit_name].load_data():
-    #     sensor_data_2D(con,
-    #                    rhds.unit[dataunit_name],
-    #                    dataunit_name,
-    #                    homes_dict_reversed,
-    #                    sensors_dict_reversed,
-    #                    "lblrgbd_labels")
 
-    # # main return
-    # return 0
+    dataunit_name = "lblrgbd"
+    if rhds.unit[dataunit_name].load_data():
+        sensor_data_2D(con,
+                       rhds.unit[dataunit_name],
+                       dataunit_name,
+                       homes_dict_reversed,
+                       sensors_dict_reversed,
+                       "lblrgbd_labels")
 
     # =============================================================
     #                         LSRSCAN
     # =============================================================
+
     dataunit_name = "lsrscan"
     if rhds.unit[dataunit_name].load_data():
         sensor_data_2D(con,
@@ -1085,7 +1114,10 @@ def main():
                        dataunit_name,
                        homes_dict_reversed,
                        sensors_dict_reversed,
-                       "lsrscan_scans",1)
+                       "lsrscan_scans",
+                       1)
+
+
 
 
     # main return
