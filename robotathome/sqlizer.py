@@ -5,8 +5,8 @@
 
 __author__ = "Gregorio Ambrosio"
 __contact__ = "gambrosio[at]uma.es"
-__copyright__ = "Copyright 2020, Gregorio Ambrosio"
-__date__ = "2020/12/05"
+__copyright__ = "Copyright 2021, Gregorio Ambrosio"
+__date__ = "2021/01/13"
 __license__ = "MIT"
 
 
@@ -33,344 +33,518 @@ def sql_connection():
         print(NameError)
 
 
-def create_tables(con):
+def create_tables(con, arg):
 
     """ Docstring """
 
-    cursor_obj = con.cursor()
+    def create_tables_extra_data(con):
 
-    # Table creation
+        """ Docstring """
 
-    cursor_obj.execute("DROP TABLE IF EXISTS homes")
-    cursor_obj.execute("CREATE TABLE homes(id integer PRIMARY KEY, name text)")
+        cursor_obj = con.cursor()
 
-    cursor_obj.execute("DROP TABLE IF EXISTS home_sessions")
-    cursor_obj.execute("CREATE TABLE home_sessions("
-                       "id integer PRIMARY KEY, "
-                       "home_id integer, "
-                       "name text)"
-                       )
+        # Table creation
 
-    cursor_obj.execute("DROP TABLE IF EXISTS room_types")
-    cursor_obj.execute("CREATE TABLE room_types(id integer PRIMARY KEY, "
-                       "name text)")
+        cursor_obj.execute("DROP TABLE IF EXISTS sensors")
+        cursor_obj.execute("CREATE TABLE sensors(id integer PRIMARY KEY, "
+                           "sensor_type_id integer, "
+                           "name text)")
 
-    cursor_obj.execute("DROP TABLE IF EXISTS object_types")
-    cursor_obj.execute("CREATE TABLE object_types(id integer PRIMARY KEY, "
-                       "name text)")
+        cursor_obj.execute("DROP TABLE IF EXISTS sensor_types")
+        cursor_obj.execute("CREATE TABLE sensor_types(id integer PRIMARY KEY, "
+                           "name text)")
 
-    cursor_obj.execute("DROP TABLE IF EXISTS sensors")
-    cursor_obj.execute("CREATE TABLE sensors(id integer PRIMARY KEY, "
-                       "sensor_type_id integer, "
-                       "name text)")
+        con.commit()
 
-    cursor_obj.execute("DROP TABLE IF EXISTS sensor_types")
-    cursor_obj.execute("CREATE TABLE sensor_types(id integer PRIMARY KEY, "
-                       "name text)")
+    def create_tables_chelmnts(con):
 
-    cursor_obj.execute("DROP TABLE IF EXISTS rooms")
-    cursor_obj.execute("CREATE TABLE rooms("
-                       "id integer PRIMARY KEY, "
-                       "home_session_id integer, "
-                       "home_id integer, "
-                       "name text, "
-                       "room_type_id integer)"
-                       )
+        """ Docstring """
 
-    cursor_obj.execute("DROP TABLE IF EXISTS objects")
-    sql_str = ("CREATE TABLE objects("
-               "id integer PRIMARY KEY, "
-               "room_id integer, "
-               "home_session_id integer, "
-               "home_id integer, "
-               "name text, "
-               "object_type_id integer, "
-               "planarity real, "
-               "scatter real, "
-               "linearity real, "
-               "min_height real, "
-               "max_height real, "
-               "centroid_x real, "
-               "centroid_y real, "
-               "centroid_z real, "
-               "volume real, "
-               "biggest_area real, "
-               "orientation real, "
-               "hue_mean real, "
-               "saturation_mean real, "
-               "value_mean real, "
-               "hue_stdv real, "
-               "saturation_stdv real, "
-               "value_stdv real, "
-               "hue_histogram_0 real, "
-               "hue_histogram_1 real, "
-               "hue_histogram_2 real, "
-               "hue_histogram_3 real, "
-               "hue_histogram_4 real, "
-               "value_histogram_0 real, "
-               "value_histogram_1 real, "
-               "value_histogram_2 real, "
-               "value_histogram_3 real, "
-               "value_histogram_4 real, "
-               "saturation_histogram_0 real, "
-               "saturation_histogram_1 real, "
-               "saturation_histogram_2 real, "
-               "saturation_histogram_3 real, "
-               "saturation_histogram_4 real)"
-               )
-    # print(sql_str)
-    cursor_obj.execute(sql_str)
+        cursor_obj = con.cursor()
 
-    cursor_obj.execute("DROP TABLE IF EXISTS relations")
-    sql_str = ("CREATE TABLE relations("
-               "id integer PRIMARY KEY, "
-               "room_id integer, "
-               "home_session_id integer, "
-               "home_id integer, "
-               "obj1_id integer, "
-               "obj2_id integer, "
-               "minimum_distance real, "
-               "perpendicularity real, "
-               "vertical_distance real, "
-               "volume_ratio real, "
-               "is_on integer, "
-               "abs_hue_stdv_diff real, "
-               "abs_saturation_stdv_diff real, "
-               "abs_value_stdv_diff real, "
-               "abs_hue_mean_diff real, "
-               "abs_saturation_mean_diff real, "
-               "abs_value_mean_diff real)"
-               )
-    # print(sql_str)
-    cursor_obj.execute(sql_str)
+        # Table creation
 
-    cursor_obj.execute("DROP TABLE IF EXISTS observations")
-    sql_str = ("CREATE TABLE observations("
-               "id integer PRIMARY KEY, "
-               "room_id integer, "
-               "home_session_id integer, "
-               "home_id integer, "
-               "sensor_id integer, "
-               "mean_hue real, "
-               "mean_saturation real, "
-               "mean_value real, "
-               "hue_stdv real, "
-               "saturation_stdv real, "
-               "value_stdv real, "
-               "hue_histogram_1 real, "
-               "hue_histogram_2 real, "
-               "hue_histogram_3 real, "
-               "hue_histogram_4 real, "
-               "hue_histogram_5 real, "
-               "saturation_histogram_1 real, "
-               "saturation_histogram_2 real, "
-               "saturation_histogram_3 real, "
-               "saturation_histogram_4 real, "
-               "saturation_histogram_5 real, "
-               "value_histogram_1 real, "
-               "value_histogram_2 real, "
-               "value_histogram_3 real, "
-               "value_histogram_4 real, "
-               "value_histogram_5 real, "
-               "distance real, "
-               "foot_print real, "
-               "volume real, "
-               "mean_mean_hue real, "
-               "mean_mean_saturation real, "
-               "mean_mean_value real, "
-               "mean_hue_stdv real, "
-               "mean_saturation_stdv real, "
-               "mean_value_stdv real, "
-               "mean_hue_histogram_1 real, "
-               "mean_hue_histogram_2 real, "
-               "mean_hue_histogram_3 real, "
-               "mean_hue_histogram_4 real, "
-               "mean_hue_histogram_5 real, "
-               "mean_saturation_histogram_1 real, "
-               "mean_saturation_histogram_2 real, "
-               "mean_saturation_histogram_3 real, "
-               "mean_saturation_histogram_4 real, "
-               "mean_saturation_histogram_5 real, "
-               "mean_value_histogram_1 real, "
-               "mean_value_histogram_2 real, "
-               "mean_value_histogram_3 real, "
-               "mean_value_histogram_4 real, "
-               "mean_value_histogram_5 real, "
-               "mean_distance real, "
-               "mean_foot_print real, "
-               "mean_volume real, "
-               "scan_area real, "
-               "scan_elongation real, "
-               "scan_mean_distance real, "
-               "scan_distance_stdv real, "
-               "scan_num_of_points integer, "
-               "scan_compactness real, "
-               "scan_compactness2 real, "
-               "scan_linearity real, "
-               "scan_scatter real)"
-               )
-    # print(sql_str)
-    cursor_obj.execute(sql_str)
+        cursor_obj.execute("DROP TABLE IF EXISTS homes")
+        cursor_obj.execute("CREATE TABLE homes(id integer PRIMARY KEY, name text)")
 
-    cursor_obj.execute("DROP TABLE IF EXISTS objects_in_observation")
-    cursor_obj.execute("CREATE TABLE objects_in_observation(id integer PRIMARY KEY, "
-                       "observation_id integer, "
-                       "object_id)")
+        cursor_obj.execute("DROP TABLE IF EXISTS home_sessions")
+        cursor_obj.execute("CREATE TABLE home_sessions("
+                           "id integer PRIMARY KEY, "
+                           "home_id integer, "
+                           "name text)"
+                           )
 
-    cursor_obj.execute("DROP TABLE IF EXISTS raw")
-    sql_str = ("CREATE TABLE raw("
-               "id integer PRIMARY KEY, "
-               "room_id integer, "
-               "home_session_id integer, "
-               "home_id integer, "
-               "name text, "
-               "sensor_id integer, "
-               "sensor_pose_x real, "
-               "sensor_pose_y real, "
-               "sensor_pose_z real, "
-               "sensor_pose_yaw real, "
-               "sensor_pose_pitch real, "
-               "sensor_pose_roll real, "
-               "laser_aperture real, "
-               "laser_max_range real, "
-               "laser_num_of_scans integer,"
-               "time_stamp integer, "
-               "sensor_type integer, "
-               "sensor_file_1 text, "
-               "sensor_file_2 text, "
-               "sensor_file_3 text, "
-               "files_path text"
-               ")"
-               )
-    # print(sql_str)
-    cursor_obj.execute(sql_str)
+        cursor_obj.execute("DROP TABLE IF EXISTS room_types")
+        cursor_obj.execute("CREATE TABLE room_types(id integer PRIMARY KEY, "
+                           "name text)")
 
-    cursor_obj.execute("DROP TABLE IF EXISTS raw_scans")
-    sql_str = ("CREATE TABLE raw_scans("
-               "id integer PRIMARY KEY, "
-               "shot_id, integer, "
-               "scan real, "
-               "valid_scan integer, "
-               "sensor_observation_id integer, "
-               "session"
-               ")"
-               )
-    # print(sql_str)
-    cursor_obj.execute(sql_str)
+        cursor_obj.execute("DROP TABLE IF EXISTS object_types")
+        cursor_obj.execute("CREATE TABLE object_types(id integer PRIMARY KEY, "
+                           "name text)")
 
-    cursor_obj.execute("DROP TABLE IF EXISTS rgbd")
-    sql_str = ("CREATE TABLE rgbd("
-               "id integer PRIMARY KEY, "
-               "room_id integer, "
-               "home_session_id integer, "
-               "home_id integer, "
-               "name text, "
-               "sensor_id integer, "
-               "sensor_pose_x real, "
-               "sensor_pose_y real, "
-               "sensor_pose_z real, "
-               "sensor_pose_yaw real, "
-               "sensor_pose_pitch real, "
-               "sensor_pose_roll real, "
-               "laser_aperture real, "
-               "laser_max_range real, "
-               "laser_num_of_scans integer,"
-               "time_stamp integer, "
-               "sensor_type integer, "
-               "sensor_file_1 text, "
-               "sensor_file_2 text, "
-               "sensor_file_3 text, "
-               "files_path text"
-               ")"
-               )
-    # print(sql_str)
-    cursor_obj.execute(sql_str)
+        cursor_obj.execute("DROP TABLE IF EXISTS rooms")
+        cursor_obj.execute("CREATE TABLE rooms("
+                           "id integer PRIMARY KEY, "
+                           "home_session_id integer, "
+                           "home_id integer, "
+                           "name text, "
+                           "room_type_id integer)"
+                           )
 
-    cursor_obj.execute("DROP TABLE IF EXISTS lblrgbd")
-    sql_str = ("CREATE TABLE lblrgbd("
-               "id integer PRIMARY KEY, "
-               "room_id integer, "
-               "home_session_id integer, "
-               "home_id integer, "
-               "name text, "
-               "sensor_id integer, "
-               "sensor_pose_x real, "
-               "sensor_pose_y real, "
-               "sensor_pose_z real, "
-               "sensor_pose_yaw real, "
-               "sensor_pose_pitch real, "
-               "sensor_pose_roll real, "
-               "laser_aperture real, "
-               "laser_max_range real, "
-               "laser_num_of_scans integer,"
-               "time_stamp integer, "
-               "sensor_type integer, "
-               "sensor_file_1 text, "
-               "sensor_file_2 text, "
-               "sensor_file_3 text, "
-               "files_path text"
-               ")"
-               )
-    # print(sql_str)
-    cursor_obj.execute(sql_str)
+        cursor_obj.execute("DROP TABLE IF EXISTS objects")
+        sql_str = ("CREATE TABLE objects("
+                   "id integer PRIMARY KEY, "
+                   "room_id integer, "
+                   "home_session_id integer, "
+                   "home_id integer, "
+                   "name text, "
+                   "object_type_id integer, "
+                   "planarity real, "
+                   "scatter real, "
+                   "linearity real, "
+                   "min_height real, "
+                   "max_height real, "
+                   "centroid_x real, "
+                   "centroid_y real, "
+                   "centroid_z real, "
+                   "volume real, "
+                   "biggest_area real, "
+                   "orientation real, "
+                   "hue_mean real, "
+                   "saturation_mean real, "
+                   "value_mean real, "
+                   "hue_stdv real, "
+                   "saturation_stdv real, "
+                   "value_stdv real, "
+                   "hue_histogram_0 real, "
+                   "hue_histogram_1 real, "
+                   "hue_histogram_2 real, "
+                   "hue_histogram_3 real, "
+                   "hue_histogram_4 real, "
+                   "value_histogram_0 real, "
+                   "value_histogram_1 real, "
+                   "value_histogram_2 real, "
+                   "value_histogram_3 real, "
+                   "value_histogram_4 real, "
+                   "saturation_histogram_0 real, "
+                   "saturation_histogram_1 real, "
+                   "saturation_histogram_2 real, "
+                   "saturation_histogram_3 real, "
+                   "saturation_histogram_4 real)"
+                   )
+        # print(sql_str)
+        cursor_obj.execute(sql_str)
 
-    cursor_obj.execute("DROP TABLE IF EXISTS lblrgbd_labels")
-    sql_str = ("CREATE TABLE lblrgbd_labels("
-               "id integer PRIMARY KEY, "
-               "local_id integer, "
-               "name text, "
-               "sensor_observation_id integer, "
-               "object_type_id integer"
-               ")"
-               )
-    # print(sql_str)
-    cursor_obj.execute(sql_str)
+        cursor_obj.execute("DROP TABLE IF EXISTS relations")
+        sql_str = ("CREATE TABLE relations("
+                   "id integer PRIMARY KEY, "
+                   "room_id integer, "
+                   "home_session_id integer, "
+                   "home_id integer, "
+                   "obj1_id integer, "
+                   "obj2_id integer, "
+                   "minimum_distance real, "
+                   "perpendicularity real, "
+                   "vertical_distance real, "
+                   "volume_ratio real, "
+                   "is_on integer, "
+                   "abs_hue_stdv_diff real, "
+                   "abs_saturation_stdv_diff real, "
+                   "abs_value_stdv_diff real, "
+                   "abs_hue_mean_diff real, "
+                   "abs_saturation_mean_diff real, "
+                   "abs_value_mean_diff real)"
+                   )
+        # print(sql_str)
+        cursor_obj.execute(sql_str)
 
-    cursor_obj.execute("DROP TABLE IF EXISTS lsrscan")
-    sql_str = ("CREATE TABLE lsrscan("
-               "id integer PRIMARY KEY, "
-               "room_id integer, "
-               "home_session_id integer, "
-               "home_id integer, "
-               "name text, "
-               "sensor_id integer, "
-               "sensor_pose_x real, "
-               "sensor_pose_y real, "
-               "sensor_pose_z real, "
-               "sensor_pose_yaw real, "
-               "sensor_pose_pitch real, "
-               "sensor_pose_roll real, "
-               "laser_aperture real, "
-               "laser_max_range real, "
-               "laser_num_of_scans integer,"
-               "time_stamp integer, "
-               "sensor_type integer, "
-               "sensor_file_1 text, "
-               "sensor_file_2 text, "
-               "sensor_file_3 text, "
-               "files_path text"
-               ")"
-               )
-    # print(sql_str)
-    cursor_obj.execute(sql_str)
+        cursor_obj.execute("DROP TABLE IF EXISTS observations")
+        sql_str = ("CREATE TABLE observations("
+                   "id integer PRIMARY KEY, "
+                   "room_id integer, "
+                   "home_session_id integer, "
+                   "home_id integer, "
+                   "sensor_id integer, "
+                   "mean_hue real, "
+                   "mean_saturation real, "
+                   "mean_value real, "
+                   "hue_stdv real, "
+                   "saturation_stdv real, "
+                   "value_stdv real, "
+                   "hue_histogram_1 real, "
+                   "hue_histogram_2 real, "
+                   "hue_histogram_3 real, "
+                   "hue_histogram_4 real, "
+                   "hue_histogram_5 real, "
+                   "saturation_histogram_1 real, "
+                   "saturation_histogram_2 real, "
+                   "saturation_histogram_3 real, "
+                   "saturation_histogram_4 real, "
+                   "saturation_histogram_5 real, "
+                   "value_histogram_1 real, "
+                   "value_histogram_2 real, "
+                   "value_histogram_3 real, "
+                   "value_histogram_4 real, "
+                   "value_histogram_5 real, "
+                   "distance real, "
+                   "foot_print real, "
+                   "volume real, "
+                   "mean_mean_hue real, "
+                   "mean_mean_saturation real, "
+                   "mean_mean_value real, "
+                   "mean_hue_stdv real, "
+                   "mean_saturation_stdv real, "
+                   "mean_value_stdv real, "
+                   "mean_hue_histogram_1 real, "
+                   "mean_hue_histogram_2 real, "
+                   "mean_hue_histogram_3 real, "
+                   "mean_hue_histogram_4 real, "
+                   "mean_hue_histogram_5 real, "
+                   "mean_saturation_histogram_1 real, "
+                   "mean_saturation_histogram_2 real, "
+                   "mean_saturation_histogram_3 real, "
+                   "mean_saturation_histogram_4 real, "
+                   "mean_saturation_histogram_5 real, "
+                   "mean_value_histogram_1 real, "
+                   "mean_value_histogram_2 real, "
+                   "mean_value_histogram_3 real, "
+                   "mean_value_histogram_4 real, "
+                   "mean_value_histogram_5 real, "
+                   "mean_distance real, "
+                   "mean_foot_print real, "
+                   "mean_volume real, "
+                   "scan_area real, "
+                   "scan_elongation real, "
+                   "scan_mean_distance real, "
+                   "scan_distance_stdv real, "
+                   "scan_num_of_points integer, "
+                   "scan_compactness real, "
+                   "scan_compactness2 real, "
+                   "scan_linearity real, "
+                   "scan_scatter real)"
+                   )
+        # print(sql_str)
+        cursor_obj.execute(sql_str)
+
+        cursor_obj.execute("DROP TABLE IF EXISTS objects_in_observation")
+        cursor_obj.execute("CREATE TABLE objects_in_observation(id integer PRIMARY KEY, "
+                           "observation_id integer, "
+                           "object_id)")
+
+        con.commit()
+
+    def create_tables_raw(con):
+
+        """ Docstring """
+
+        cursor_obj = con.cursor()
+
+        # Table creation
+
+        cursor_obj.execute("DROP TABLE IF EXISTS raw")
+        sql_str = ("CREATE TABLE raw("
+                   "id integer PRIMARY KEY, "
+                   "room_id integer, "
+                   "home_session_id integer, "
+                   "home_id integer, "
+                   "name text, "
+                   "sensor_id integer, "
+                   "sensor_pose_x real, "
+                   "sensor_pose_y real, "
+                   "sensor_pose_z real, "
+                   "sensor_pose_yaw real, "
+                   "sensor_pose_pitch real, "
+                   "sensor_pose_roll real, "
+                   "laser_aperture real, "
+                   "laser_max_range real, "
+                   "laser_num_of_scans integer,"
+                   "time_stamp integer, "
+                   "sensor_type integer, "
+                   "sensor_file_1 text, "
+                   "sensor_file_2 text, "
+                   "sensor_file_3 text, "
+                   "files_path text"
+                   ")"
+                   )
+        # print(sql_str)
+        cursor_obj.execute(sql_str)
+
+        cursor_obj.execute("DROP TABLE IF EXISTS raw_scans")
+        sql_str = ("CREATE TABLE raw_scans("
+                   "id integer PRIMARY KEY, "
+                   "shot_id integer, "
+                   "scan real, "
+                   "valid_scan integer, "
+                   "sensor_observation_id integer, "
+                   "session"
+                   ")"
+                   )
+        # print(sql_str)
+        cursor_obj.execute(sql_str)
+
+        con.commit()
+
+    def create_tables_rgbd(con):
+
+        """ Docstring """
+
+        cursor_obj = con.cursor()
+
+        # Table creation
+
+        cursor_obj.execute("DROP TABLE IF EXISTS rgbd")
+        sql_str = ("CREATE TABLE rgbd("
+                   "id integer PRIMARY KEY, "
+                   "room_id integer, "
+                   "home_session_id integer, "
+                   "home_id integer, "
+                   "name text, "
+                   "sensor_id integer, "
+                   "sensor_pose_x real, "
+                   "sensor_pose_y real, "
+                   "sensor_pose_z real, "
+                   "sensor_pose_yaw real, "
+                   "sensor_pose_pitch real, "
+                   "sensor_pose_roll real, "
+                   "laser_aperture real, "
+                   "laser_max_range real, "
+                   "laser_num_of_scans integer,"
+                   "time_stamp integer, "
+                   "sensor_type integer, "
+                   "sensor_file_1 text, "
+                   "sensor_file_2 text, "
+                   "sensor_file_3 text, "
+                   "files_path text"
+                   ")"
+                   )
+        # print(sql_str)
+        cursor_obj.execute(sql_str)
+
+        con.commit()
+
+    def create_tables_lblrgbd(con):
+
+        """ Docstring """
+
+        cursor_obj = con.cursor()
+
+        # Table creation
+
+        cursor_obj.execute("DROP TABLE IF EXISTS lblrgbd")
+        sql_str = ("CREATE TABLE lblrgbd("
+                   "id integer PRIMARY KEY, "
+                   "room_id integer, "
+                   "home_session_id integer, "
+                   "home_id integer, "
+                   "name text, "
+                   "sensor_id integer, "
+                   "sensor_pose_x real, "
+                   "sensor_pose_y real, "
+                   "sensor_pose_z real, "
+                   "sensor_pose_yaw real, "
+                   "sensor_pose_pitch real, "
+                   "sensor_pose_roll real, "
+                   "laser_aperture real, "
+                   "laser_max_range real, "
+                   "laser_num_of_scans integer,"
+                   "time_stamp integer, "
+                   "sensor_type integer, "
+                   "sensor_file_1 text, "
+                   "sensor_file_2 text, "
+                   "sensor_file_3 text, "
+                   "files_path text"
+                   ")"
+                   )
+        # print(sql_str)
+        cursor_obj.execute(sql_str)
+
+        cursor_obj.execute("DROP TABLE IF EXISTS lblrgbd_labels")
+        sql_str = ("CREATE TABLE lblrgbd_labels("
+                   "id integer PRIMARY KEY, "
+                   "local_id integer, "
+                   "name text, "
+                   "sensor_observation_id integer, "
+                   "object_type_id integer"
+                   ")"
+                   )
+        # print(sql_str)
+        cursor_obj.execute(sql_str)
+
+        con.commit()
+
+    def create_tables_lsrscan(con):
+
+        """ Docstring """
+
+        cursor_obj = con.cursor()
+
+        # Table creation
+
+        cursor_obj.execute("DROP TABLE IF EXISTS lsrscan")
+        sql_str = ("CREATE TABLE lsrscan("
+                   "id integer PRIMARY KEY, "
+                   "room_id integer, "
+                   "home_session_id integer, "
+                   "home_id integer, "
+                   "name text, "
+                   "sensor_id integer, "
+                   "sensor_pose_x real, "
+                   "sensor_pose_y real, "
+                   "sensor_pose_z real, "
+                   "sensor_pose_yaw real, "
+                   "sensor_pose_pitch real, "
+                   "sensor_pose_roll real, "
+                   "laser_aperture real, "
+                   "laser_max_range real, "
+                   "laser_num_of_scans integer,"
+                   "time_stamp integer, "
+                   "sensor_type integer, "
+                   "sensor_file_1 text, "
+                   "sensor_file_2 text, "
+                   "sensor_file_3 text, "
+                   "files_path text"
+                   ")"
+                   )
+        # print(sql_str)
+        cursor_obj.execute(sql_str)
+
+        cursor_obj.execute("DROP TABLE IF EXISTS lsrscan_scans")
+        sql_str = ("CREATE TABLE lsrscan_scans("
+                   "id integer PRIMARY KEY, "
+                   "shot_id integer, "
+                   "scan real, "
+                   "valid_scan integer, "
+                   "sensor_observation_id integer, "
+                   "session"
+                   ")"
+                   )
+        # print(sql_str)
+        cursor_obj.execute(sql_str)
+
+        con.commit()
 
 
-    cursor_obj.execute("DROP TABLE IF EXISTS lsrscan_scans")
-    sql_str = ("CREATE TABLE lsrscan_scans("
-               "id integer PRIMARY KEY, "
-               "shot_id, integer, "
-               "scan real, "
-               "valid_scan integer, "
-               "sensor_observation_id integer, "
-               "session"
-               ")"
-               )
-    # print(sql_str)
-    cursor_obj.execute(sql_str)
+    switcher = {
+        "extra_data" : create_tables_extra_data,
+        "chelmnts"   : create_tables_chelmnts,
+        "raw"        : create_tables_raw,
+        "rgbd"       : create_tables_rgbd,
+        "lblrgbd"    : create_tables_lblrgbd,
+        "lsrscan"    : create_tables_lsrscan,
+    }
+    func = switcher.get(arg, lambda: "Invalid argument")
+    func(con)
 
 
-    con.commit()
+def fill_tables(con, rhds):
 
+    """ Docstring """
+
+    # inner global variables
+    sensors_dict_reversed = {}
+    homes_dict_reversed = {}
+
+    def fill_tables_extra_data():
+        # =============================================================
+        #                          EXTRA_DATA
+        # =============================================================
+
+        # Set some needed tables with no explicit data
+        create_tables(con, "extra_data")
+        nonlocal sensors_dict_reversed
+        sensor_types_dict, sensors_list, sensors_dict_reversed = set_extra_data(con)
+
+    def fill_tables_chelmnts():
+        # =============================================================
+        #                           CHELMNTS
+        # =============================================================
+
+        dataunit_name = "chelmnts"
+        create_tables(con, dataunit_name)
+        if rhds.unit[dataunit_name].load_data():
+            chelmnts(con,
+                     rhds.unit[dataunit_name],
+                     sensors_dict_reversed)
+
+        # Pre RAW
+        homes = rhds.unit["chelmnts"].get_home_names()
+        homes_dict = dict(enumerate(homes, start=1))
+        nonlocal homes_dict_reversed
+        homes_dict_reversed = dict(map(reversed, homes_dict.items()))
+
+    def fill_tables_raw():
+        # =============================================================
+        #                           RAW
+        # =============================================================
+
+        dataunit_name = "raw"
+        create_tables(con, dataunit_name)
+        if rhds.unit[dataunit_name].load_data():
+            sensor_data(con,
+                        rhds.unit[dataunit_name],
+                        dataunit_name,
+                        homes_dict_reversed,
+                        sensors_dict_reversed,
+                        "raw_scans")
+
+    def fill_tables_rgbd():
+        # =============================================================
+        #                           RGBD
+        # =============================================================
+
+        dataunit_name = "rgbd"
+        create_tables(con, dataunit_name)
+        if rhds.unit[dataunit_name].load_data():
+            sensor_data(con,
+                        rhds.unit[dataunit_name],
+                        dataunit_name,
+                        homes_dict_reversed,
+                        sensors_dict_reversed)
+
+    def fill_tables_lblrgbd():
+        # =============================================================
+        #                         LBLRGBD
+        # =============================================================
+
+        dataunit_name = "lblrgbd"
+        create_tables(con, dataunit_name)
+        if rhds.unit[dataunit_name].load_data():
+            sensor_data(con,
+                        rhds.unit[dataunit_name],
+                        dataunit_name,
+                        homes_dict_reversed,
+                        sensors_dict_reversed,
+                        "lblrgbd_labels")
+
+    def fill_tables_lsrscan():
+        # =============================================================
+        #                         LSRSCAN
+        # =============================================================
+
+        dataunit_name = "lsrscan"
+        create_tables(con, dataunit_name)
+        if rhds.unit[dataunit_name].load_data():
+            sensor_data(con,
+                        rhds.unit[dataunit_name],
+                        dataunit_name,
+                        homes_dict_reversed,
+                        sensors_dict_reversed,
+                        "lsrscan_scans")
+
+            sensor_data(con,
+                        rhds.unit[dataunit_name],
+                        dataunit_name,
+                        homes_dict_reversed,
+                        sensors_dict_reversed,
+                        "lsrscan_scans",
+                        1)
+
+    fill_tables_extra_data()
+    fill_tables_chelmnts()
+    fill_tables_raw()
+    fill_tables_rgbd()
+    fill_tables_lblrgbd()
+    fill_tables_lsrscan()
 
 def set_extra_data(con):
 
@@ -674,159 +848,7 @@ def test():
     """ Docstring """
 
 
-def raw_bak(con,
-        dataunit,
-        dataunit_name,
-        homes_dict_reversed,
-        sensors_dict_reversed,
-        labels_table_name="labels"
-        ):
-
-    """ Docstring """
-
-    # Get a cursor to execute SQLite statements
-    cursor_obj = con.cursor()
-
-
-    # print(dataunit)
-    # input('Press a key to continue ...')
-
-    home_sessions = dataunit.home_sessions
-
-
-    # num_observations = 0
-    # num_rooms = 0
-    sensor_observation_id = 0
-    label_id = 0
-    for home_session_id, home_session in enumerate(home_sessions, start=0):
-        # num_rooms += len(home_session.rooms)
-        home_id = homes_dict_reversed[home_session.name.split('-s')[0]]-1
-        for room_id, room in enumerate(home_session.rooms):
-            # time_zero = int(room.sensor_observations[0].time_stamp)
-            # previous_time = 0
-            # num_observations += len(room.sensor_observations)
-            # change room_id by autoincremental
-            # print(room_id, home_session_id, home_id, room.name, len(room.sensor_observations))
-            for sensor_observation in room.sensor_observations:
-                sensor_observation.load_files()
-                # files = sensor_observation.files
-                # print(sensor_observation_id,  # sensor_observation.id repeats id range for each room
-                #       room_id,
-                #       home_session_id,
-                #       home_id,
-                #       sensor_observation.name,
-                #       sensors_dict_reversed[sensor_observation.name],
-                #       sensor_observation.sensor_pose_x,
-                #       sensor_observation.sensor_pose_y,
-                #       sensor_observation.sensor_pose_z,
-                #       sensor_observation.sensor_pose_yaw,
-                #       sensor_observation.sensor_pose_pitch,
-                #       sensor_observation.sensor_pose_roll,
-                #       int(sensor_observation.time_stamp),
-                #       # int(sensor_observation.time_stamp)-time_zero,
-                #       # int(sensor_observation.time_stamp)-previous_time if previous_time != 0 else 0,
-                #       0 if sensor_observation.get_type() == 'SensorLaserScanner' else 1,
-                #       sensor_observation.files[0],
-                #       sensor_observation.files[1] if (len(sensor_observation.files) > 1) else '',
-                #       sensor_observation.files[2] if (len(sensor_observation.files) > 2) else ''
-                #       # os.path.relpath(sensor_observation.path)
-                #       )
-                sql_str = ("INSERT INTO " + dataunit_name +  "("
-                           "id, "
-                           "room_id, "
-                           "home_session_id, "
-                           "home_id, "
-                           "name, "
-                           "sensor_id, "
-                           "sensor_pose_x, "
-                           "sensor_pose_y, "
-                           "sensor_pose_z, "
-                           "sensor_pose_yaw, "
-                           "sensor_pose_pitch, "
-                           "sensor_pose_roll, "
-                           "time_stamp, "
-                           "sensor_type, "
-                           "sensor_file_1, "
-                           "sensor_file_2, "
-                           "sensor_file_3, "
-                           "files_path"
-                           ") "
-                           "VALUES( ?, ?, ?, ?, ?, "
-                           "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )"
-                           )
-
-                # print(sql_str)
-                cursor_obj.execute(sql_str,
-                                   (
-                                       sensor_observation_id,
-                                       room_id,
-                                       home_session_id,
-                                       home_id,
-                                       sensor_observation.name,
-                                       sensors_dict_reversed[sensor_observation.name],
-                                       sensor_observation.sensor_pose_x,
-                                       sensor_observation.sensor_pose_y,
-                                       sensor_observation.sensor_pose_z,
-                                       sensor_observation.sensor_pose_yaw,
-                                       sensor_observation.sensor_pose_pitch,
-                                       sensor_observation.sensor_pose_roll,
-                                       int(sensor_observation.time_stamp),
-                                       0 if sensor_observation.get_type() == 'SensorLaserScanner' else 1,
-                                       sensor_observation.files[0],
-                                       sensor_observation.files[1] if (len(sensor_observation.files) > 1) else '',
-                                       sensor_observation.files[2] if (len(sensor_observation.files) > 2) else '',
-                                       os.path.relpath(sensor_observation.path)
-                                   )
-                                   )
-                if len(sensor_observation.files) > 2:
-                    labels = sensor_observation.get_labels()
-                    # print(labels)
-                    for label in labels:
-                        # print(label_id, # global label id
-                        #       label.id, # local label id inside the sensor_observation
-                        #       label.name,
-                        #       sensor_observation_id,
-                        #       -1        # object_type.id -> to be set in the integration phase
-                        #       )
-                        sql_str = ("INSERT INTO " + labels_table_name +  "("
-                                   "id, "
-                                   "local_id, "
-                                   "name, "
-                                   "sensor_observation_id, "
-                                   "object_type_id"
-                                   ") "
-                                   "VALUES( ?, ?, ?, ?, ? )"
-                                   )
-                        # print(sql_str)
-                        cursor_obj.execute(sql_str,
-                                           (
-                                               label_id,
-                                               label.id,
-                                               label.name,
-                                               sensor_observation_id,
-                                               -1
-                                           )
-                                           )
-                        label_id += 1
-
-                # print(os.path.relpath(sensor_observation.path))
-                # previous_time = int(sensor_observation.time_stamp)
-                sensor_observation_id += 1
-                sys.stdout.write("\rsensor_observation: %d" % (sensor_observation_id))
-
-    # print(num_observations)
-    # print(num_rooms)
-
-    con.commit()
-
-    sql_str = "create index idx_" + dataunit_name + "_timestamp on " + dataunit_name + "(time_stamp);"
-    print(sql_str)
-    cursor_obj.execute(sql_str)
-
-    con.commit()
-
-
-def sensor_data_2D(con,
+def sensor_data(con,
                    dataunit,
                    dataunit_name,
                    homes_dict_reversed,
@@ -1009,7 +1031,6 @@ def sensor_data_2D(con,
     con.commit()
 
 
-
 def main():
 
     """ Docstring """
@@ -1018,13 +1039,7 @@ def main():
     #     Robot@Home
     # ===================
 
-    # rhds = Dataset("MyRobot@Home")
     rhds = Dataset("MyRobot@Home", autoload=False)
-
-    # Characterized elements
-    # rhds.unit["chelmnts"].load_data()
-    # Labeled RGB-D data
-    # rhds.unit["rgbd"].load_data()
 
     # =====================
     #   SQLite initialize
@@ -1032,93 +1047,9 @@ def main():
     con = sql_connection()
 
     # =====================
-    #    Tables creation
-    # =====================
-    create_tables(con)
-
-    # Set some needed tables with no explicit data
-    # ============================================
-    sensor_types_dict, sensors_list, sensors_dict_reversed = set_extra_data(con)
-
-    # =====================
     #    Filling tables
     # =====================
-
-    # =============================================================
-    #                           CHELMNTS
-    # =============================================================
-    dataunit_name = "chelmnts"
-    if rhds.unit[dataunit_name].load_data():
-        chelmnts(con,
-                 rhds.unit[dataunit_name],
-                 sensors_dict_reversed)
-
-    # Pre RAW
-    homes = rhds.unit["chelmnts"].get_home_names()
-    homes_dict = dict(enumerate(homes, start=1))
-    homes_dict_reversed = dict(map(reversed, homes_dict.items()))
-
-    # =============================================================
-    #                           RAW
-    # =============================================================
-
-    dataunit_name = "raw"
-    if rhds.unit[dataunit_name].load_data():
-        sensor_data_2D(con,
-                       rhds.unit[dataunit_name],
-                       dataunit_name,
-                       homes_dict_reversed,
-                       sensors_dict_reversed,
-                       "raw_scans")
-
-    # =============================================================
-    #                           RGBD
-    # =============================================================
-
-    dataunit_name = "rgbd"
-    if rhds.unit[dataunit_name].load_data():
-        sensor_data_2D(con,
-                       rhds.unit[dataunit_name],
-                       dataunit_name,
-                       homes_dict_reversed,
-                       sensors_dict_reversed)
-
-    # =============================================================
-    #                         LBLRGBD
-    # =============================================================
-
-    dataunit_name = "lblrgbd"
-    if rhds.unit[dataunit_name].load_data():
-        sensor_data_2D(con,
-                       rhds.unit[dataunit_name],
-                       dataunit_name,
-                       homes_dict_reversed,
-                       sensors_dict_reversed,
-                       "lblrgbd_labels")
-
-    # =============================================================
-    #                         LSRSCAN
-    # =============================================================
-
-    dataunit_name = "lsrscan"
-    if rhds.unit[dataunit_name].load_data():
-        sensor_data_2D(con,
-                       rhds.unit[dataunit_name],
-                       dataunit_name,
-                       homes_dict_reversed,
-                       sensors_dict_reversed,
-                       "lsrscan_scans")
-
-        sensor_data_2D(con,
-                       rhds.unit[dataunit_name],
-                       dataunit_name,
-                       homes_dict_reversed,
-                       sensors_dict_reversed,
-                       "lsrscan_scans",
-                       1)
-
-
-
+    fill_tables(con, rhds)
 
     # main return
     return 0
