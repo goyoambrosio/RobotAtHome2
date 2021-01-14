@@ -146,27 +146,28 @@ def sensor_data_2D(dataunit,
                 # files = sensor_observation.files
                 # print(files)
                 # print(sensor_observation.get_type())
-                print(sensor_observation_id,  # sensor_observation.id repeats id range for each room
-                      room_id,
-                      home_session_id,
-                      home_id,
-                      sensor_observation.name,
-                      sensors_dict_reversed[sensor_observation.name],
-                      sensor_observation.sensor_pose_x,
-                      sensor_observation.sensor_pose_y,
-                      sensor_observation.sensor_pose_z,
-                      sensor_observation.sensor_pose_yaw,
-                      sensor_observation.sensor_pose_pitch,
-                      sensor_observation.sensor_pose_roll,
-                      int(sensor_observation.time_stamp),
-                      # int(sensor_observation.time_stamp)-time_zero,
-                      # int(sensor_observation.time_stamp)-previous_time if previous_time != 0 else 0,
-                      0 if sensor_observation.get_type() == 'SensorLaserScanner' else 1,
-                      sensor_observation.files[0],
-                      sensor_observation.files[1] if (len(sensor_observation.files) > 1) else '',
-                      sensor_observation.files[2] if (len(sensor_observation.files) > 2) else ''
-                      # os.path.relpath(sensor_observation.path)
-                      )
+
+                # print(sensor_observation_id,  # sensor_observation.id repeats id range for each room
+                #       room_id,
+                #       home_session_id,
+                #       home_id,
+                #       sensor_observation.name,
+                #       sensors_dict_reversed[sensor_observation.name],
+                #       sensor_observation.sensor_pose_x,
+                #       sensor_observation.sensor_pose_y,
+                #       sensor_observation.sensor_pose_z,
+                #       sensor_observation.sensor_pose_yaw,
+                #       sensor_observation.sensor_pose_pitch,
+                #       sensor_observation.sensor_pose_roll,
+                #       int(sensor_observation.time_stamp),
+                #       # int(sensor_observation.time_stamp)-time_zero,
+                #       # int(sensor_observation.time_stamp)-previous_time if previous_time != 0 else 0,
+                #       0 if sensor_observation.get_type() == 'SensorLaserScanner' else 1,
+                #       sensor_observation.files[0],
+                #       sensor_observation.files[1] if (len(sensor_observation.files) > 1) else '',
+                #       sensor_observation.files[2] if (len(sensor_observation.files) > 2) else ''
+                #       # os.path.relpath(sensor_observation.path)
+                #       )
                 if len(sensor_observation.files) > 2:
                     labels = sensor_observation.get_labels()
                     # print(labels)
@@ -284,27 +285,16 @@ def main():
     homes_dict = dict(enumerate(homes, start=1))
     homes_dict_reversed = dict(map(reversed, homes_dict.items()))
 
-    # lblrgbd(rhds, homes_dict_reversed, sensors_dict_reversed)
-    # lsrscan(rhds)
 
     # dataunit_name = "raw"
-    # dataunit_name = "rgbd"
+    dataunit_name = "rgbd"
     # dataunit_name = "lblrgbd"
+    # dataunit_name = "lsrscan"
     # if rhds.unit[dataunit_name].load_data():
-    #     raw(rhds.unit[dataunit_name],
-    #         dataunit_name,
-    #         homes_dict_reversed,
-    #         sensors_dict_reversed)
-
-    # dataunit_name = "raw"
-    # dataunit_name = "rgbd"
-    # dataunit_name = "lblrgbd"
-    dataunit_name = "lsrscan"
-    if rhds.unit[dataunit_name].load_data():
-        sensor_data_2D(rhds.unit[dataunit_name],
-                        dataunit_name,
-                        homes_dict_reversed,
-                        sensors_dict_reversed)
+    #     sensor_data_2D(rhds.unit[dataunit_name],
+    #                     dataunit_name,
+    #                     homes_dict_reversed,
+    #                     sensors_dict_reversed)
 
 
     return 0

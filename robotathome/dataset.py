@@ -1753,7 +1753,7 @@ class Dataset():
 
             def __repr__(self):
                 s = "<Room instance (" + self.name + ")>"
-                return g
+                return s
 
         class Rooms(list):
 
