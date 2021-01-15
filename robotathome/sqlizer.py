@@ -78,7 +78,6 @@ def create_tables(con, arg):
         cursor_obj.execute("CREATE TABLE room_types(id integer PRIMARY KEY, "
                            "name text)")
 
-
         con.commit()
 
     def create_tables_chelmnts(con):
@@ -89,32 +88,9 @@ def create_tables(con, arg):
 
         # Table creation
 
-        cursor_obj.execute("DROP TABLE IF EXISTS homes")
-        cursor_obj.execute("CREATE TABLE homes(id integer PRIMARY KEY, name text)")
-
-        cursor_obj.execute("DROP TABLE IF EXISTS home_sessions")
-        cursor_obj.execute("CREATE TABLE home_sessions("
-                           "id integer PRIMARY KEY, "
-                           "home_id integer, "
-                           "name text)"
-                           )
-
-        cursor_obj.execute("DROP TABLE IF EXISTS room_types")
-        cursor_obj.execute("CREATE TABLE room_types(id integer PRIMARY KEY, "
-                           "name text)")
-
         cursor_obj.execute("DROP TABLE IF EXISTS object_types")
         cursor_obj.execute("CREATE TABLE object_types(id integer PRIMARY KEY, "
                            "name text)")
-
-        cursor_obj.execute("DROP TABLE IF EXISTS chelmnts_rooms")
-        cursor_obj.execute("CREATE TABLE chelmnts_rooms("
-                           "id integer PRIMARY KEY, "
-                           "home_session_id integer, "
-                           "home_id integer, "
-                           "name text, "
-                           "room_type_id integer)"
-                           )
 
         cursor_obj.execute("DROP TABLE IF EXISTS objects")
         sql_str = ("CREATE TABLE objects("
@@ -479,8 +455,8 @@ def fill_tables(con, rhds):
     """ Docstring """
 
     # inner global variables
-    sensors_dict_reversed = {}
-    homes_dict_reversed = {}
+    global sensors_dict_reversed
+    global homes_dict_reversed
 
     def fill_tables_framework_data():
         # =============================================================
@@ -490,12 +466,11 @@ def fill_tables(con, rhds):
         # Set some needed tables with no explicit data
         dataunit_name = "raw"
         create_tables(con, "framework")
-        nonlocal sensors_dict_reversed
+        # global sensors_dict_reversed
         if rhds.unit[dataunit_name].load_data():
             # sensor_types_dict, sensors_list, sensors_dict_reversed = set_framework_data(con, rhds)
             set_framework_data(con,
                                rhds.unit[dataunit_name])
-
 
     def fill_tables_chelmnts():
         # =============================================================
@@ -506,14 +481,7 @@ def fill_tables(con, rhds):
         create_tables(con, dataunit_name)
         if rhds.unit[dataunit_name].load_data():
             chelmnts(con,
-                     rhds.unit[dataunit_name],
-                     sensors_dict_reversed)
-
-        # Pre RAW
-        homes = rhds.unit["chelmnts"].get_home_names()
-        homes_dict = dict(enumerate(homes, start=1))
-        nonlocal homes_dict_reversed
-        homes_dict_reversed = dict(map(reversed, homes_dict.items()))
+                     rhds.unit[dataunit_name])
 
     def fill_tables_raw():
         # =============================================================
@@ -583,7 +551,7 @@ def fill_tables(con, rhds):
                         1)
 
     fill_tables_framework_data()
-    # fill_tables_chelmnts()
+    fill_tables_chelmnts()
     # fill_tables_raw()
     # fill_tables_rgbd()
     # fill_tables_lblrgbd()
@@ -596,7 +564,12 @@ def set_framework_data(con, dataunit):
 
     """ Docstring """
 
-    global sensor_types_dict, sensors_list, sensors_dict_reversed
+    global sensor_types_dict, sensors_list
+    global sensors_dict_reversed
+    global home_sessions_dict_reversed
+    global homes_dict_reversed
+    global room_types_dict_reversed
+    global rooms_dict_reversed
 
     # Get a cursor to execute SQLite statements
     cursor_obj = con.cursor()
@@ -625,23 +598,7 @@ def set_framework_data(con, dataunit):
     #                        FRAMEWORK
     # ============================================================
 
-
     home_sessions = dataunit.home_sessions
-
-    # for home_session in home_sessions:
-    #     print(home_session.name.split("-s"))
-    #     # home_id = homes_dict_reversed[home_session.name.split('-s')[0]]-1
-    #     for room in (home_session.rooms):
-    #         # sql_str = ("INSERT INTO rooms(id, home_session_id, home_id,"
-    #         #            "                  name, room_type_id)"
-    #         #            "VALUES(?, ?, ?, ?, ?)")
-    #         # cursor_obj.execute(sql_str,
-    #         #                    (room.id, home_session.id, home_id,
-    #         #                     room.name, room.type_id)
-    #         #                    )
-    #         # print(room.name)
-    #         pass
-
 
     # =======================================
     #               HOMES
@@ -655,7 +612,6 @@ def set_framework_data(con, dataunit):
     homes_dict = dict(enumerate(homes, start=0))
     homes_dict_reversed = dict(map(reversed, homes_dict.items()))
     # print(homes_dict_reversed)
-
     cursor_obj.executemany("INSERT INTO homes VALUES(?,?)",
                            list(enumerate(homes, start=0)))
 
@@ -695,6 +651,7 @@ def set_framework_data(con, dataunit):
     # print(home_sessions_dict_reversed)
     # print(room_types_dict_reversed)
     room_id = 0
+    rooms = []
     for home_session in home_sessions:
         home_id = homes_dict_reversed[home_session.get_home_name()]
         home_session_id = home_sessions_dict_reversed[home_session.name]
@@ -711,10 +668,13 @@ def set_framework_data(con, dataunit):
                                 room.name,
                                 room_type_id)
                                )
+            # room_name = room.name.split('_')[0]
+            rooms.append(home_session.get_home_name() + "_" + room.name)
             room_id += 1
-
-
-
+    rooms = list(dict.fromkeys(rooms))
+    rooms_dict = dict(enumerate(rooms, start=0))
+    rooms_dict_reversed = dict(map(reversed, rooms_dict.items()))
+    # print(rooms_dict_reversed)
 
     con.commit()
 
@@ -726,7 +686,7 @@ def set_framework_data(con, dataunit):
     return sensor_types_dict, sensors_list, sensors_dict_reversed
 
 
-def chelmnts(con, dataunit, sensors_dict_reversed):
+def chelmnts(con, dataunit):
 
     """ Docstring """
 
@@ -736,39 +696,6 @@ def chelmnts(con, dataunit, sensors_dict_reversed):
     # =============================================================
     #                           CHELMNTS
     # =============================================================
-
-    # ================
-    #      Homes
-    # ================
-
-    homes = dataunit.get_home_names()
-    # for home in homes:
-    #     sql_str = "INSERT INTO homes(name) VALUES('" + home + "')"
-    #     cursor_obj.execute(sql_str)
-
-    # homes_dict = dict(enumerate(homes, start=1))
-    # print(homes_dict.items())
-
-    cursor_obj.executemany("INSERT INTO homes VALUES(?,?)",
-                           list(enumerate(homes, start=0)))
-    con.commit()
-
-    # ================
-    #    Room types
-    # ================
-
-    room_types = dataunit.get_category_rooms()
-    # print(room_types)
-    cursor_obj.executemany("INSERT INTO room_types VALUES(?,?)",
-                           room_types.items())
-    # Adding ad-hoc values that appear 
-    cursor_obj.execute("INSERT INTO room_types(id,name) VALUES(" +
-                       str(len(room_types)) +
-                       ",'dressingroom')")
-    cursor_obj.execute("INSERT INTO room_types(id,name) VALUES(" +
-                       str(len(room_types)+1) +
-                       ",'fullhouse')")
-    con.commit()
 
     # ================
     #    Object types
@@ -783,39 +710,33 @@ def chelmnts(con, dataunit, sensors_dict_reversed):
     #  Home Sessions
     # ===============
 
-    homes_dict = dict(enumerate(homes, start=1))
-    # Two options for reversing a dictionary
-    # homes_dict_reversed = {value: key for (key, value) in homes_dict.items()}
-    homes_dict_reversed = dict(map(reversed, homes_dict.items()))
-    # print(homes_dict_reversed)
+    # homes_dict = dict(enumerate(homes, start=1))
+    # # Two options for reversing a dictionary
+    # # homes_dict_reversed = {value: key for (key, value) in homes_dict.items()}
+    # homes_dict_reversed = dict(map(reversed, homes_dict.items()))
+    # # print(homes_dict_reversed)
+
+    global sensors_dict_reversed
+    global home_sessions_dict_reversed
+    global homes_dict_reversed
+    global room_types_dict_reversed
+    global rooms_dict_reversed
+
+    print(rooms_dict_reversed)
 
     home_sessions = dataunit.home_sessions
     for home_session in home_sessions:
-        home_id = homes_dict_reversed[home_session.get_home_name()]-1
-        # print(home_id, home_session.id, home_session.name)
-        sql_str = ("INSERT INTO home_sessions(id, home_id, name)"
-                   "VALUES(?, ?, ?)")
-        cursor_obj.execute(sql_str,
-                           (home_session.id, home_id, home_session.name)
-                           )
-        # ===============
-        #      Rooms
-        # ===============
+        home_id = homes_dict_reversed[home_session.get_home_name()]
+        home_session_id = home_sessions_dict_reversed[home_session.name]
         for room in home_session.rooms:
-            # print(room)
-            # print(home_id, home_session.id, room.id, room.name, room.type_id)
-            sql_str = ("INSERT INTO chelmnts_rooms(id, home_session_id, home_id,"
-                       "                  name, room_type_id)"
-                       "VALUES(?, ?, ?, ?, ?)")
-            cursor_obj.execute(sql_str,
-                               (room.id, home_session.id, home_id,
-                                room.name, room.type_id)
-                               )
+            # print(home_session.get_home_name(), home_session.name, room.name.split('_')[0])
+            print(home_session.get_home_name(), home_session.name, room.name)
+            room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + room.name]
             # ===============
             #     Objects
             # ===============
-            for my_object in room.objects:
-                # print(home_id, home_session.id, room.id, object.id, object.name, object.type_id)
+            for object in room.objects:
+                # print(home_id, home_session_id, room_id, object.id, object.name, object.type_id)
                 # print(object.features)
                 sql_str = "INSERT INTO objects(id, room_id, home_session_id, home_id, \
                                                name, object_type_id, \
@@ -858,16 +779,18 @@ def chelmnts(con, dataunit, sensors_dict_reversed):
                                           ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, \
                                           ?, ?)"
                 cursor_obj.execute(sql_str,
-                                   ([my_object.id, room.id, home_session.id, home_id,
-                                    my_object.name, my_object.type_id] +
-                                    my_object.features[0:32])
+                                   ([object.id,
+                                     room_id,
+                                     home_session_id,
+                                     home_id,
+                                     object.name,
+                                     object.type_id] +
+                                     object.features[0:32])
                                    )
             # ===============
             #    Relations
             # ===============
             for relation in room.relations:
-                # print(home_id, home_session.id, room.id, relation.id, relation.obj1_id, relation.obj2_id)
-                # print(relation.features)
                 sql_str = ("INSERT INTO relations(id, room_id, home_session_id, "
                            "home_id, "
                            "obj1_id, obj2_id, "
@@ -886,7 +809,7 @@ def chelmnts(con, dataunit, sensors_dict_reversed):
                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                            )
                 cursor_obj.execute(sql_str,
-                                   ([relation.id, room.id, home_session.id, home_id,
+                                   ([relation.id, room_id, home_session_id, home_id,
                                     relation.obj1_id, relation.obj2_id] +
                                     relation.features[0:11])
                                    )
@@ -895,10 +818,6 @@ def chelmnts(con, dataunit, sensors_dict_reversed):
             # ===============
 
             for observation in room.observations:
-                # print(home_id, home_session.id, room.id, observation.id, observation.sensor_name)
-                # print(observation.objects_id)
-                # print(observation.features)
-                # print(observation.scan_features)
                 sql_str = ("INSERT INTO observations("
                            "id, "
                            "room_id, "
@@ -972,7 +891,7 @@ def chelmnts(con, dataunit, sensors_dict_reversed):
                            )
                 cursor_obj.execute(sql_str,
                                    ([observation.id,
-                                     room.id,
+                                     room_id,
                                      home_session.id,
                                      home_id,
                                      sensors_dict_reversed[observation.sensor_name]] +
