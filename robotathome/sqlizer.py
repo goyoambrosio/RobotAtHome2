@@ -96,8 +96,8 @@ def create_tables(con, arg):
         sql_str = ("CREATE TABLE objects("
                    "id integer PRIMARY KEY, "
                    "room_id integer, "
-                   "home_session_id integer, "
                    "home_id integer, "
+                   "home_session_id integer, "
                    "name text, "
                    "object_type_id integer, "
                    "planarity real, "
@@ -140,8 +140,8 @@ def create_tables(con, arg):
         sql_str = ("CREATE TABLE relations("
                    "id integer PRIMARY KEY, "
                    "room_id integer, "
-                   "home_session_id integer, "
                    "home_id integer, "
+                   "home_session_id integer, "
                    "obj1_id integer, "
                    "obj2_id integer, "
                    "minimum_distance real, "
@@ -163,8 +163,8 @@ def create_tables(con, arg):
         sql_str = ("CREATE TABLE observations("
                    "id integer PRIMARY KEY, "
                    "room_id integer, "
-                   "home_session_id integer, "
                    "home_id integer, "
+                   "home_session_id integer, "
                    "sensor_id integer, "
                    "mean_hue real, "
                    "mean_saturation real, "
@@ -282,19 +282,6 @@ def create_tables(con, arg):
                    )
         # print(sql_str)
         cursor_obj.execute(sql_str)
-
-        cursor_obj.execute("DROP TABLE IF EXISTS raw_rooms")
-        cursor_obj.execute("CREATE TABLE rooms("
-                           "id integer PRIMARY KEY, "
-                           "home_session_id integer, "
-                           "home_id integer, "
-                           "name text, "
-                           "room_type_id integer)"
-                           )
-        # print(sql_str)
-        cursor_obj.execute(sql_str)
-
-
 
         con.commit()
 
@@ -456,7 +443,10 @@ def fill_tables(con, rhds):
 
     # inner global variables
     global sensors_dict_reversed
+    global home_sessions_dict_reversed
     global homes_dict_reversed
+    global room_types_dict_reversed
+    global rooms_dict_reversed
 
     def fill_tables_framework_data():
         # =============================================================
@@ -494,8 +484,6 @@ def fill_tables(con, rhds):
             sensor_data(con,
                         rhds.unit[dataunit_name],
                         dataunit_name,
-                        homes_dict_reversed,
-                        sensors_dict_reversed,
                         "raw_scans")
 
     def fill_tables_rgbd():
@@ -508,9 +496,7 @@ def fill_tables(con, rhds):
         if rhds.unit[dataunit_name].load_data():
             sensor_data(con,
                         rhds.unit[dataunit_name],
-                        dataunit_name,
-                        homes_dict_reversed,
-                        sensors_dict_reversed)
+                        dataunit_name)
 
     def fill_tables_lblrgbd():
         # =============================================================
@@ -523,8 +509,6 @@ def fill_tables(con, rhds):
             sensor_data(con,
                         rhds.unit[dataunit_name],
                         dataunit_name,
-                        homes_dict_reversed,
-                        sensors_dict_reversed,
                         "lblrgbd_labels")
 
     def fill_tables_lsrscan():
@@ -538,21 +522,17 @@ def fill_tables(con, rhds):
             sensor_data(con,
                         rhds.unit[dataunit_name],
                         dataunit_name,
-                        homes_dict_reversed,
-                        sensors_dict_reversed,
                         "lsrscan_scans")
 
             sensor_data(con,
                         rhds.unit[dataunit_name],
                         dataunit_name,
-                        homes_dict_reversed,
-                        sensors_dict_reversed,
                         "lsrscan_scans",
                         1)
 
     fill_tables_framework_data()
-    fill_tables_chelmnts()
-    # fill_tables_raw()
+    # fill_tables_chelmnts()
+    fill_tables_raw()
     # fill_tables_rgbd()
     # fill_tables_lblrgbd()
     # fill_tables_lsrscan()
@@ -615,6 +595,8 @@ def set_framework_data(con, dataunit):
     cursor_obj.executemany("INSERT INTO homes VALUES(?,?)",
                            list(enumerate(homes, start=0)))
 
+    con.commit()
+
     # ======================================
     #            HOME_SESSIONS
     # ======================================
@@ -628,6 +610,7 @@ def set_framework_data(con, dataunit):
     home_sessions_dict = dict(enumerate(home_sessions.get_names(), start=0))
     home_sessions_dict_reversed = dict(map(reversed, home_sessions_dict.items()))
 
+    con.commit()
 
     # ======================================
     #               ROOM_TYPES
@@ -643,6 +626,7 @@ def set_framework_data(con, dataunit):
     # print(room_types)
     cursor_obj.executemany("INSERT INTO room_types VALUES(?,?)",
                            list(enumerate(room_types, start=0)))
+    con.commit()
 
     # ======================================
     #                ROOMS
@@ -656,7 +640,11 @@ def set_framework_data(con, dataunit):
         home_id = homes_dict_reversed[home_session.get_home_name()]
         home_session_id = home_sessions_dict_reversed[home_session.name]
         for room in home_session.rooms:
+            room_name = re.split('_\d+', room.name)[0]
+            # print(room_name)
             room_type_id = room_types_dict_reversed[re.split('\d+', room.name)[0]]
+            # print(home_id, home_session_id, room_type_id, room_name)
+            # room_type_id = room_types_dict_reversed[re.split('\d+', room.name)[0]]
             # print(home_id, home_session_id, room_type_id, room.name)
             sql_str = ("INSERT INTO rooms(id, home_session_id, home_id,"
                        "                  name, room_type_id)"
@@ -665,11 +653,12 @@ def set_framework_data(con, dataunit):
                                (room_id,
                                 home_session_id,
                                 home_id,
-                                room.name,
+                                room_name,
+                                # room.name,
                                 room_type_id)
                                )
-            # room_name = room.name.split('_')[0]
-            rooms.append(home_session.get_home_name() + "_" + room.name)
+            rooms.append(home_session.get_home_name() + "_" + room_name)
+            # rooms.append(home_session.get_home_name() + "_" + room.name)
             room_id += 1
     rooms = list(dict.fromkeys(rooms))
     rooms_dict = dict(enumerate(rooms, start=0))
@@ -683,7 +672,8 @@ def set_framework_data(con, dataunit):
     #                         RETURN
     # ============================================================
 
-    return sensor_types_dict, sensors_list, sensors_dict_reversed
+    #return sensor_types_dict, sensors_list, sensors_dict_reversed
+    return
 
 
 def chelmnts(con, dataunit):
@@ -722,7 +712,7 @@ def chelmnts(con, dataunit):
     global room_types_dict_reversed
     global rooms_dict_reversed
 
-    print(rooms_dict_reversed)
+    # print(rooms_dict_reversed)
 
     home_sessions = dataunit.home_sessions
     for home_session in home_sessions:
@@ -730,15 +720,20 @@ def chelmnts(con, dataunit):
         home_session_id = home_sessions_dict_reversed[home_session.name]
         for room in home_session.rooms:
             # print(home_session.get_home_name(), home_session.name, room.name.split('_')[0])
-            print(home_session.get_home_name(), home_session.name, room.name)
-            room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + room.name]
+            # print(home_session.get_home_name(), home_session.name, room.name)
+            # room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + room.name]
+            room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + re.split('_\d+', room.name)[0]]
             # ===============
             #     Objects
             # ===============
             for object in room.objects:
                 # print(home_id, home_session_id, room_id, object.id, object.name, object.type_id)
                 # print(object.features)
-                sql_str = "INSERT INTO objects(id, room_id, home_session_id, home_id, \
+                sql_str = "INSERT INTO objects(\
+                                               id, \
+                                               room_id, \
+                                               home_id, \
+                                               home_session_id,\
                                                name, object_type_id, \
                                                planarity, \
                                                scatter, \
@@ -781,8 +776,8 @@ def chelmnts(con, dataunit):
                 cursor_obj.execute(sql_str,
                                    ([object.id,
                                      room_id,
-                                     home_session_id,
                                      home_id,
+                                     home_session_id,
                                      object.name,
                                      object.type_id] +
                                      object.features[0:32])
@@ -791,8 +786,11 @@ def chelmnts(con, dataunit):
             #    Relations
             # ===============
             for relation in room.relations:
-                sql_str = ("INSERT INTO relations(id, room_id, home_session_id, "
+                sql_str = ("INSERT INTO relations("
+                           "id, "
+                           "room_id, "
                            "home_id, "
+                           "home_session_id, "
                            "obj1_id, obj2_id, "
                            "minimum_distance, "
                            "perpendicularity, "
@@ -809,9 +807,14 @@ def chelmnts(con, dataunit):
                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                            )
                 cursor_obj.execute(sql_str,
-                                   ([relation.id, room_id, home_session_id, home_id,
-                                    relation.obj1_id, relation.obj2_id] +
-                                    relation.features[0:11])
+                                   ([relation.id,
+                                     room_id,
+                                     home_id,
+                                     home_session_id,
+                                     relation.obj1_id,
+                                     relation.obj2_id] +
+                                     relation.features[0:11]
+                                    )
                                    )
             # ===============
             #  Observations
@@ -821,8 +824,8 @@ def chelmnts(con, dataunit):
                 sql_str = ("INSERT INTO observations("
                            "id, "
                            "room_id, "
-                           "home_session_id, "
                            "home_id, "
+                           "home_session_id, "
                            "sensor_id, "
                            "mean_hue, "
                            "mean_saturation, "
@@ -892,8 +895,8 @@ def chelmnts(con, dataunit):
                 cursor_obj.execute(sql_str,
                                    ([observation.id,
                                      room_id,
-                                     home_session.id,
                                      home_id,
+                                     home_session.id,
                                      sensors_dict_reversed[observation.sensor_name]] +
                                     observation.features +
                                     observation.scan_features)
@@ -920,8 +923,6 @@ def test():
 def sensor_data(con,
                 dataunit,
                 dataunit_name,
-                homes_dict_reversed,
-                sensors_dict_reversed,
                 extra_data_table_name="extra_data",
                 sensor_session=0
                 ):
@@ -931,12 +932,13 @@ def sensor_data(con,
     # Get a cursor to execute SQLite statements
     cursor_obj = con.cursor()
 
-
-    # print(dataunit)
-    # input('Press a key to continue ...')
+    global sensors_dict_reversed
+    global home_sessions_dict_reversed
+    global homes_dict_reversed
+    global room_types_dict_reversed
+    global rooms_dict_reversed
 
     home_sessions = dataunit.home_sessions
-
 
     # num_observations = 0
     # num_rooms = 0
@@ -995,24 +997,33 @@ def sensor_data(con,
         "VALUES( ?, ?, ?, ?, ? )"
         )
 
+    for home_session in home_sessions:
+        home_id = homes_dict_reversed[home_session.get_home_name()]
+        home_session_id = home_sessions_dict_reversed[home_session.name]
 
-    for home_session_id, home_session in enumerate(home_sessions, start=0):
-        # num_rooms += len(home_session.rooms)
-        # print(home_session.name)
-        home_id = homes_dict_reversed[home_session.name.split('-s')[0]]-1
-        for room_id, room in enumerate(home_session.rooms):
-            # time_zero = int(room.sensor_observations[0].time_stamp)
-            # previous_time = 0
-            # num_observations += len(room.sensor_observations)
-            # change room_id by autoincremental
-            # print(room_id, home_session_id, home_id, room.name, len(room.sensor_observations))
+        for room in home_session.rooms:
+            # print(home_session.get_home_name(), home_session.name, room.name, re.split('_\D+', room.name))
+            # print(home_session.get_home_name(), home_session.name, room.name, re.split('_\d+', room.name))
+            # try:
+            #     room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + re.split('_\D+', room.name)[0]]
+            # except KeyError:
+            #     print("KeyError: room " + room.name + " not found" )
+            #     pass
+
+            room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + re.split('_\d+', room.name)[0]]
+            if len(room.name.split('_')) > 1:
+                home_subsession = int(room.name.split('_')[1])
+            else:
+                home_subsession = 1
+
+            print(room.name, home_session.name, home_session_id, home_subsession)
 
             try:
                 # The observation is a cam shot
                 sensor_observations = room.sensor_observations
             except AttributeError:
                 # The observation is a laser scan
-                try: 
+                try:
                     sensor_observations = room.sensor_sessions[sensor_session].sensor_observations
                 except IndexError:
                     # The observation is a laser scan but it hasn't any
@@ -1026,6 +1037,7 @@ def sensor_data(con,
                     pass
 
             for sensor_observation in sensor_observations:
+                break
                 sensor_observation.load_files()
                 cursor_obj.execute(sql_str_sensor_observation,
                                    (
@@ -1085,7 +1097,7 @@ def sensor_data(con,
                 # previous_time = int(sensor_observation.time_stamp)
                 sensor_observation_id += 1
                 sys.stdout.write("\rsensor_observation: %d" % (sensor_observation_id))
-
+            print("\n")
     # print(num_observations)
     # print(num_rooms)
     print("\n")
