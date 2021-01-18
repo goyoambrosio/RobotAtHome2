@@ -318,6 +318,9 @@ class Dataset():
                         self.__data_loaded__ = False
                         return self.__data_loaded__
 
+        def get_type(self):
+            return str(type(self)).split('.')[-1][:-2]
+
     class DatasetUnitCharacterizedElements(DatasetUnit):
         class HomeSession():
             keys = ['id',
