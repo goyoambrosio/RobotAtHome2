@@ -276,8 +276,7 @@ def create_tables(con, arg):
                    "shot_id integer, "
                    "scan real, "
                    "valid_scan integer, "
-                   "sensor_observation_id integer, "
-                   "session"
+                   "sensor_observation_id integer"
                    ")"
                    )
         # print(sql_str)
@@ -418,8 +417,7 @@ def create_tables(con, arg):
                    "shot_id integer, "
                    "scan real, "
                    "valid_scan integer, "
-                   "sensor_observation_id integer, "
-                   "session"
+                   "sensor_observation_id integer"
                    ")"
                    )
         # print(sql_str)
@@ -533,7 +531,7 @@ def fill_tables(con, rhds):
     # fill_tables_raw()
     # fill_tables_rgbd()
     # fill_tables_lblrgbd()
-    fill_tables_lsrscan()
+    # fill_tables_lsrscan()
 
     return
 
@@ -598,13 +596,15 @@ def set_framework_data(con, dataunit):
     # ======================================
     #            HOME_SESSIONS
     # ======================================
-    sql_str = ("INSERT INTO home_sessions(home_id, name)"
-               "VALUES(?, ?)")
+    sql_str = ("INSERT INTO home_sessions(id, home_id, name)"
+               "VALUES(?, ?, ?)")
+    home_session_id = 0
     for home_session in home_sessions:
         home_id = homes_dict_reversed[home_session.get_home_name()]
         cursor_obj.execute(sql_str,
-                           (home_id, home_session.name)
+                           (home_session_id, home_id, home_session.name)
                            )
+        home_session_id += 1
     home_sessions_dict = dict(enumerate(home_sessions.get_names(), start=0))
     home_sessions_dict_reversed = dict(map(reversed, home_sessions_dict.items()))
 
@@ -947,7 +947,7 @@ def sensor_data(con,
 
     sql_str_sensor_observation = (
         "INSERT INTO " + dataunit_name + "("
-        # "id, "
+        "id, "
         "room_id, "
         "home_session_id, "
         "home_subsession_id, "
@@ -970,7 +970,7 @@ def sensor_data(con,
         "sensor_file_3, "
         "files_path"
         ") "
-        "VALUES( ?, ?, ?, ?, ?, "
+        "VALUES( ?, ?, ?, ?, ?, ?, "
         "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )"
         )
 
@@ -991,10 +991,9 @@ def sensor_data(con,
         "shot_id, "
         "scan, "
         "valid_scan, "
-        "sensor_observation_id, "
-        "session"
-        ") "
-        "VALUES( ?, ?, ?, ?, ? )"
+        "sensor_observation_id "
+         ") "
+        "VALUES( ?, ?, ?, ? )"
         )
 
     for home_session in home_sessions:
@@ -1002,34 +1001,21 @@ def sensor_data(con,
         home_session_id = home_sessions_dict_reversed[home_session.name]
 
         for room in home_session.rooms:
-            # print(home_session.get_home_name(), home_session.name, room.name, re.split('_\D+', room.name))
-            # print(home_session.get_home_name(), home_session.name, room.name, re.split('_\d+', room.name))
-            # try:
-            #     room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + re.split('_\D+', room.name)[0]]
-            # except KeyError:
-            #     print("KeyError: room " + room.name + " not found" )
-            #     pass
-
-
             try:
                 room_name = home_session.get_home_name() + "_" + re.split('_\d+', room.name)[0]
                 room_id = rooms_dict_reversed[room_name]
                 if len(room.name.split('_')) > 1:
-                    home_subsession_id = int(room.name.split('_')[1])
+                    home_subsession_id = int(room.name.split('_')[1])-1
                 else:
-                    home_subsession_id = 1
+                    home_subsession_id = 0
             except KeyError:
                 try:
                     room_name = home_session.get_home_name() + "_" + re.split('_\D+', room.name)[0]
                     room_id = rooms_dict_reversed[room_name]
-                    home_subsession_id = 1
+                    home_subsession_id = 0
                 except KeyError:
                     print("********* KeyError: room " + room_name + " not found", "\n" )
                     continue
-
-                # room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + re.split('_\D+', room.name)[0]]
-                # home_subsession_id = 1
-
 
             print(room.name, "|", room_name, "|", room_id, "|", home_session.name, "|", home_session_id, home_subsession_id)
 
@@ -1039,11 +1025,11 @@ def sensor_data(con,
                     print("    ", "num_of_sensor_sessions: ", num_of_sensor_sessions, "sensor_session: ", sensor_session)
                     sensor_observations = room.sensor_sessions[sensor_session].sensor_observations
                     for sensor_observation in sensor_observations:
-                        break
+                        # break
                         sensor_observation.load_files()
                         cursor_obj.execute(sql_str_sensor_observation,
                                            (
-                                               # sensor_observation_id,
+                                               sensor_observation_id,
                                                room_id,
                                                home_session_id,
                                                sensor_session,
@@ -1076,8 +1062,7 @@ def sensor_data(con,
                                                    shot_id,
                                                    laser_scan.vector_of_scans[shot_id],
                                                    laser_scan.vector_of_valid_scans[shot_id],
-                                                   sensor_observation_id,
-                                                   sensor_session
+                                                   sensor_observation_id
                                                )
                                                )
                             scan_id += 1
@@ -1090,11 +1075,11 @@ def sensor_data(con,
             else:
                 sensor_observations = room.sensor_observations
                 for sensor_observation in sensor_observations:
-                    break
+                    # break
                     sensor_observation.load_files()
                     cursor_obj.execute(sql_str_sensor_observation,
                                        (
-                                           # sensor_observation_id,
+                                           sensor_observation_id,
                                            room_id,
                                            home_session_id,
                                            home_subsession_id,
@@ -1132,43 +1117,31 @@ def sensor_data(con,
                                                )
                             label_id += 1
 
+                    if sensor_observation.get_type() == "SensorLaserScanner":
+                        laser_scan = sensor_observation.get_laser_scan()
+                        for shot_id in range(0, len(laser_scan.vector_of_scans)-1):
+                            cursor_obj.execute(sql_str_scans,
+                                               (
+                                                   # scan_id,
+                                                   shot_id,
+                                                   laser_scan.vector_of_scans[shot_id],
+                                                   laser_scan.vector_of_valid_scans[shot_id],
+                                                   sensor_observation_id,
+                                               )
+                                               )
+                            scan_id += 1
+
                     # print(os.path.relpath(sensor_observation.path))
                     # previous_time = int(sensor_observation.time_stamp)
                     sensor_observation_id += 1
                     sys.stdout.write("\rsensor_observation: %d" % (sensor_observation_id))
                 print("\n")
-
-
-
-            # try:
-            #     # The observation is a cam shot
-            #     sensor_observations = room.sensor_observations
-            # except AttributeError:
-            #     # The observation is a laser scan
-            #     try:
-            #         sensor_observations = room.sensor_sessions[sensor_session].sensor_observations
-            #     except IndexError:
-            #         # The observation is a laser scan but it hasn't any
-            #         # other extra scan session. This circumstance occurs in:
-            #         # anto-s1  ->  corridor1
-            #         # pare-s1  ->  corridor1
-            #         # sarmis-s1  ->  fullhouse
-            #         # sarmis-s2  ->  fullhouse
-            #         # sarmis-s3  ->  fullhouse
-            #         # print("\n", home_session.name, " -> ", room.name, "\n")
-            #         pass
-
-
-
-    # print(num_observations)
-    # print(num_rooms)
     print("\n")
 
     con.commit()
 
     cursor_obj.execute("DROP INDEX IF EXISTS " + "idx_" + dataunit_name + "_timestamp")
     sql_str = "create index idx_" + dataunit_name + "_timestamp on " + dataunit_name + "(time_stamp);"
-    # print(sql_str)
     cursor_obj.execute(sql_str)
 
     con.commit()
