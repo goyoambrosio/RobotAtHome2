@@ -482,10 +482,11 @@ def fill_tables(con, rhds):
         dataunit_name = "raw"
         create_tables(con, dataunit_name)
         if rhds.unit[dataunit_name].load_data():
-            sensor_data(con,
-                        rhds.unit[dataunit_name],
-                        dataunit_name,
-                        "raw_scans")
+            num_of_observations = sensor_data(con,
+                                              rhds.unit[dataunit_name],
+                                              dataunit_name,
+                                              "raw_scans")
+            print("# stored observations : ", num_of_observations)
 
     def fill_tables_rgbd():
         # =============================================================
@@ -495,9 +496,11 @@ def fill_tables(con, rhds):
         dataunit_name = "rgbd"
         create_tables(con, dataunit_name)
         if rhds.unit[dataunit_name].load_data():
-            sensor_data(con,
-                        rhds.unit[dataunit_name],
-                        dataunit_name)
+            num_of_observations = sensor_data(con,
+                                              rhds.unit[dataunit_name],
+                                              dataunit_name)
+            print("# stored observations : ", num_of_observations)
+
 
     def fill_tables_lblrgbd():
         # =============================================================
@@ -507,10 +510,12 @@ def fill_tables(con, rhds):
         dataunit_name = "lblrgbd"
         create_tables(con, dataunit_name)
         if rhds.unit[dataunit_name].load_data():
-            sensor_data(con,
-                        rhds.unit[dataunit_name],
-                        dataunit_name,
-                        "lblrgbd_labels")
+            num_of_observations = sensor_data(con,
+                                              rhds.unit[dataunit_name],
+                                              dataunit_name,
+                                              "lblrgbd_labels",
+                                              100000)
+            print("# stored observations : ", num_of_observations)
 
     def fill_tables_lsrscan():
         # =============================================================
@@ -520,17 +525,19 @@ def fill_tables(con, rhds):
         dataunit_name = "lsrscan"
         create_tables(con, dataunit_name)
         if rhds.unit[dataunit_name].load_data():
-            sensor_data(con,
-                        rhds.unit[dataunit_name],
-                        dataunit_name,
-                        "lsrscan_scans")
+            num_of_observations = sensor_data(con,
+                                              rhds.unit[dataunit_name],
+                                              dataunit_name,
+                                              "lsrscan_scans",
+                                              200000)
+            print("# stored observations : ", num_of_observations)
 
 
     fill_tables_framework_data()
-    # fill_tables_chelmnts()
+    fill_tables_chelmnts()
     # fill_tables_raw()
     # fill_tables_rgbd()
-    # fill_tables_lblrgbd()
+    fill_tables_lblrgbd()
     # fill_tables_lsrscan()
 
     return
@@ -540,7 +547,8 @@ def set_framework_data(con, dataunit):
 
     """ Docstring """
 
-    global sensor_types_dict, sensors_list
+    global object_types_dict_reversed
+    global sensor_types_dict #, sensors_list
     global sensors_dict_reversed
     global home_sessions_dict_reversed
     global homes_dict_reversed
@@ -687,14 +695,25 @@ def chelmnts(con, dataunit):
     #                           CHELMNTS
     # =============================================================
 
+    global object_types_dict_reversed
+    global sensors_dict_reversed
+    global home_sessions_dict_reversed
+    global homes_dict_reversed
+    global room_types_dict_reversed
+    global rooms_dict_reversed
+
     # ================
     #    Object types
     # ================
 
-    object_types = dataunit.get_category_objects()
+    object_types_dict = dataunit.get_category_objects()
     cursor_obj.executemany("INSERT INTO object_types VALUES(?,?)",
-                           object_types.items())
+                           object_types_dict.items())
     con.commit()
+
+    object_types_dict_reversed = dict(map(reversed, object_types_dict.items()))
+    # print(object_types_dict)
+    # print(object_types_dict_reversed)
 
     # ===============
     #  Home Sessions
@@ -706,11 +725,7 @@ def chelmnts(con, dataunit):
     # homes_dict_reversed = dict(map(reversed, homes_dict.items()))
     # # print(homes_dict_reversed)
 
-    global sensors_dict_reversed
-    global home_sessions_dict_reversed
-    global homes_dict_reversed
-    global room_types_dict_reversed
-    global rooms_dict_reversed
+
 
     # print(rooms_dict_reversed)
 
@@ -919,18 +934,21 @@ def chelmnts(con, dataunit):
 def test():
     """ Docstring """
 
+    return
+
 
 def sensor_data(con,
                 dataunit,
                 dataunit_name,
-                extra_data_table_name="extra_data"
-                ):
+                extra_data_table_name="extra_data",
+                first_observation_id = 0):
 
     """ Docstring """
 
     # Get a cursor to execute SQLite statements
     cursor_obj = con.cursor()
 
+    global object_types_dict_reversed
     global sensors_dict_reversed
     global home_sessions_dict_reversed
     global homes_dict_reversed
@@ -941,7 +959,7 @@ def sensor_data(con,
 
     # num_observations = 0
     # num_rooms = 0
-    sensor_observation_id = 0
+    sensor_observation_id = first_observation_id
     label_id = 0
     scan_id = 0
 
@@ -1106,13 +1124,19 @@ def sensor_data(con,
                     if len(sensor_observation.files) > 2:
                         labels = sensor_observation.get_labels()
                         for label in labels:
+                            try:
+                                object_type_id = object_types_dict_reversed[re.split('_\d+', label.name)[0]]
+                            except KeyError:
+                                print("********* KeyError: object " + label.name + " not found", "\n" )
+                                object_type_id = -1
+
                             cursor_obj.execute(sql_str_labels,
                                                (
                                                    label_id,
                                                    label.id,
                                                    label.name,
                                                    sensor_observation_id,
-                                                   -1
+                                                   object_type_id
                                                )
                                                )
                             label_id += 1
@@ -1145,6 +1169,8 @@ def sensor_data(con,
     cursor_obj.execute(sql_str)
 
     con.commit()
+
+    return sensor_observation_id
 
 
 def main():
