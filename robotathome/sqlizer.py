@@ -14,10 +14,32 @@ import os.path
 import sys
 import sqlite3
 import re
+import fire
 from robotathome.dataset import Dataset
 
 
-def sql_connection():
+def dataset2sql(database_name='robotathome.db'):
+
+    """ Docstring """
+
+    # ===================
+    #     Robot@Home
+    # ===================
+
+    rhds = Dataset("MyRobot@Home", autoload=False)
+
+    # =====================
+    #   SQLite initialize
+    # =====================
+    con = sql_connection(database_name)
+
+    # =====================
+    #    Filling tables
+    # =====================
+    fill_tables(con, rhds)
+
+
+def sql_connection(database_name):
 
     """ Docstring """
 
@@ -25,8 +47,8 @@ def sql_connection():
 
         # con = sqlite3.connect(':memory:')
         # print("Connection is established: Database is created in memory")
-        con = sqlite3.connect('robotathome.db')
-        print("Connection is established: robotathome.db")
+        con = sqlite3.connect(database_name)
+        print("Connection is established: ", database_name)
         return con
 
     except NameError:
@@ -535,12 +557,11 @@ def fill_tables(con, rhds):
 
     fill_tables_framework_data()
     fill_tables_chelmnts()
-    # fill_tables_raw()
-    # fill_tables_rgbd()
+    #fill_tables_raw()
+    #fill_tables_rgbd()
     fill_tables_lblrgbd()
-    # fill_tables_lsrscan()
-
-    return
+    #fill_tables_lsrscan()
+    print("Tables successfully populated !")
 
 
 def set_framework_data(con, dataunit):
@@ -676,14 +697,6 @@ def set_framework_data(con, dataunit):
     con.commit()
 
 
-    # ============================================================
-    #                         RETURN
-    # ============================================================
-
-    #return sensor_types_dict, sensors_list, sensors_dict_reversed
-    return
-
-
 def chelmnts(con, dataunit):
 
     """ Docstring """
@@ -718,16 +731,6 @@ def chelmnts(con, dataunit):
     # ===============
     #  Home Sessions
     # ===============
-
-    # homes_dict = dict(enumerate(homes, start=1))
-    # # Two options for reversing a dictionary
-    # # homes_dict_reversed = {value: key for (key, value) in homes_dict.items()}
-    # homes_dict_reversed = dict(map(reversed, homes_dict.items()))
-    # # print(homes_dict_reversed)
-
-
-
-    # print(rooms_dict_reversed)
 
     home_sessions = dataunit.home_sessions
     for home_session in home_sessions:
@@ -1035,12 +1038,12 @@ def sensor_data(con,
                     print("********* KeyError: room " + room_name + " not found", "\n" )
                     continue
 
-            print(room.name, "|", room_name, "|", room_id, "|", home_session.name, "|", home_session_id, home_subsession_id)
+            # print(room.name, "|", room_name, "|", room_id, "|", home_session.name, "|", home_session_id, home_subsession_id)
 
             if dataunit.get_type() == "DatasetUnitLaserScans":
                 num_of_sensor_sessions = len(room.sensor_sessions)
                 for sensor_session in range(num_of_sensor_sessions):
-                    print("    ", "num_of_sensor_sessions: ", num_of_sensor_sessions, "sensor_session: ", sensor_session)
+                    # print("    ", "num_of_sensor_sessions: ", num_of_sensor_sessions, "sensor_session: ", sensor_session)
                     sensor_observations = room.sensor_sessions[sensor_session].sensor_observations
                     for sensor_observation in sensor_observations:
                         # break
@@ -1089,7 +1092,7 @@ def sensor_data(con,
                         # previous_time = int(sensor_observation.time_stamp)
                         sensor_observation_id += 1
                         sys.stdout.write("\rsensor_observation: %d" % (sensor_observation_id))
-                    print("\n")
+                    # print("\n")
             else:
                 sensor_observations = room.sensor_observations
                 for sensor_observation in sensor_observations:
@@ -1110,9 +1113,9 @@ def sensor_data(con,
                                            sensor_observation.sensor_pose_yaw,
                                            sensor_observation.sensor_pose_pitch,
                                            sensor_observation.sensor_pose_roll,
-                                           4.1847,
-                                           5.6,
-                                           682,
+                                           0,
+                                           0,
+                                           0,
                                            int(sensor_observation.time_stamp),
                                            0 if sensor_observation.get_type() == 'SensorLaserScanner' else 1,
                                            sensor_observation.files[0],
@@ -1159,7 +1162,7 @@ def sensor_data(con,
                     # previous_time = int(sensor_observation.time_stamp)
                     sensor_observation_id += 1
                     sys.stdout.write("\rsensor_observation: %d" % (sensor_observation_id))
-                print("\n")
+                # print("\n")
     print("\n")
 
     con.commit()
@@ -1177,21 +1180,10 @@ def main():
 
     """ Docstring """
 
-    # ===================
-    #     Robot@Home
-    # ===================
-
-    rhds = Dataset("MyRobot@Home", autoload=False)
-
-    # =====================
-    #   SQLite initialize
-    # =====================
-    con = sql_connection()
-
-    # =====================
-    #    Filling tables
-    # =====================
-    fill_tables(con, rhds)
+    try:
+        fire.Fire(dataset2sql)
+    except:
+        print('A filename must be provided')
 
     # main return
     return 0
