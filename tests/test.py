@@ -13,25 +13,45 @@ import cv2
 from robotathome.dataset import Dataset
 
 
-def main():
-    """
-    Multiline comment
-    """
+def rgbd():
+    """ About rgbd data """
 
-    # http://mapir.isa.uma.es/mapirwebsite/index.php/mapir-downloads/203-robot-at-home-dataset.html#downloads
-    # /media/goyo/WDGREEN2TB-A/Users/goyo/Documents
+    global rhds
+    tab = 4
+    print(rhds.unit["rgbd"])
+    home_sessions = rhds.unit["rgbd"].home_sessions
+    #print(str(home_sessions).expandtabs(0))
+    #for home_session in home_sessions:
+    #    print(str(home_session.rooms).expandtabs(tab))
+    #    for room in home_session.rooms:
+    #        print(str(room.name).expandtabs(tab*2))
+    print(home_sessions[0].name)
+    print(home_sessions[0].rooms[0].name)
+    print(home_sessions[0].rooms[0].folder_path)
 
-    rhds = Dataset("MyRobot@Home")
+    path = home_sessions[0].rooms[0].folder_path
 
-    """ About data units """
-    """
-    print(rhds)
-    print(rhds["hometopo"].check_integrity(verbose=True))
-    print(rhds["hometopo"].hash_for_directory())
-    rhds["hometopo"].download()
-    """
+    # print(home_sessions[0].rooms[0].sensor_observations)
 
+    sensor = home_sessions[0].rooms[0].sensor_observations[926]
+
+    files = sensor.load_files()
+    intensity_file = sensor.get_intensity_file()
+    depth_file = sensor.get_depth_file()
+    print(files)
+    print(intensity_file)
+    print(depth_file)
+
+    sensor.show_intensity_image()
+    sensor.show_depth_image()
+    print('Press a key to continue ...')
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
+
+def lblrgbd():
     """ About labelled rgbd data """
+    global rhds
     tab = 4
     print(rhds.unit["lblrgbd"])
     home_sessions = rhds.unit["lblrgbd"].home_sessions
@@ -74,44 +94,10 @@ def main():
     cv2.destroyAllWindows()
 
 
-
-    """ About rgbd data """
-    """
-    tab = 4
-    print(rhds.unit["rgbd"])
-    home_sessions = rhds.unit["rgbd"].home_sessions
-    #print(str(home_sessions).expandtabs(0))
-    #for home_session in home_sessions:
-    #    print(str(home_session.rooms).expandtabs(tab))
-    #    for room in home_session.rooms:
-    #        print(str(room.name).expandtabs(tab*2))
-    print(home_sessions[0].name)
-    print(home_sessions[0].rooms[0].name)
-    print(home_sessions[0].rooms[0].folder_path)
-
-    path = home_sessions[0].rooms[0].folder_path
-
-    # print(home_sessions[0].rooms[0].sensor_observations)
-
-    sensor = home_sessions[0].rooms[0].sensor_observations[926]
-
-    files = sensor.load_files()
-    intensity_file = sensor.get_intensity_file()
-    depth_file = sensor.get_depth_file()
-    print(files)
-    print(intensity_file)
-    print(depth_file)
-
-    sensor.show_intensity_image()
-    sensor.show_depth_image()
-    print('Press a key to continue ...')
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    """
-
-
+def lsrscan():
     """ About laser scans """
-    """
+
+    global rhds
     tab = 4
     print(rhds.unit["lsrscan"])
     home_sessions = rhds.unit["lsrscan"].home_sessions
@@ -131,12 +117,14 @@ def main():
     print(type(sensor))
     laser_scan = sensor.get_laser_scan()
     print(laser_scan)
-    # print(laser_scan.vector_of_scans)
-    # print(laser_scan.vector_of_valid_scans)
-    """
+    print(laser_scan.vector_of_scans)
+    print(laser_scan.vector_of_valid_scans)
 
+
+def raw():
 
     """ About raw data """
+    global rhds
     """
     tab = 4
     print(rhds.unit["raw"])
@@ -149,7 +137,7 @@ def main():
         for room in home_session.rooms:
             print(str(room.name).expandtabs(tab*2))
     """
-    """
+
     print(home_sessions[0].name)
     print(home_sessions[0].rooms[0].name)
     print(home_sessions[0].rooms[0].folder_path)
@@ -178,12 +166,14 @@ def main():
 
     sensor.show_intensity_file()
     sensor.show_depth_file()
-    """
+
+    input('Press <enter> to continue')
 
 
-    # input('Press <enter> to continue')
-
+def chelmnts():
     """  About categories """
+
+    global rhds
     """
     print(rhds.unit["chelmnts"])
     print(rhds.unit["chelmnts"].get_home_names())
@@ -219,7 +209,6 @@ def main():
     """
 
     """ About Home sessions, room, objects, relations and observations"""
-    """
     print('######## HOME #########')
     home_session = rhds.unit["chelmnts"].home_sessions[0]
     print(home_session)
@@ -309,11 +298,12 @@ def main():
     print(observations.get_ids())
     print(observations.get_sensor_names())
     print(observations.as_dict_id())
-    #print(observations.as_dict_sensor_name())
-    """
+    print(observations.as_dict_sensor_name())
 
+
+def geomap():
     """ About 2d geometric maps """
-    """
+    global rhds
     tab = 4
     print(rhds.unit["2dgeomap"])
     homes = rhds.unit["2dgeomap"].homes
@@ -327,10 +317,11 @@ def main():
             #for point in room.points:
             #    print(str(point).expandtabs(tab*2))
     print(homes[0].rooms[0].points[0])
-    """
 
+
+def hometopo():
     """ About Home Topologies """
-    """
+    global rhds
     tab = 4
     print(rhds.unit["hometopo"])
     homes = rhds.unit["hometopo"].homes
@@ -346,7 +337,32 @@ def main():
     print(homes[0].topo_relations.as_dict())
     print(homes[0].as_dict())
     print(homes.as_dict())
+
+
+def main():
     """
+    Multiline comment
+    """
+
+    # http://mapir.isa.uma.es/mapirwebsite/index.php/mapir-downloads/203-robot-at-home-dataset.html#downloads
+    # /media/goyo/WDGREEN2TB-A/Users/goyo/Documents
+
+    global rhds
+
+    rhds = Dataset("MyRobot@Home")
+
+    """ About data units """
+    """
+    print(rhds)
+    print(rhds["hometopo"].check_integrity(verbose=True))
+    print(rhds["hometopo"].hash_for_directory())
+    rhds["hometopo"].download()
+    """
+
+    rhds["lblscene"].download()
+
+
+    print("That's all !!!")
 
 
 if __name__ == "__main__":

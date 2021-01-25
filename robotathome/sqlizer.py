@@ -119,6 +119,7 @@ def create_tables(con, arg):
                    "room_id integer, "
                    "home_id integer, "
                    "home_session_id integer, "
+                   "home_subsession_id integer, "
                    "name text, "
                    "object_type_id integer, "
                    "planarity real, "
@@ -163,6 +164,7 @@ def create_tables(con, arg):
                    "room_id integer, "
                    "home_id integer, "
                    "home_session_id integer, "
+                   "home_subsession_id integer, "
                    "obj1_id integer, "
                    "obj2_id integer, "
                    "minimum_distance real, "
@@ -186,6 +188,7 @@ def create_tables(con, arg):
                    "room_id integer, "
                    "home_id integer, "
                    "home_session_id integer, "
+                   "home_subsession_id integer, "
                    "sensor_id integer, "
                    "mean_hue real, "
                    "mean_saturation real, "
@@ -447,14 +450,86 @@ def create_tables(con, arg):
 
         con.commit()
 
+    def create_tables_rctrscene(con):
+
+        """ Docstring """
+
+        cursor_obj = con.cursor()
+
+        # Table creation
+
+        cursor_obj.execute("DROP TABLE IF EXISTS rctrscene")
+        sql_str = ("CREATE TABLE rctrscene("
+                   "id integer PRIMARY KEY, "
+                   "room_id integer, "
+                   "home_session_id integer, "
+                   "home_subsession_id integer, "
+                   "home_id integer, "
+                   "scene_file text"
+                   ")"
+                   )
+        # print(sql_str)
+        cursor_obj.execute(sql_str)
+
+        con.commit()
+
+    def create_tables_lblscene(con):
+
+        """ Docstring """
+
+        cursor_obj = con.cursor()
+
+        # Table creation
+
+        cursor_obj.execute("DROP TABLE IF EXISTS lblscene")
+        sql_str = ("CREATE TABLE lblscene("
+                   "id integer PRIMARY KEY, "
+                   "room_id integer, "
+                   "home_session_id integer, "
+                   "home_subsession_id integer, "
+                   "home_id integer, "
+                   "scene_file text"
+                   ")"
+                   )
+        # print(sql_str)
+        cursor_obj.execute(sql_str)
+
+
+        cursor_obj.execute("DROP TABLE IF EXISTS lblscene_bboxes")
+        sql_str = ("CREATE TABLE lblscene_bboxes("
+                   "id integer PRIMARY KEY, "
+                   "scene_id integer, "
+                   "bb_id integer, "
+                   "object_id, "
+                   "bb_pose_x real, "
+                   "bb_pose_y real, "
+                   "bb_pose_z real, "
+                   "bb_pose_yaw real, "
+                   "bb_pose_pitch real, "
+                   "bb_pose_roll real, "
+                   "bb_corner1_x real, "
+                   "bb_corner1_y real, "
+                   "bb_corner1_z real, "
+                   "bb_corner2_x real, "
+                   "bb_corner2_y real, "
+                   "bb_corner2_z real"
+                   ")"
+                   )
+        # print(sql_str)
+        cursor_obj.execute(sql_str)
+
+        con.commit()
+
 
     switcher = {
-        "framework"  : create_tables_framework,
-        "chelmnts"   : create_tables_chelmnts,
-        "raw"        : create_tables_raw,
-        "rgbd"       : create_tables_rgbd,
-        "lblrgbd"    : create_tables_lblrgbd,
-        "lsrscan"    : create_tables_lsrscan,
+        "framework" : create_tables_framework,
+        "chelmnts"  : create_tables_chelmnts,
+        "raw"       : create_tables_raw,
+        "rgbd"      : create_tables_rgbd,
+        "lblrgbd"   : create_tables_lblrgbd,
+        "lsrscan"   : create_tables_lsrscan,
+        "rctrscene" : create_tables_rctrscene,
+        "lblscene"  : create_tables_lblscene
     }
     func = switcher.get(arg, lambda: "Invalid argument")
     func(con)
@@ -523,7 +598,6 @@ def fill_tables(con, rhds):
                                               dataunit_name)
             print("# stored observations : ", num_of_observations)
 
-
     def fill_tables_lblrgbd():
         # =============================================================
         #                         LBLRGBD
@@ -554,13 +628,28 @@ def fill_tables(con, rhds):
                                               200000)
             print("# stored observations : ", num_of_observations)
 
+    def fill_tables_rctrscene():
+        # =============================================================
+        #                           CHELMNTS
+        # =============================================================
+
+        dataunit_name = "rctrscene"
+        create_tables(con, dataunit_name)
+        if rhds.unit[dataunit_name].load_data():
+            scene_data(con,
+                       rhds.unit[dataunit_name],
+                       dataunit_name
+                       )
+
 
     fill_tables_framework_data()
     fill_tables_chelmnts()
     #fill_tables_raw()
     #fill_tables_rgbd()
-    fill_tables_lblrgbd()
+    #fill_tables_lblrgbd()
     #fill_tables_lsrscan()
+    fill_tables_rctrscene()
+
     print("Tables successfully populated !")
 
 
@@ -741,17 +830,23 @@ def chelmnts(con, dataunit):
             # print(home_session.get_home_name(), home_session.name, room.name)
             # room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + room.name]
             room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + re.split('_\d+', room.name)[0]]
+            if len(room.name.split('_')) > 1:
+                home_subsession_id = int(room.name.split('_')[1])-1
+            else:
+                home_subsession_id = 0
+
             # ===============
             #     Objects
             # ===============
             for object in room.objects:
-                # print(home_id, home_session_id, room_id, object.id, object.name, object.type_id)
+                # print(home_id, home_session_id, home_subsession_id, room_id, object.id, object.name, object.type_id)
                 # print(object.features)
                 sql_str = "INSERT INTO objects(\
                                                id, \
                                                room_id, \
                                                home_id, \
                                                home_session_id,\
+                                               home_subsession_id,\
                                                name, object_type_id, \
                                                planarity, \
                                                scatter, \
@@ -786,7 +881,7 @@ def chelmnts(con, dataunit):
                                                saturation_histogram_3, \
                                                saturation_histogram_4  \
                                                )  \
-                                   VALUES(?, ?, ?, ?, ?, ?,  \
+                                   VALUES(?, ?, ?, ?, ?, ?, ?, \
                                           ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, \
                                           ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, \
                                           ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, \
@@ -796,10 +891,13 @@ def chelmnts(con, dataunit):
                                      room_id,
                                      home_id,
                                      home_session_id,
+                                     home_subsession_id,
                                      object.name,
                                      object.type_id] +
                                      object.features[0:32])
                                    )
+                sys.stdout.write("\robject: %d" % (int(object.id)))
+
             # ===============
             #    Relations
             # ===============
@@ -809,6 +907,7 @@ def chelmnts(con, dataunit):
                            "room_id, "
                            "home_id, "
                            "home_session_id, "
+                           "home_subsession_id, "
                            "obj1_id, obj2_id, "
                            "minimum_distance, "
                            "perpendicularity, "
@@ -821,7 +920,7 @@ def chelmnts(con, dataunit):
                            "abs_hue_mean_diff, "
                            "abs_saturation_mean_diff, "
                            "abs_value_mean_diff)"
-                           "VALUES(?, ?, ?, ?, ?, ?,"
+                           "VALUES(?, ?, ?, ?, ?, ?, ?,"
                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
                            )
                 cursor_obj.execute(sql_str,
@@ -829,11 +928,14 @@ def chelmnts(con, dataunit):
                                      room_id,
                                      home_id,
                                      home_session_id,
+                                     home_subsession_id,
                                      relation.obj1_id,
                                      relation.obj2_id] +
                                      relation.features[0:11]
                                     )
                                    )
+                #sys.stdout.write("\rrelation: %d" % (relation.id))
+
             # ===============
             #  Observations
             # ===============
@@ -844,6 +946,7 @@ def chelmnts(con, dataunit):
                            "room_id, "
                            "home_id, "
                            "home_session_id, "
+                           "home_subsession_id, "
                            "sensor_id, "
                            "mean_hue, "
                            "mean_saturation, "
@@ -902,7 +1005,7 @@ def chelmnts(con, dataunit):
                            "scan_compactness2, "
                            "scan_linearity, "
                            "scan_scatter) "
-                           "VALUES(?, ?, ?, ?, ?, "
+                           "VALUES(?, ?, ?, ?, ?, ?, "
                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
                            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, "
@@ -915,6 +1018,7 @@ def chelmnts(con, dataunit):
                                      room_id,
                                      home_id,
                                      home_session.id,
+                                     home_subsession_id,
                                      sensors_dict_reversed[observation.sensor_name]] +
                                     observation.features +
                                     observation.scan_features)
@@ -930,6 +1034,8 @@ def chelmnts(con, dataunit):
                            )
                 # Temporarily deactivate to get a faster development !!!!!!!!!
                 cursor_obj.executemany(sql_str, objects_in_observation_list)
+
+
 
     con.commit()
 
@@ -1176,6 +1282,145 @@ def sensor_data(con,
     return sensor_observation_id
 
 
+def scene_data(con,
+               dataunit,
+               dataunit_name,
+               first_bb_id = 0):
+
+    """ Docstring """
+
+    # Get a cursor to execute SQLite statements
+    cursor_obj = con.cursor()
+
+    # =============================================================
+    #                         SCENE_DATA
+    # =============================================================
+
+    global object_types_dict_reversed
+    global sensors_dict_reversed
+    global home_sessions_dict_reversed
+    global homes_dict_reversed
+    global room_types_dict_reversed
+    global rooms_dict_reversed
+
+    scene_id = 0
+    bb_id = first_bb_id
+
+    sql_str_scene = (
+        "INSERT INTO " + dataunit_name + "("
+        "id, "
+        "room_id, "
+        "home_session_id, "
+        "home_subsession_id, "
+        "home_id, "
+        "scene_file"
+        ") "
+        "VALUES( ?, ?, ?, ?, ?, ?, ?)"
+        )
+
+    sql_str_bb = (
+        "INSERT INTO " + dataunit_name + "_bboxes" + "("
+        "id, "
+        "scene_id, "
+        "object_id, "
+        "bb_pose_x, "
+        "bb_pose_y, "
+        "bb_pose_z, "
+        "bb_pose_yaw, "
+        "bb_pose_pitch, "
+        "bb_pose_roll, "
+        "bb_corner1_x, "
+        "bb_corner1_y, "
+        "bb_corner1_z, "
+        "bb_corner2_x, "
+        "bb_corner2_y, "
+        "bb_corner2_z"
+        ") "
+        "VALUES( ?, ?, ?, "
+        "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )"
+        )
+
+
+
+    # ===============
+    #  Home Sessions
+    # ===============
+
+    home_sessions = dataunit.home_sessions
+    for home_session in home_sessions:
+        home_id = homes_dict_reversed[home_session.get_home_name()]
+        home_session_id = home_sessions_dict_reversed[home_session.name]
+        for room in home_session.rooms:
+            # print(home_session.get_home_name(), home_session.name, room.name.split('_')[0])
+            # print(home_session.get_home_name(), home_session.name, room.name)
+            # room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + room.name]
+            room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + re.split('_\d+', room.name)[0]]
+            if len(room.name.split('_')) > 1:
+                home_subsession_id = int(room.name.split('_')[1])-1
+            else:
+                home_subsession_id = 0
+
+            cursor_obj.execute(sql_str_scene,
+                               (
+                                   scene_id,
+                                   room_id,
+                                   home_session_id,
+                                   home_subsession_id,
+                                   home_id,
+                                   room.scene_file
+                                )
+                               )
+            #sys.stdout.write("\rrelation: %d" % (relation.id))
+
+            # ===============
+            #     Objects
+            # ===============
+            for boundingbox in room.boundingboxes:
+                # print(home_id, home_session_id, home_subsession_id, room_id, object.id, object.name, object.type_id)
+                # print(object.features)
+                sql_str = ("INSERT INTO relations("
+                           "id, "
+                           "room_id, "
+                           "home_id, "
+                           "home_session_id, "
+                           "home_subsession_id, "
+                           "obj1_id, obj2_id, "
+                           "minimum_distance, "
+                           "perpendicularity, "
+                           "vertical_distance, "
+                           "volume_ratio, "
+                           "is_on, "
+                           "abs_hue_stdv_diff, "
+                           "abs_saturation_stdv_diff, "
+                           "abs_value_stdv_diff, "
+                           "abs_hue_mean_diff, "
+                           "abs_saturation_mean_diff, "
+                           "abs_value_mean_diff)"
+                           "VALUES(?, ?, ?, ?, ?, ?, ?,"
+                           "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                           )
+                # cursor_obj.execute(sql_str,
+                #                    ([relation.id,
+                #                      room_id,
+                #                      home_id,
+                #                      home_session_id,
+                #                      home_subsession_id,
+                #                      relation.obj1_id,
+                #                      relation.obj2_id] +
+                #                      relation.features[0:11]
+                #                     )
+                #                    )
+                # #sys.stdout.write("\rrelation: %d" % (relation.id))
+                # sys.stdout.write("\robject: %d" % (int(object.id)))
+
+            scene_id += 1
+
+    con.commit()
+
+
+
+
+
 def main():
 
     """ Docstring """
@@ -1183,7 +1428,7 @@ def main():
     try:
         fire.Fire(dataset2sql)
     except:
-        print('A filename must be provided')
+        print("Oops! ", sys.exc_info()[0], " occurred.")
 
     # main return
     return 0

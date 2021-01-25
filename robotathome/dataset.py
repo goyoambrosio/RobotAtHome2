@@ -306,7 +306,7 @@ class Dataset():
                     self.__data_loaded__ = True
                     return self.__data_loaded__
                 except:
-                    print("Something went wrong")
+                    print("Something went wrong: ",sys.exc_info()[0], " occurred.")
                     print("Checking the integrity. It can take some time, please be patient")
                     if (self.check_integrity(verbose=True)):
                         print("Seems to have passed the integrity check but some unknown error persists.")
@@ -2250,7 +2250,6 @@ class Dataset():
             def get_home_name(self):
                 return self.name.split('-s')[0]
 
-
         class HomeSessions(list):
 
             def __init__(self):
@@ -2599,6 +2598,217 @@ class Dataset():
                         s += "\t\t" + self.sensor_session.name + " (" + str(len(self.sensor_session.sensor_observations)) + " observations)" + "\n"
             return super().__str__() + s
 
+    class DatasetUnitSceneData(DatasetUnit):
+        class HomeSession():
+            def __init__(self, name, rooms):
+                self.name = name
+                self.rooms = rooms
+
+            def __str__(self):
+                s = '\t' + self.name
+                return s
+
+            def __repr__(self):
+                s = "<HomeSession instance (" + self.name + ")>"
+                return s
+
+            def get_home_name(self):
+                return self.name.split('-s')[0]
+
+        class HomeSessions(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<HomesSessions list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+            def get_names(self):
+                return [home.name for home in self]
+
+        class Room():
+            def __init__(self, name, scene_file, boundingboxes):
+                self.name = name
+                self.scene_file = scene_file
+                self.boundingboxes = boundingboxes
+
+            def __str__(self):
+                s = '\t' + self.name + '  folder: /' + self.folder_path + \
+                    ' boundingboxes: ' + str(len(self.boundingboxes))
+                return s
+
+            def __repr__(self):
+                s = "<Room instance (" + self.name + ")>"
+                return s
+
+        class Rooms(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<Rooms list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+        class BoundingBox():
+
+            def __init__(self, id='0', name='undefined',
+                         bb_pose=[0.0]*6,
+                         bb_corner=[0.0]*6):
+                self.id = id
+                self.name = name
+                self.bb_pose = bb_pose
+                self.bb_corner = bb_corner
+
+            def __str__(self):
+                s = '\t' + self.id + ', ' + self.name + ', ' + \
+                    str(self.bb_pose) + ', ' + \
+                    str(self.bb_corner)
+                return s
+
+
+            def __repr__(self):
+                s = "<BoundingBox instance (" + self.name + ")>"
+                return s
+
+        class BoundingBoxes(list):
+
+            def __init__(self):
+                pass
+
+            def __str__(self):
+                s = ''
+                for item in self:
+                    s += str(item) + "\n"
+                return s
+
+            def __repr__(self):
+                s = "<BoundingBox list instance (" + str(len(self)) + \
+                    " items)>"
+                return s
+
+            def get_names(self):
+                return [bounding_box.name for bounding_box in self]
+
+            def get_ids(self):
+                return [bounding_box.id for bounding_box in self]
+
+            def get_boundingbox_pose(self):
+                return self.bb_pose
+
+            def get_boundingbox_corner(self):
+                return self.bb_corner
+
+            def as_dict_id(self):
+                keys = [bounding_box.id for bounding_box in self]
+                zip_obj = zip(keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+            def as_dict_name(self):
+                keys = [bounding_box.name for bounding_box in self]
+                zip_obj = zip(keys, self)
+                new_dict = dict(zip_obj)
+                return new_dict
+
+        def __init__(self, name="", url="", path="", expected_hash_code="",
+                     expected_size=0):
+            """ Calls the super class __init__"""
+            super().__init__(name, url, path, expected_hash_code,
+                             expected_size)
+
+        def _load_function(self):
+            self.home_sessions = self.HomeSessions()
+            home_folders = sorted(os.listdir(self.path))
+            print("home_folders: ", home_folders)
+            for home_folder in home_folders:
+                words = home_folder.strip().split('_')
+                len_of_words = len(words)
+                home_subfolder = words[len_of_words - 1]
+                room_folder = self.path + '/' + home_folder + '/' + home_subfolder
+                rooms = self.Rooms()
+                room_files = sorted(os.listdir(room_folder))
+                # print("home_folder: ", home_folder)
+                # print("home_subfolder: ", home_subfolder)
+                # print("room_folder: ", room_folder)
+                # print("room_files: ", room_files)
+                for room_file in room_files:
+                    boundingboxes = self.BoundingBoxes()
+                    room_file_path = room_folder + '/' + room_file
+                    # print(room_file_path)
+                    with open(room_file_path, "r") as file_handler:
+                        num_of_boundingboxes = 0
+                        num_of_header_lines = 0
+                        line = file_handler.readline()
+                        while line[0] == '#':
+                            num_of_header_lines += 1
+                            line = file_handler.readline()
+                        # print("num_of_header_lines: ", num_of_header_lines)
+                        # The header belongs to a file with bounding boxes.
+                        # There is another type of header with 5 lines and
+                        # no bounding boxes.
+                        if num_of_header_lines == 13:
+                            words = line.strip().split()
+                            num_of_boundingboxes = words[0]
+                            # print("num_of_boundingboxes: ", num_of_boundingboxes)
+                            for bb_id in range(int(num_of_boundingboxes)):
+                                # print("bb_id: ", bb_id)
+                                line = file_handler.readline()
+                                words = line.strip().split()
+                                object_name = line # words[0]
+                                # print(object_name)
+                                # [bb_pose_x] [bb_pose_y] [bb_pose_z] [bb_pose_yaw] [bb_pose_pitch] [bb_pose_roll]
+                                line = file_handler.readline()
+                                bb_pose = line.strip().split()
+                                # print(bb_pose)
+                                # [bb_corner1_x] [bb_corner1_y] [bb_corner1_z]
+                                line = file_handler.readline()
+                                bb_corner1 = line.strip().split()
+                                # [bb_corner2_x] [bb_corner2_y] [bb_corner2_z]
+                                line = file_handler.readline()
+                                bb_corner2 = line.strip().split()
+                                # print(bb_id, object_name, bb_pose, bb_corner1 + bb_corner2)
+                                boundingbox = self.BoundingBox(bb_id,
+                                                               object_name,
+                                                               bb_pose,
+                                                               bb_corner1 + bb_corner2
+                                                               )
+                                boundingboxes.append(boundingbox)
+                                # input("Press a key to continue")
+
+                    room = self.Room(room_file.rsplit('_', 1)[0],
+                                     room_file_path,
+                                     boundingboxes)
+                    rooms.append(room)
+                    # print(room)
+                # print(rooms)
+                # input("Press Enter to continue...")
+                home_session = self.HomeSession(home_subfolder, rooms)
+                self.home_sessions.append(home_session)
+
+        def __str__(self):
+            s = ""
+            for self.home_session in self.home_sessions:
+                s += self.home_session.name + "\n"
+                for self.room in self.home_session.rooms:
+                    s += "\t" + self.room.name + " (" + str(len(self.room.boundingboxes)) + " bounding boxes)" + "\n"
+            return super().__str__() + s
+
 
     # @profile
     def __init__(self,
@@ -2608,99 +2818,7 @@ class Dataset():
                  autoload="True"):
 
         """
-        Initializes the Dataset with supplied values
-
-        Attributes
-        =========
-
-        name : Human name of
-        unit : dict with the expected dataset units:
-            http://mapir.isa.uma.es/mapirwebsite/index.php/mapir-downloads/203-robot-at-home-dataset.html#downloads
-        types : dict with homes, room categories and object categories
-        """
-
-        """
-        self.name = name
-        self.unit = {}
-
-        self.unit["recscn"] = self.DatasetUnit(
-          "Reconstructed scenes",
-          "https://ananas.isa.uma.es:10002/sharing/sFCGRu1LN",
-          "Robot@Home-dataset_reconstructed-scenes_plain-text_all",
-          "5dc5aed9dfebf6e14890eb2418d3f518d0f55c6d",
-          7947567151)
-
-        self.unit["lblscn"] = self.DatasetUnit(
-          "Labeled scenes",
-          "https://ananas.isa.uma.es:10002/sharing/KS6kscXb3",
-          "Robot@Home-dataset_labelled-scenes_plain-text_all",
-          "394dc6c8f4d19b2887007e6ee66f2e7cb64f930f",
-          7947369064)
-
-        self.unit["chelmnts"] = self.DatasetUnitCharacterizedElements(
-            "Characterized elements",
-            "https://ananas.isa.uma.es:10002/sharing/t6zVblP3w",
-            "Robot@Home-dataset_characterized-elements",
-            "9d46bc3b33d2c6b84c04bd3db12cc415c17b4ae8",
-            33345659)
-
-        self.unit["2dgeomap"] = self.DatasetUnit2DGeometricMaps(
-          "2D geometric maps",
-          "https://ananas.isa.uma.es:10002/sharing/PUZHG28p6",
-          "Robot@Home-dataset_2d_geometric_maps",
-          "a00bb33bc628e0fdb9df6822915b9eafcf67998f",
-          8323899)
-
-        self.unit["2dgeomapl"] = self.DatasetUnit(
-          "2D geometric maps + logs",
-          "https://ananas.isa.uma.es:10002/sharing/VLWRJUJGY",
-          "Robot@Home-dataset_2d_geometric_maps+logs",
-          "f8b3dadd9181291a59f589033521708d4399d12b",
-          216384106)
-
-        self.unit["hometopo"] = self.DatasetUnitHomesTopologies(
-          "Home's topologies",
-          "https://ananas.isa.uma.es:10002/sharing/EBXypqYAV",
-          "Robot@Home-dataset_homes-topologies",
-          "652087d30c05ff4eaec9a0770307a2ced7fe5064",
-          40872)
-
-        self.unit["raw"] = self.DatasetUnitRawData(
-          "Raw data",
-          "https://ananas.isa.uma.es:10002/sharing/PAJxeUT0q",
-          "Robot@Home-dataset_raw_data-plain_text-all",
-          "4823b61180bbf8ce5458ad43ad709069edb0e8f3",
-          20002442369)
-
-        self.unit["lsrscan"] = self.DatasetUnitLaserScans(
-          "Laser scans",
-          "https://ananas.isa.uma.es:10002/sharing/pMVKQb5hl",
-          "Robot@Home-dataset_laser_scans-plain_text-all",
-          "0f188931b2bce1926d0faaac13be78614749ec72",
-          227829791)
-
-        self.unit["rgbd"] = self.DatasetUnitRawData(
-          "RGB-D data",
-          "https://ananas.isa.uma.es:10002/sharing/sJUC06jFJ",
-          "Robot@Home-dataset_rgbd_data-plain_text-all",
-          "b934e53d16580a62e0f4f1532d1efaa0567232ae",
-          19896608308)
-
-        self.unit["lblrgbd"] = self.DatasetUnitRawData(
-          "Labeled RGB-D data",
-          "https://ananas.isa.uma.es:10002/sharing/jVVI92AJn",
-          "Robot@Home-dataset_labelled-rgbd-data_plain-text_all",
-          "6834f930a16bb5d968d55b0b647703d952384e91",
-          16739353847)
-
-        self.categories = self.unit["chelmnts"].categories
-        self.home_sessions_elements = self.unit["chelmnts"].home_sessions
-        self.home_2dgeomaps = self.unit["2dgeomap"].homes
-        self.home_topologies = self.unit["hometopo"].homes
-        self.home_sessions_sensor_observations = self.unit["raw"].home_sessions
-        self.home_sessions_laser_scans = self.unit["lsrscan"].home_sessions
-        self.home_sessions_rgbd_images = self.unit["rgbd"].home_sessions
-        self.home_sessions_labeled_rgbd_images = self.unit["lblrgbd"].home_sessions
+        Robot@Home Dataset
         """
 
         self.name = name
@@ -2745,23 +2863,37 @@ class Dataset():
         self.unit["lsrscan"] = self.DatasetUnitLaserScans(
             "Laser scans",
             os.path.abspath(self.path + "/" + "Robot@Home-dataset_laser_scans-plain_text-all"),
-            "https://zenodo.org/record/3901564/files/Robot%40Home-dataset_laser_scans-plain_text-all.tgz?download=1",
+            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_laser_scans-plain_text-all.tgz?download=1",
             "34cf2cb72028e9f203fae449ce4a8270",
             227829791)
 
         self.unit["rgbd"] = self.DatasetUnitRawData(
             "RGB-D data",
             os.path.abspath(self.path + "/" + "Robot@Home-dataset_rgbd_data-plain_text-all"),
-            "https://zenodo.org/record/3901564/files/Robot%40Home-dataset_rgbd_data-plain_text-all.tgz?download=1",
+            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_rgbd_data-plain_text-all.tgz?download=1",
             "f4ad609d0368fe89e3050510c95892b0",
             19896608308)
 
         self.unit["lblrgbd"] = self.DatasetUnitRawData(
-            "Labeled RGB-D data",
+            "Labelled RGB-D data",
             os.path.abspath(self.path + "/" + "Robot@Home-dataset_labelled-rgbd-data_plain-text_all"),
-            "https://zenodo.org/record/3901564/files/Robot%40Home-dataset_labelled-rgbd-data_plain-text_all.tgz?download=1",
+            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_labelled-rgbd-data_plain-text_all.tgz?download=1",
             "e562d4e494a5ac1c83ef0edd6a768f90",
             16739353847)
+
+        self.unit["lblscene"] = self.DatasetUnitSceneData(
+            "Labelled scene data",
+            os.path.abspath(self.path + "/" + "Robot@Home-dataset_labelled-scenes_plain-text_all"),
+            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_labelled-scenes_plain-text_all.tgz?download=1",
+            "18f949b06455e1dbc8874e298c04d880",
+            7947369064)
+
+        self.unit["rctrscene"] = self.DatasetUnitSceneData(
+            "Reconstructed scene data",
+            os.path.abspath(self.path + "/" + "Robot@Home-dataset_reconstructed-scenes_plain-text_all"),
+            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_reconstructed-scenes_plain-text_all.tgz?download=1",
+            "0d13c07e02deb09baee5c51b4f87d065 ",
+            7947567151)
 
 
 
@@ -2773,6 +2905,8 @@ class Dataset():
             self.unit["lsrscan"].load_data()
             self.unit["rgbd"].load_data()
             self.unit["lblrgbd"].load_data()
+            self.unit["lblscene"].load_data()
+            self.unit["rctrscene"].load_data()
 
             """
             Memory profile
