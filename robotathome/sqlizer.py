@@ -526,6 +526,50 @@ def create_tables(con, arg):
 
         con.commit()
 
+    def create_tables_2dgeomap(con):
+
+        """ Docstring """
+
+        cursor_obj = con.cursor()
+
+        # Table creation
+
+        cursor_obj.execute("DROP TABLE IF EXISTS twodgeomap")
+        sql_str = ("CREATE TABLE twodgeomap("
+                   "id integer PRIMARY KEY, "
+                   "home_id integer, "
+                   "room_id integer, "
+                   "x real, "
+                   "y real, "
+                   "z real"
+                   ")"
+                   )
+        # print(sql_str)
+        cursor_obj.execute(sql_str)
+
+        con.commit()
+
+    def create_tables_hometopo(con):
+
+        """ Docstring """
+
+        cursor_obj = con.cursor()
+
+        # Table creation
+
+        cursor_obj.execute("DROP TABLE IF EXISTS hometopo")
+        sql_str = ("CREATE TABLE hometopo("
+                   "id integer PRIMARY KEY, "
+                   "home_id integer, "
+                   "room1_id integer, "
+                   "room2_id integer "
+                   ")"
+                   )
+        # print(sql_str)
+        cursor_obj.execute(sql_str)
+
+        con.commit()
+
 
     switcher = {
         "framework" : create_tables_framework,
@@ -535,7 +579,9 @@ def create_tables(con, arg):
         "lblrgbd"   : create_tables_lblrgbd,
         "lsrscan"   : create_tables_lsrscan,
         "rctrscene" : create_tables_rctrscene,
-        "lblscene"  : create_tables_lblscene
+        "lblscene"  : create_tables_lblscene,
+        "2dgeomap"  : create_tables_2dgeomap,
+        "hometopo"  : create_tables_hometopo,
     }
     func = switcher.get(arg, lambda: "Invalid argument")
     func(con)
@@ -659,15 +705,40 @@ def fill_tables(con, rhds):
                        dataunit_name
                        )
 
+    def fill_tables_twodgeomap():
+        # =============================================================
+        #                          2DGEOMAP
+        # =============================================================
+
+        dataunit_name = "2dgeomap"
+        create_tables(con, dataunit_name)
+        if rhds.unit[dataunit_name].load_data():
+            twodgeomap(con,
+                       rhds.unit[dataunit_name]
+                       )
+
+    def fill_tables_hometopo():
+        # =============================================================
+        #                        HOMETOPO
+        # =============================================================
+
+        dataunit_name = "hometopo"
+        create_tables(con, dataunit_name)
+        if rhds.unit[dataunit_name].load_data():
+            hometopo(con,
+                     rhds.unit[dataunit_name]
+                     )
 
     fill_tables_framework_data()
-    fill_tables_chelmnts()
+    #fill_tables_chelmnts()
     #fill_tables_raw()
     #fill_tables_rgbd()
     #fill_tables_lblrgbd()
     #fill_tables_lsrscan()
-    fill_tables_rctrscene()
-    fill_tables_lblscene()
+    #fill_tables_rctrscene()
+    #fill_tables_lblscene()
+    #fill_tables_twodgeomap()
+    fill_tables_hometopo()
 
     print("Tables successfully populated !")
 
@@ -1441,6 +1512,109 @@ def scene_data(con,
         print("scenes: %d, bounding boxes: %d" % (scene_id, bb_id))
     else:
         print("scenes: %d" % (scene_id))
+
+
+def twodgeomap(con,
+               dataunit):
+    """ Docstring """
+
+    # Get a cursor to execute SQLite statements
+    cursor_obj = con.cursor()
+
+    # =============================================================
+    #                          2DGEOMAP
+    # =============================================================
+
+    global homes_dict_reversed
+    global rooms_dict_reversed
+
+    point_id = 0
+
+    sql_str_2dgeomap = (
+        "INSERT INTO twodgeomap("
+        "id, "
+        "home_id, "
+        "room_id, "
+        "x, "
+        "y, "
+        "z "
+        ") "
+        "VALUES( ?, ?, ?, ?, ?, ?)"
+        )
+
+    homes = dataunit.homes
+    for home in homes:
+        home_id = homes_dict_reversed[home.name]
+        for room in home.rooms:
+            try:
+                room_id = rooms_dict_reversed[home.name+"_"+room.name.split("_")[0]]
+            except KeyError:
+                continue
+            for point in room.points:
+                cursor_obj.execute(sql_str_2dgeomap,
+                                   (
+                                       point_id,
+                                       home_id,
+                                       room_id,
+                                       point.x,
+                                       point.y,
+                                       point.z
+                                    )
+                                   )
+                sys.stdout.write("\rpoint: %d" % (point_id))
+                point_id += 1
+
+    con.commit()
+
+    print("\n")
+
+
+def hometopo(con,
+             dataunit):
+    """ Docstring """
+
+    # Get a cursor to execute SQLite statements
+    cursor_obj = con.cursor()
+
+    # =============================================================
+    #                          2DGEOMAP
+    # =============================================================
+
+    global homes_dict_reversed
+    global rooms_dict_reversed
+
+    topo_id = 0
+
+    sql_str_hometopo = (
+        "INSERT INTO hometopo("
+        "id, "
+        "home_id, "
+        "room1_id, "
+        "room2_id  "
+        ") "
+        "VALUES( ?, ?, ?, ?)"
+        )
+
+    homes = dataunit.homes
+    for home in homes:
+        home_id = homes_dict_reversed[home.name]
+        for topo_relation in home.topo_relations:
+            room1_id = rooms_dict_reversed[home.name+"_"+topo_relation.room1_name]
+            room2_id = rooms_dict_reversed[home.name+"_"+topo_relation.room2_name]
+            cursor_obj.execute(sql_str_hometopo,
+                               (
+                                   topo_id,
+                                   home_id,
+                                   room1_id,
+                                   room2_id
+                                )
+                               )
+            sys.stdout.write("\rpoint: %d" % (topo_id))
+            topo_id += 1
+
+    con.commit()
+
+    print("\n")
 
 
 def main():
