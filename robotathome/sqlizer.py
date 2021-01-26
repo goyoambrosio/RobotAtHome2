@@ -38,6 +38,11 @@ def dataset2sql(database_name='robotathome.db'):
     # =====================
     fill_tables(con, rhds)
 
+    # =====================
+    #  Closing connections
+    # =====================
+    con.close()
+
 
 def sql_connection(database_name):
 
@@ -498,9 +503,10 @@ def create_tables(con, arg):
         cursor_obj.execute("DROP TABLE IF EXISTS lblscene_bboxes")
         sql_str = ("CREATE TABLE lblscene_bboxes("
                    "id integer PRIMARY KEY, "
+                   "local_id integer, "
                    "scene_id integer, "
-                   "bb_id integer, "
-                   "object_id, "
+                   "object_id integer, "
+                   "object_name text, "
                    "bb_pose_x real, "
                    "bb_pose_y real, "
                    "bb_pose_z real, "
@@ -630,10 +636,22 @@ def fill_tables(con, rhds):
 
     def fill_tables_rctrscene():
         # =============================================================
-        #                           CHELMNTS
+        #                           RTRSCENE
         # =============================================================
 
         dataunit_name = "rctrscene"
+        create_tables(con, dataunit_name)
+        if rhds.unit[dataunit_name].load_data():
+            scene_data(con,
+                       rhds.unit[dataunit_name],
+                       dataunit_name
+                       )
+    def fill_tables_lblscene():
+        # =============================================================
+        #                           LBLSCENE
+        # =============================================================
+
+        dataunit_name = "lblscene"
         create_tables(con, dataunit_name)
         if rhds.unit[dataunit_name].load_data():
             scene_data(con,
@@ -649,6 +667,7 @@ def fill_tables(con, rhds):
     #fill_tables_lblrgbd()
     #fill_tables_lsrscan()
     fill_tables_rctrscene()
+    fill_tables_lblscene()
 
     print("Tables successfully populated !")
 
@@ -1284,8 +1303,7 @@ def sensor_data(con,
 
 def scene_data(con,
                dataunit,
-               dataunit_name,
-               first_bb_id = 0):
+               dataunit_name):
 
     """ Docstring """
 
@@ -1304,7 +1322,7 @@ def scene_data(con,
     global rooms_dict_reversed
 
     scene_id = 0
-    bb_id = first_bb_id
+    bb_id = 0
 
     sql_str_scene = (
         "INSERT INTO " + dataunit_name + "("
@@ -1315,14 +1333,16 @@ def scene_data(con,
         "home_id, "
         "scene_file"
         ") "
-        "VALUES( ?, ?, ?, ?, ?, ?, ?)"
+        "VALUES( ?, ?, ?, ?, ?, ?)"
         )
 
     sql_str_bb = (
         "INSERT INTO " + dataunit_name + "_bboxes" + "("
         "id, "
+        "local_id,"
         "scene_id, "
         "object_id, "
+        "object_name, "
         "bb_pose_x, "
         "bb_pose_y, "
         "bb_pose_z, "
@@ -1336,24 +1356,25 @@ def scene_data(con,
         "bb_corner2_y, "
         "bb_corner2_z"
         ") "
-        "VALUES( ?, ?, ?, "
+        "VALUES( ?, ?, ?, ?, ?, "
         "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )"
         )
 
+    sql_str_select = (
+        "SELECT id FROM objects WHERE "
+        "room_id = ? AND "
+        "home_id = ? AND "
+        "home_session_id = ? AND "
+        "home_subsession_id = ? AND "
+        "name = ?"
+    )
 
-
-    # ===============
-    #  Home Sessions
-    # ===============
 
     home_sessions = dataunit.home_sessions
     for home_session in home_sessions:
         home_id = homes_dict_reversed[home_session.get_home_name()]
         home_session_id = home_sessions_dict_reversed[home_session.name]
         for room in home_session.rooms:
-            # print(home_session.get_home_name(), home_session.name, room.name.split('_')[0])
-            # print(home_session.get_home_name(), home_session.name, room.name)
-            # room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + room.name]
             room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + re.split('_\d+', room.name)[0]]
             if len(room.name.split('_')) > 1:
                 home_subsession_id = int(room.name.split('_')[1])-1
@@ -1370,65 +1391,69 @@ def scene_data(con,
                                    room.scene_file
                                 )
                                )
-            #sys.stdout.write("\rrelation: %d" % (relation.id))
+            # sys.stdout.write("\rscene: %d" % (scene_id))
 
-            # ===============
-            #     Objects
-            # ===============
-            for boundingbox in room.boundingboxes:
-                # print(home_id, home_session_id, home_subsession_id, room_id, object.id, object.name, object.type_id)
-                # print(object.features)
-                sql_str = ("INSERT INTO relations("
-                           "id, "
-                           "room_id, "
-                           "home_id, "
-                           "home_session_id, "
-                           "home_subsession_id, "
-                           "obj1_id, obj2_id, "
-                           "minimum_distance, "
-                           "perpendicularity, "
-                           "vertical_distance, "
-                           "volume_ratio, "
-                           "is_on, "
-                           "abs_hue_stdv_diff, "
-                           "abs_saturation_stdv_diff, "
-                           "abs_value_stdv_diff, "
-                           "abs_hue_mean_diff, "
-                           "abs_saturation_mean_diff, "
-                           "abs_value_mean_diff)"
-                           "VALUES(?, ?, ?, ?, ?, ?, ?,"
-                           "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-                           )
-                # cursor_obj.execute(sql_str,
-                #                    ([relation.id,
-                #                      room_id,
-                #                      home_id,
-                #                      home_session_id,
-                #                      home_subsession_id,
-                #                      relation.obj1_id,
-                #                      relation.obj2_id] +
-                #                      relation.features[0:11]
-                #                     )
-                #                    )
-                # #sys.stdout.write("\rrelation: %d" % (relation.id))
-                # sys.stdout.write("\robject: %d" % (int(object.id)))
-
+            # ================================
+            #     Bounding boxes (Objects)
+            # ================================
+            for bb in room.boundingboxes:
+                cursor_obj.execute(sql_str_select,
+                                   (
+                                       room_id,
+                                       home_id,
+                                       home_session_id,
+                                       home_subsession_id,
+                                       bb.name
+                                   )
+                                   )
+                row = cursor_obj.fetchone()
+                if row is None:
+                    object_id = None
+                else:
+                    object_id = row[0]
+                cursor_obj.execute(sql_str_bb,
+                                   (
+                                       bb_id,
+                                       bb.id,
+                                       scene_id,
+                                       object_id,
+                                       bb.name,
+                                       bb.bb_pose[0],
+                                       bb.bb_pose[1],
+                                       bb.bb_pose[2],
+                                       bb.bb_pose[3],
+                                       bb.bb_pose[4],
+                                       bb.bb_pose[5],
+                                       bb.bb_corner[0],
+                                       bb.bb_corner[1],
+                                       bb.bb_corner[2],
+                                       bb.bb_corner[3],
+                                       bb.bb_corner[4],
+                                       bb.bb_corner[5],
+                                    )
+                                   )
+                # sys.stdout.write("\rbounding box: %d" % (bb_id))
+                bb_id += 1
             scene_id += 1
 
     con.commit()
-
-
-
+    if bb_id > 0:
+        print("scenes: %d, bounding boxes: %d" % (scene_id, bb_id))
+    else:
+        print("scenes: %d" % (scene_id))
 
 
 def main():
 
     """ Docstring """
 
-    try:
-        fire.Fire(dataset2sql)
-    except:
-        print("Oops! ", sys.exc_info()[0], " occurred.")
+    fire.Fire(dataset2sql)
+    # try:
+    #     fire.Fire(dataset2sql)
+    # except Exception as e:
+    #     print("Oops! ", sys.exc_info()[0], " occurred.")
+    #     print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno), type(e).__name__, e)
+
 
     # main return
     return 0

@@ -2735,7 +2735,6 @@ class Dataset():
         def _load_function(self):
             self.home_sessions = self.HomeSessions()
             home_folders = sorted(os.listdir(self.path))
-            print("home_folders: ", home_folders)
             for home_folder in home_folders:
                 words = home_folder.strip().split('_')
                 len_of_words = len(words)
@@ -2743,14 +2742,9 @@ class Dataset():
                 room_folder = self.path + '/' + home_folder + '/' + home_subfolder
                 rooms = self.Rooms()
                 room_files = sorted(os.listdir(room_folder))
-                # print("home_folder: ", home_folder)
-                # print("home_subfolder: ", home_subfolder)
-                # print("room_folder: ", room_folder)
-                # print("room_files: ", room_files)
                 for room_file in room_files:
                     boundingboxes = self.BoundingBoxes()
                     room_file_path = room_folder + '/' + room_file
-                    # print(room_file_path)
                     with open(room_file_path, "r") as file_handler:
                         num_of_boundingboxes = 0
                         num_of_header_lines = 0
@@ -2758,46 +2752,42 @@ class Dataset():
                         while line[0] == '#':
                             num_of_header_lines += 1
                             line = file_handler.readline()
-                        # print("num_of_header_lines: ", num_of_header_lines)
                         # The header belongs to a file with bounding boxes.
                         # There is another type of header with 5 lines and
                         # no bounding boxes.
                         if num_of_header_lines == 13:
                             words = line.strip().split()
                             num_of_boundingboxes = words[0]
-                            # print("num_of_boundingboxes: ", num_of_boundingboxes)
                             for bb_id in range(int(num_of_boundingboxes)):
-                                # print("bb_id: ", bb_id)
                                 line = file_handler.readline()
                                 words = line.strip().split()
-                                object_name = line # words[0]
-                                # print(object_name)
+                                object_name = words[0]
                                 # [bb_pose_x] [bb_pose_y] [bb_pose_z] [bb_pose_yaw] [bb_pose_pitch] [bb_pose_roll]
                                 line = file_handler.readline()
                                 bb_pose = line.strip().split()
-                                # print(bb_pose)
                                 # [bb_corner1_x] [bb_corner1_y] [bb_corner1_z]
                                 line = file_handler.readline()
                                 bb_corner1 = line.strip().split()
                                 # [bb_corner2_x] [bb_corner2_y] [bb_corner2_z]
                                 line = file_handler.readline()
                                 bb_corner2 = line.strip().split()
-                                # print(bb_id, object_name, bb_pose, bb_corner1 + bb_corner2)
                                 boundingbox = self.BoundingBox(bb_id,
                                                                object_name,
                                                                bb_pose,
                                                                bb_corner1 + bb_corner2
                                                                )
                                 boundingboxes.append(boundingbox)
-                                # input("Press a key to continue")
-
-                    room = self.Room(room_file.rsplit('_', 1)[0],
+                    room_name = room_file.rsplit('_', 1)[0]
+                    room_name = room_name.split('_labelled')[0]
+                    # if '_labelled' in room.name:
+                    #     room_name = room.name.split('_labelled_scene')[0]
+                    # else:
+                    #     room_name = room.name.split('_scene')[0]
+                    # breakpoint()
+                    room = self.Room(room_name,
                                      room_file_path,
                                      boundingboxes)
                     rooms.append(room)
-                    # print(room)
-                # print(rooms)
-                # input("Press Enter to continue...")
                 home_session = self.HomeSession(home_subfolder, rooms)
                 self.home_sessions.append(home_session)
 
