@@ -18,58 +18,81 @@ import fire
 from robotathome.dataset import Dataset
 
 
+# =========================
+#      GLOBAL VARIABLES
+# =========================
+# Database connection
+CON = 0
+# Dataset
+RHDS = None
+# Reversed dictionaries
+# (to avoid id queries as SELECT id ... WHERE name = ...)
+OBJECT_TYPES_DICT_REVERSED = {}
+SENSOR_TYPES_DICT = {}
+SENSORS_DICT_REVERSED = {}
+HOME_SESSIONS_DICT_REVERSED = {}
+HOMES_DICT_REVERSED = {}
+ROOM_TYPES_DICT_REVERSED = {}
+ROOMS_DICT_REVERSED = {}
+
 def dataset2sql(database_name='robotathome.db'):
 
     """ Docstring """
+
+    global CON
+    global RHDS
 
     # ===================
     #     Robot@Home
     # ===================
 
-    rhds = Dataset("MyRobot@Home", autoload=False)
+    # global RHDS
+    RHDS = Dataset("MyRobot@Home", autoload=False)
 
     # =====================
     #   SQLite initialize
     # =====================
-    con = sql_connection(database_name)
+
+    # global database connection
+    CON = sql_connection(database_name)
 
     # =====================
     #    Filling tables
     # =====================
-    fill_tables(con, rhds)
+    fill_tables()
 
     # =====================
     #  Closing connections
     # =====================
-    con.close()
+    CON.close()
 
 
 def sql_connection(database_name):
 
     """ Docstring """
 
-    try:
+    global CON
 
-        # con = sqlite3.connect(':memory:')
-        # print("Connection is established: Database is created in memory")
-        con = sqlite3.connect(database_name)
+    try:
+        CON = sqlite3.connect(database_name)
         print("Connection is established: ", database_name)
-        return con
+        return CON
 
     except NameError:
 
         print(NameError)
 
 
-def create_tables(con, arg):
+def create_tables(arg):
 
     """ Docstring """
 
-    def create_tables_framework(con):
+    def create_tables_framework():
 
         """ Docstring """
 
-        cursor_obj = con.cursor()
+        # global CON
+        cursor_obj = CON.cursor()
 
         # Table creation
 
@@ -104,13 +127,13 @@ def create_tables(con, arg):
         cursor_obj.execute("CREATE TABLE room_types(id integer PRIMARY KEY, "
                            "name text)")
 
-        con.commit()
+        CON.commit()
 
-    def create_tables_chelmnts(con):
+    def create_tables_chelmnts():
 
         """ Docstring """
 
-        cursor_obj = con.cursor()
+        cursor_obj = CON.cursor()
 
         # Table creation
 
@@ -261,13 +284,13 @@ def create_tables(con, arg):
                            "observation_id integer, "
                            "object_id)")
 
-        con.commit()
+        CON.commit()
 
-    def create_tables_raw(con):
+    def create_tables_raw():
 
         """ Docstring """
 
-        cursor_obj = con.cursor()
+        cursor_obj = CON.cursor()
 
         # Table creation
 
@@ -312,13 +335,13 @@ def create_tables(con, arg):
         # print(sql_str)
         cursor_obj.execute(sql_str)
 
-        con.commit()
+        CON.commit()
 
-    def create_tables_rgbd(con):
+    def create_tables_rgbd():
 
         """ Docstring """
 
-        cursor_obj = con.cursor()
+        cursor_obj = CON.cursor()
 
         # Table creation
 
@@ -351,13 +374,13 @@ def create_tables(con, arg):
         # print(sql_str)
         cursor_obj.execute(sql_str)
 
-        con.commit()
+        CON.commit()
 
-    def create_tables_lblrgbd(con):
+    def create_tables_lblrgbd():
 
         """ Docstring """
 
-        cursor_obj = con.cursor()
+        cursor_obj = CON.cursor()
 
         # Table creation
 
@@ -402,13 +425,13 @@ def create_tables(con, arg):
         # print(sql_str)
         cursor_obj.execute(sql_str)
 
-        con.commit()
+        CON.commit()
 
-    def create_tables_lsrscan(con):
+    def create_tables_lsrscan():
 
         """ Docstring """
 
-        cursor_obj = con.cursor()
+        cursor_obj = CON.cursor()
 
         # Table creation
 
@@ -453,13 +476,13 @@ def create_tables(con, arg):
         # print(sql_str)
         cursor_obj.execute(sql_str)
 
-        con.commit()
+        CON.commit()
 
-    def create_tables_rctrscene(con):
+    def create_tables_rctrscene():
 
         """ Docstring """
 
-        cursor_obj = con.cursor()
+        cursor_obj = CON.cursor()
 
         # Table creation
 
@@ -476,13 +499,13 @@ def create_tables(con, arg):
         # print(sql_str)
         cursor_obj.execute(sql_str)
 
-        con.commit()
+        CON.commit()
 
-    def create_tables_lblscene(con):
+    def create_tables_lblscene():
 
         """ Docstring """
 
-        cursor_obj = con.cursor()
+        cursor_obj = CON.cursor()
 
         # Table creation
 
@@ -524,13 +547,13 @@ def create_tables(con, arg):
         # print(sql_str)
         cursor_obj.execute(sql_str)
 
-        con.commit()
+        CON.commit()
 
-    def create_tables_2dgeomap(con):
+    def create_tables_2dgeomap():
 
         """ Docstring """
 
-        cursor_obj = con.cursor()
+        cursor_obj = CON.cursor()
 
         # Table creation
 
@@ -547,13 +570,13 @@ def create_tables(con, arg):
         # print(sql_str)
         cursor_obj.execute(sql_str)
 
-        con.commit()
+        CON.commit()
 
-    def create_tables_hometopo(con):
+    def create_tables_hometopo():
 
         """ Docstring """
 
-        cursor_obj = con.cursor()
+        cursor_obj = CON.cursor()
 
         # Table creation
 
@@ -568,7 +591,7 @@ def create_tables(con, arg):
         # print(sql_str)
         cursor_obj.execute(sql_str)
 
-        con.commit()
+        CON.commit()
 
 
     switcher = {
@@ -584,19 +607,12 @@ def create_tables(con, arg):
         "hometopo"  : create_tables_hometopo,
     }
     func = switcher.get(arg, lambda: "Invalid argument")
-    func(con)
+    func()
 
 
-def fill_tables(con, rhds):
+def fill_tables():
 
     """ Docstring """
-
-    # inner global variables
-    global sensors_dict_reversed
-    global home_sessions_dict_reversed
-    global homes_dict_reversed
-    global room_types_dict_reversed
-    global rooms_dict_reversed
 
     def fill_tables_framework_data():
         # =============================================================
@@ -605,12 +621,9 @@ def fill_tables(con, rhds):
 
         # Set some needed tables with no explicit data
         dataunit_name = "raw"
-        create_tables(con, "framework")
-        # global sensors_dict_reversed
-        if rhds.unit[dataunit_name].load_data():
-            # sensor_types_dict, sensors_list, sensors_dict_reversed = set_framework_data(con, rhds)
-            set_framework_data(con,
-                               rhds.unit[dataunit_name])
+        create_tables("framework")
+        if RHDS.unit[dataunit_name].load_data():
+            set_framework_data(dataunit_name)
 
     def fill_tables_chelmnts():
         # =============================================================
@@ -618,10 +631,9 @@ def fill_tables(con, rhds):
         # =============================================================
 
         dataunit_name = "chelmnts"
-        create_tables(con, dataunit_name)
-        if rhds.unit[dataunit_name].load_data():
-            chelmnts(con,
-                     rhds.unit[dataunit_name])
+        create_tables(dataunit_name)
+        if RHDS.unit[dataunit_name].load_data():
+            chelmnts(dataunit_name)
 
     def fill_tables_raw():
         # =============================================================
@@ -629,13 +641,9 @@ def fill_tables(con, rhds):
         # =============================================================
 
         dataunit_name = "raw"
-        create_tables(con, dataunit_name)
-        if rhds.unit[dataunit_name].load_data():
-            num_of_observations = sensor_data(con,
-                                              rhds.unit[dataunit_name],
-                                              dataunit_name,
-                                              "raw_scans")
-            print("# stored observations : ", num_of_observations)
+        create_tables(dataunit_name)
+        if RHDS.unit[dataunit_name].load_data():
+            sensor_data(dataunit_name)
 
     def fill_tables_rgbd():
         # =============================================================
@@ -643,12 +651,9 @@ def fill_tables(con, rhds):
         # =============================================================
 
         dataunit_name = "rgbd"
-        create_tables(con, dataunit_name)
-        if rhds.unit[dataunit_name].load_data():
-            num_of_observations = sensor_data(con,
-                                              rhds.unit[dataunit_name],
-                                              dataunit_name)
-            print("# stored observations : ", num_of_observations)
+        create_tables(dataunit_name)
+        if RHDS.unit[dataunit_name].load_data():
+            sensor_data(dataunit_name)
 
     def fill_tables_lblrgbd():
         # =============================================================
@@ -656,14 +661,9 @@ def fill_tables(con, rhds):
         # =============================================================
 
         dataunit_name = "lblrgbd"
-        create_tables(con, dataunit_name)
-        if rhds.unit[dataunit_name].load_data():
-            num_of_observations = sensor_data(con,
-                                              rhds.unit[dataunit_name],
-                                              dataunit_name,
-                                              "lblrgbd_labels",
-                                              100000)
-            print("# stored observations : ", num_of_observations)
+        create_tables(dataunit_name)
+        if RHDS.unit[dataunit_name].load_data():
+            sensor_data(dataunit_name, 100000)
 
     def fill_tables_lsrscan():
         # =============================================================
@@ -671,14 +671,9 @@ def fill_tables(con, rhds):
         # =============================================================
 
         dataunit_name = "lsrscan"
-        create_tables(con, dataunit_name)
-        if rhds.unit[dataunit_name].load_data():
-            num_of_observations = sensor_data(con,
-                                              rhds.unit[dataunit_name],
-                                              dataunit_name,
-                                              "lsrscan_scans",
-                                              200000)
-            print("# stored observations : ", num_of_observations)
+        create_tables(dataunit_name)
+        if RHDS.unit[dataunit_name].load_data():
+            sensor_data(dataunit_name, 200000)
 
     def fill_tables_rctrscene():
         # =============================================================
@@ -686,24 +681,19 @@ def fill_tables(con, rhds):
         # =============================================================
 
         dataunit_name = "rctrscene"
-        create_tables(con, dataunit_name)
-        if rhds.unit[dataunit_name].load_data():
-            scene_data(con,
-                       rhds.unit[dataunit_name],
-                       dataunit_name
-                       )
+        create_tables(dataunit_name)
+        if RHDS.unit[dataunit_name].load_data():
+            scene_data(dataunit_name)
+
     def fill_tables_lblscene():
         # =============================================================
         #                           LBLSCENE
         # =============================================================
 
         dataunit_name = "lblscene"
-        create_tables(con, dataunit_name)
-        if rhds.unit[dataunit_name].load_data():
-            scene_data(con,
-                       rhds.unit[dataunit_name],
-                       dataunit_name
-                       )
+        create_tables(dataunit_name)
+        if RHDS.unit[dataunit_name].load_data():
+            scene_data(dataunit_name)
 
     def fill_tables_twodgeomap():
         # =============================================================
@@ -711,11 +701,9 @@ def fill_tables(con, rhds):
         # =============================================================
 
         dataunit_name = "2dgeomap"
-        create_tables(con, dataunit_name)
-        if rhds.unit[dataunit_name].load_data():
-            twodgeomap(con,
-                       rhds.unit[dataunit_name]
-                       )
+        create_tables(dataunit_name)
+        if RHDS.unit[dataunit_name].load_data():
+            twodgeomap(dataunit_name)
 
     def fill_tables_hometopo():
         # =============================================================
@@ -723,48 +711,48 @@ def fill_tables(con, rhds):
         # =============================================================
 
         dataunit_name = "hometopo"
-        create_tables(con, dataunit_name)
-        if rhds.unit[dataunit_name].load_data():
-            hometopo(con,
-                     rhds.unit[dataunit_name]
-                     )
+        create_tables(dataunit_name)
+        if RHDS.unit[dataunit_name].load_data():
+            hometopo(dataunit_name)
 
     fill_tables_framework_data()
-    #fill_tables_chelmnts()
-    #fill_tables_raw()
-    #fill_tables_rgbd()
-    #fill_tables_lblrgbd()
-    #fill_tables_lsrscan()
-    #fill_tables_rctrscene()
-    #fill_tables_lblscene()
-    #fill_tables_twodgeomap()
+    fill_tables_chelmnts()
+    fill_tables_raw()
+    fill_tables_rgbd()
+    fill_tables_lblrgbd()
+    fill_tables_lsrscan()
+    fill_tables_rctrscene()
+    fill_tables_lblscene()
+    fill_tables_twodgeomap()
     fill_tables_hometopo()
 
     print("Tables successfully populated !")
 
 
-def set_framework_data(con, dataunit):
+def set_framework_data(dataunit_name):
 
     """ Docstring """
 
-    global object_types_dict_reversed
-    global sensor_types_dict #, sensors_list
-    global sensors_dict_reversed
-    global home_sessions_dict_reversed
-    global homes_dict_reversed
-    global room_types_dict_reversed
-    global rooms_dict_reversed
+    global SENSOR_TYPES_DICT
+    global SENSORS_DICT_REVERSED
+    global HOME_SESSIONS_DICT_REVERSED
+    global HOMES_DICT_REVERSED
+    global ROOM_TYPES_DICT_REVERSED
+    global ROOMS_DICT_REVERSED
 
     # Get a cursor to execute SQLite statements
-    cursor_obj = con.cursor()
+    cursor_obj = CON.cursor()
+
+    # Get the dataunit from global RHDS dataset
+    dataunit = RHDS.unit[dataunit_name]
 
     # ================
     #   Sensor types
     # ================
 
-    sensor_types_dict = {0: "LASER SCANNER", 1: "RGBD CAMERA"}
+    SENSOR_TYPES_DICT = {0: "LASER SCANNER", 1: "RGBD CAMERA"}
     cursor_obj.executemany("INSERT INTO sensor_types VALUES(?, ?)",
-                           sensor_types_dict.items())
+                           SENSOR_TYPES_DICT.items())
 
     # ================
     #     Sensors
@@ -776,7 +764,7 @@ def set_framework_data(con, dataunit):
                     [3, 1, "RGBD_3"],
                     [4, 1, "RGBD_4"]]
     cursor_obj.executemany("INSERT INTO sensors VALUES(?, ?, ?)", sensors_list)
-    sensors_dict_reversed = dict((x[2], x[0]) for x in sensors_list)
+    SENSORS_DICT_REVERSED = dict((x[2], x[0]) for x in sensors_list)
 
     # ============================================================
     #                        FRAMEWORK
@@ -794,12 +782,12 @@ def set_framework_data(con, dataunit):
     # remove duplicates
     homes = list(dict.fromkeys(homes))
     homes_dict = dict(enumerate(homes, start=0))
-    homes_dict_reversed = dict(map(reversed, homes_dict.items()))
-    # print(homes_dict_reversed)
+    HOMES_DICT_REVERSED = dict(map(reversed, homes_dict.items()))
+    # print(HOMES_DICT_REVERSED)
     cursor_obj.executemany("INSERT INTO homes VALUES(?,?)",
                            list(enumerate(homes, start=0)))
 
-    con.commit()
+    CON.commit()
 
     # ======================================
     #            HOME_SESSIONS
@@ -808,15 +796,15 @@ def set_framework_data(con, dataunit):
                "VALUES(?, ?, ?)")
     home_session_id = 0
     for home_session in home_sessions:
-        home_id = homes_dict_reversed[home_session.get_home_name()]
+        home_id = HOMES_DICT_REVERSED[home_session.get_home_name()]
         cursor_obj.execute(sql_str,
                            (home_session_id, home_id, home_session.name)
                            )
         home_session_id += 1
     home_sessions_dict = dict(enumerate(home_sessions.get_names(), start=0))
-    home_sessions_dict_reversed = dict(map(reversed, home_sessions_dict.items()))
+    HOME_SESSIONS_DICT_REVERSED = dict(map(reversed, home_sessions_dict.items()))
 
-    con.commit()
+    CON.commit()
 
     # ======================================
     #               ROOM_TYPES
@@ -828,18 +816,14 @@ def set_framework_data(con, dataunit):
             room_types.append(re.split('\d+', room.name)[0])
     room_types = list(dict.fromkeys(room_types))
     room_types_dict = dict(enumerate(room_types, start=0))
-    room_types_dict_reversed = dict(map(reversed, room_types_dict.items()))
-    # print(room_types)
+    ROOM_TYPES_DICT_REVERSED = dict(map(reversed, room_types_dict.items()))
     cursor_obj.executemany("INSERT INTO room_types VALUES(?,?)",
                            list(enumerate(room_types, start=0)))
-    con.commit()
+    CON.commit()
 
     # ======================================
     #                ROOMS
     # ======================================
-    # print(homes_dict_reversed)
-    # print(home_sessions_dict_reversed)
-    # print(room_types_dict_reversed)
 
     sql_str = ("INSERT INTO rooms(id, home_id,"
                "                  name, room_type_id)"
@@ -847,52 +831,42 @@ def set_framework_data(con, dataunit):
     room_id = 0
     rooms = []
     for home_session in home_sessions:
-        home_id = homes_dict_reversed[home_session.get_home_name()]
-        home_session_id = home_sessions_dict_reversed[home_session.name]
+        home_id = HOMES_DICT_REVERSED[home_session.get_home_name()]
+        home_session_id = HOME_SESSIONS_DICT_REVERSED[home_session.name]
         for room in home_session.rooms:
             room_name = re.split('_\d+', room.name)[0]
-            # print(room_name)
-            room_type_id = room_types_dict_reversed[re.split('\d+', room.name)[0]]
-            # print(home_id, home_session_id, room_type_id, room_name)
-            # room_type_id = room_types_dict_reversed[re.split('\d+', room.name)[0]]
-            # print(home_id, home_session_id, room_type_id, room.name)
+            room_type_id = ROOM_TYPES_DICT_REVERSED[re.split('\d+', room.name)[0]]
             if home_session.get_home_name() + "_" + room_name not in rooms:
                 cursor_obj.execute(sql_str,
                                    (room_id,
-                                    # home_session_id,
                                     home_id,
                                     home_session.get_home_name() + "_" + room_name,
-                                    # room.name,
                                     room_type_id)
                                    )
                 rooms.append(home_session.get_home_name() + "_" + room_name)
-                # rooms.append(home_session.get_home_name() + "_" + room.name)
                 room_id += 1
     rooms = list(dict.fromkeys(rooms))
     rooms_dict = dict(enumerate(rooms, start=0))
-    rooms_dict_reversed = dict(map(reversed, rooms_dict.items()))
-    # print(rooms_dict_reversed)
+    ROOMS_DICT_REVERSED = dict(map(reversed, rooms_dict.items()))
 
-    con.commit()
+    CON.commit()
 
 
-def chelmnts(con, dataunit):
+def chelmnts(dataunit_name):
 
     """ Docstring """
 
     # Get a cursor to execute SQLite statements
-    cursor_obj = con.cursor()
+    cursor_obj = CON.cursor()
+
+    # Get the dataunit from global RHDS dataset
+    dataunit = RHDS.unit[dataunit_name]
 
     # =============================================================
     #                           CHELMNTS
     # =============================================================
 
-    global object_types_dict_reversed
-    global sensors_dict_reversed
-    global home_sessions_dict_reversed
-    global homes_dict_reversed
-    global room_types_dict_reversed
-    global rooms_dict_reversed
+    global OBJECT_TYPES_DICT_REVERSED
 
     # ================
     #    Object types
@@ -901,11 +875,11 @@ def chelmnts(con, dataunit):
     object_types_dict = dataunit.get_category_objects()
     cursor_obj.executemany("INSERT INTO object_types VALUES(?,?)",
                            object_types_dict.items())
-    con.commit()
+    CON.commit()
 
-    object_types_dict_reversed = dict(map(reversed, object_types_dict.items()))
+    OBJECT_TYPES_DICT_REVERSED = dict(map(reversed, object_types_dict.items()))
     # print(object_types_dict)
-    # print(object_types_dict_reversed)
+    # print(OBJECT_TYPES_DICT_REVERSED)
 
     # ===============
     #  Home Sessions
@@ -913,13 +887,13 @@ def chelmnts(con, dataunit):
 
     home_sessions = dataunit.home_sessions
     for home_session in home_sessions:
-        home_id = homes_dict_reversed[home_session.get_home_name()]
-        home_session_id = home_sessions_dict_reversed[home_session.name]
+        home_id = HOMES_DICT_REVERSED[home_session.get_home_name()]
+        home_session_id = HOME_SESSIONS_DICT_REVERSED[home_session.name]
         for room in home_session.rooms:
             # print(home_session.get_home_name(), home_session.name, room.name.split('_')[0])
             # print(home_session.get_home_name(), home_session.name, room.name)
-            # room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + room.name]
-            room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + re.split('_\d+', room.name)[0]]
+            # room_id = ROOMS_DICT_REVERSED[home_session.get_home_name() + "_" + room.name]
+            room_id = ROOMS_DICT_REVERSED[home_session.get_home_name() + "_" + re.split('_\d+', room.name)[0]]
             if len(room.name.split('_')) > 1:
                 home_subsession_id = int(room.name.split('_')[1])-1
             else:
@@ -1109,7 +1083,7 @@ def chelmnts(con, dataunit):
                                      home_id,
                                      home_session.id,
                                      home_subsession_id,
-                                     sensors_dict_reversed[observation.sensor_name]] +
+                                     SENSORS_DICT_REVERSED[observation.sensor_name]] +
                                     observation.features +
                                     observation.scan_features)
                                    )
@@ -1125,9 +1099,7 @@ def chelmnts(con, dataunit):
                 # Temporarily deactivate to get a faster development !!!!!!!!!
                 cursor_obj.executemany(sql_str, objects_in_observation_list)
 
-
-
-    con.commit()
+    CON.commit()
 
 
 def test():
@@ -1136,23 +1108,15 @@ def test():
     return
 
 
-def sensor_data(con,
-                dataunit,
-                dataunit_name,
-                extra_data_table_name="extra_data",
-                first_observation_id = 0):
+def sensor_data(dataunit_name, first_observation_id=0):
 
     """ Docstring """
 
     # Get a cursor to execute SQLite statements
-    cursor_obj = con.cursor()
+    cursor_obj = CON.cursor()
 
-    global object_types_dict_reversed
-    global sensors_dict_reversed
-    global home_sessions_dict_reversed
-    global homes_dict_reversed
-    global room_types_dict_reversed
-    global rooms_dict_reversed
+    # Get the dataunit from global RHDS dataset
+    dataunit = RHDS.unit[dataunit_name]
 
     home_sessions = dataunit.home_sessions
 
@@ -1192,7 +1156,7 @@ def sensor_data(con,
         )
 
     sql_str_labels = (
-        "INSERT INTO " + extra_data_table_name + "("
+        "INSERT INTO " + dataunit_name + "_labels " + "("
         "id, "
         "local_id, "
         "name, "
@@ -1203,7 +1167,7 @@ def sensor_data(con,
         )
 
     sql_str_scans = (
-        "INSERT INTO " + extra_data_table_name + "("
+        "INSERT INTO " + dataunit_name + "_scans " + "("
         # "id, "
         "shot_id, "
         "scan, "
@@ -1214,13 +1178,13 @@ def sensor_data(con,
         )
 
     for home_session in home_sessions:
-        home_id = homes_dict_reversed[home_session.get_home_name()]
-        home_session_id = home_sessions_dict_reversed[home_session.name]
+        home_id = HOMES_DICT_REVERSED[home_session.get_home_name()]
+        home_session_id = HOME_SESSIONS_DICT_REVERSED[home_session.name]
 
         for room in home_session.rooms:
             try:
                 room_name = home_session.get_home_name() + "_" + re.split('_\d+', room.name)[0]
-                room_id = rooms_dict_reversed[room_name]
+                room_id = ROOMS_DICT_REVERSED[room_name]
                 if len(room.name.split('_')) > 1:
                     home_subsession_id = int(room.name.split('_')[1])-1
                 else:
@@ -1228,7 +1192,7 @@ def sensor_data(con,
             except KeyError:
                 try:
                     room_name = home_session.get_home_name() + "_" + re.split('_\D+', room.name)[0]
-                    room_id = rooms_dict_reversed[room_name]
+                    room_id = ROOMS_DICT_REVERSED[room_name]
                     home_subsession_id = 0
                 except KeyError:
                     print("********* KeyError: room " + room_name + " not found", "\n" )
@@ -1252,7 +1216,7 @@ def sensor_data(con,
                                                sensor_session,
                                                home_id,
                                                sensor_observation.name,
-                                               sensors_dict_reversed[sensor_observation.name],
+                                               SENSORS_DICT_REVERSED[sensor_observation.name],
                                                sensor_observation.sensor_pose_x,
                                                sensor_observation.sensor_pose_y,
                                                sensor_observation.sensor_pose_z,
@@ -1302,7 +1266,7 @@ def sensor_data(con,
                                            home_subsession_id,
                                            home_id,
                                            sensor_observation.name,
-                                           sensors_dict_reversed[sensor_observation.name],
+                                           SENSORS_DICT_REVERSED[sensor_observation.name],
                                            sensor_observation.sensor_pose_x,
                                            sensor_observation.sensor_pose_y,
                                            sensor_observation.sensor_pose_z,
@@ -1324,7 +1288,7 @@ def sensor_data(con,
                         labels = sensor_observation.get_labels()
                         for label in labels:
                             try:
-                                object_type_id = object_types_dict_reversed[re.split('_\d+', label.name)[0]]
+                                object_type_id = OBJECT_TYPES_DICT_REVERSED[re.split('_\d+', label.name)[0]]
                             except KeyError:
                                 print("********* KeyError: object " + label.name + " not found", "\n" )
                                 object_type_id = -1
@@ -1361,36 +1325,28 @@ def sensor_data(con,
                 # print("\n")
     print("\n")
 
-    con.commit()
+    CON.commit()
 
     cursor_obj.execute("DROP INDEX IF EXISTS " + "idx_" + dataunit_name + "_timestamp")
     sql_str = "create index idx_" + dataunit_name + "_timestamp on " + dataunit_name + "(time_stamp);"
     cursor_obj.execute(sql_str)
 
-    con.commit()
-
-    return sensor_observation_id
+    CON.commit()
 
 
-def scene_data(con,
-               dataunit,
-               dataunit_name):
+def scene_data(dataunit_name):
 
     """ Docstring """
 
     # Get a cursor to execute SQLite statements
-    cursor_obj = con.cursor()
+    cursor_obj = CON.cursor()
+
+    # Get the dataunit from global RHDS dataset
+    dataunit = RHDS.unit[dataunit_name]
 
     # =============================================================
     #                         SCENE_DATA
     # =============================================================
-
-    global object_types_dict_reversed
-    global sensors_dict_reversed
-    global home_sessions_dict_reversed
-    global homes_dict_reversed
-    global room_types_dict_reversed
-    global rooms_dict_reversed
 
     scene_id = 0
     bb_id = 0
@@ -1443,10 +1399,10 @@ def scene_data(con,
 
     home_sessions = dataunit.home_sessions
     for home_session in home_sessions:
-        home_id = homes_dict_reversed[home_session.get_home_name()]
-        home_session_id = home_sessions_dict_reversed[home_session.name]
+        home_id = HOMES_DICT_REVERSED[home_session.get_home_name()]
+        home_session_id = HOME_SESSIONS_DICT_REVERSED[home_session.name]
         for room in home_session.rooms:
-            room_id = rooms_dict_reversed[home_session.get_home_name() + "_" + re.split('_\d+', room.name)[0]]
+            room_id = ROOMS_DICT_REVERSED[home_session.get_home_name() + "_" + re.split('_\d+', room.name)[0]]
             if len(room.name.split('_')) > 1:
                 home_subsession_id = int(room.name.split('_')[1])-1
             else:
@@ -1507,26 +1463,26 @@ def scene_data(con,
                 bb_id += 1
             scene_id += 1
 
-    con.commit()
+    CON.commit()
     if bb_id > 0:
         print("scenes: %d, bounding boxes: %d" % (scene_id, bb_id))
     else:
         print("scenes: %d" % (scene_id))
 
 
-def twodgeomap(con,
-               dataunit):
+def twodgeomap(dataunit_name):
+
     """ Docstring """
 
     # Get a cursor to execute SQLite statements
-    cursor_obj = con.cursor()
+    cursor_obj = CON.cursor()
+
+    # Get the dataunit from global RHDS dataset
+    dataunit = RHDS.unit[dataunit_name]
 
     # =============================================================
     #                          2DGEOMAP
     # =============================================================
-
-    global homes_dict_reversed
-    global rooms_dict_reversed
 
     point_id = 0
 
@@ -1544,10 +1500,10 @@ def twodgeomap(con,
 
     homes = dataunit.homes
     for home in homes:
-        home_id = homes_dict_reversed[home.name]
+        home_id = HOMES_DICT_REVERSED[home.name]
         for room in home.rooms:
             try:
-                room_id = rooms_dict_reversed[home.name+"_"+room.name.split("_")[0]]
+                room_id = ROOMS_DICT_REVERSED[home.name+"_"+room.name.split("_")[0]]
             except KeyError:
                 continue
             for point in room.points:
@@ -1564,24 +1520,25 @@ def twodgeomap(con,
                 sys.stdout.write("\rpoint: %d" % (point_id))
                 point_id += 1
 
-    con.commit()
+    CON.commit()
 
     print("\n")
 
 
-def hometopo(con,
-             dataunit):
+def hometopo(dataunit_name):
+
     """ Docstring """
 
     # Get a cursor to execute SQLite statements
-    cursor_obj = con.cursor()
+    cursor_obj = CON.cursor()
+
+    # Get the dataunit from global RHDS dataset
+    dataunit = RHDS.unit[dataunit_name]
+
 
     # =============================================================
     #                          2DGEOMAP
     # =============================================================
-
-    global homes_dict_reversed
-    global rooms_dict_reversed
 
     topo_id = 0
 
@@ -1597,10 +1554,10 @@ def hometopo(con,
 
     homes = dataunit.homes
     for home in homes:
-        home_id = homes_dict_reversed[home.name]
+        home_id = HOMES_DICT_REVERSED[home.name]
         for topo_relation in home.topo_relations:
-            room1_id = rooms_dict_reversed[home.name+"_"+topo_relation.room1_name]
-            room2_id = rooms_dict_reversed[home.name+"_"+topo_relation.room2_name]
+            room1_id = ROOMS_DICT_REVERSED[home.name+"_"+topo_relation.room1_name]
+            room2_id = ROOMS_DICT_REVERSED[home.name+"_"+topo_relation.room2_name]
             cursor_obj.execute(sql_str_hometopo,
                                (
                                    topo_id,
@@ -1612,7 +1569,7 @@ def hometopo(con,
             sys.stdout.write("\rpoint: %d" % (topo_id))
             topo_id += 1
 
-    con.commit()
+    CON.commit()
 
     print("\n")
 

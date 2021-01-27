@@ -6,7 +6,7 @@
 __author__ = "Gregorio Ambrosio"
 __contact__ = "gambrosio[at]uma.es"
 __copyright__ = "Copyright 2020, Gregorio Ambrosio"
-__date__ = "2020/11/19"
+__date__ = "2021/01/13"
 __license__ = "MIT"
 
 import os
@@ -24,7 +24,6 @@ import cgi
 import io
 #import progressbar
 # from memory_profiler import profile
-
 
 class Dataset():
 
