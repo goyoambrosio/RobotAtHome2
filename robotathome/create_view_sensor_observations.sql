@@ -1,3 +1,6 @@
+-- Create a view with all sensor observations sets, i.e. rejected-for-labelling raw rows plus
+-- labelled rgbd rows plus laser scan rows.
+
 -- raw table has 87690 rows: 69455 rgbd + 18235 laser scans observations
 -- rgbd rows have two files: depth.png, intensity.png
 -- laser scans have one file: scan.txt
@@ -11,7 +14,6 @@
 -- lsrscan is a table with 39363 rows composed by 10635 rows coming from 
 -- the raw table, plus 28728 rows added by extra scanning sessions not 
 -- included in the original raw table.
--- In this table 
 
 -- Create a view with rows from raw table not in lblrgbd table
 -- i.e., lblrgbd is a raw subset with labelled observations
@@ -29,7 +31,7 @@ select   time_stamp, home_session_id, home_subsession_id, home_id, room_id, sens
 except 
 select   time_stamp, home_session_id, home_subsession_id, home_id, room_id, sensor_id from lsrscan;
 
--- Create a view with raw rows not in lblrgbd table (36518 rgbd rows) nor lsrscan table (7600 lser scan rows)
+-- Create a view with raw rows not in lblrgbd table (36518 rgbd rows) nor lsrscan table (7600 laser scan rows)
 -- plus lblrgbd (32937 rgbd rows)(ids begin in 100000)
 -- plus lsrscan (39363 laser scan rows)(ids begin in 200000)
 --   note: from the 39363 laser scan rows: 10635 intersect with raw table and 28728 don't intersect
@@ -64,4 +66,8 @@ select * from lblrgbd
 
 union 
 
-select * from lsrscan
+select * from lsrscan;
+
+drop view raw_not_in_lblrgbd;
+drop view raw_not_in_lsrscan;
+
