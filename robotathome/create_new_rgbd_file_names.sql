@@ -24,8 +24,8 @@ set sensor_file_3 = id || substr(sensor_file_3,instr(sensor_file_3,"_"))
 where sensor_file_3 <> "";
 
 -- This table helps to rename and relocates files through a python script
-drop view if exists old2new_rgbd_files;
-create view old2new_rgbd_files as
+drop table if exists old2new_rgbd_files;
+create table old2new_rgbd_files as
 select 
     sensor_observations.id id, 
     sensor_observations.sensor_file_1 old_file_1, 
@@ -39,5 +39,18 @@ from
     sensor_observations 
 inner join sensor_observations_files on sensor_observations.id = sensor_observations_files.id;
 
+drop table if exists sensor_observations_files;
 
+update sensor_observations
+set (sensor_file_1,
+     sensor_file_2,
+	 sensor_file_3) = (select old2new_rgbd_files.new_file_1,
+	                          old2new_rgbd_files.new_file_2,
+							  old2new_rgbd_files.new_file_3)
+where exists (select * from old2new_rgbd_files
+              where sensor_observations.id = old2new_rgbd_files.id);
+
+ = old2new_rgbd_files.new_file_1
+from old2new_rgbd_files
+where sensor_observations.id = old2new_rgbd_files.id;
 

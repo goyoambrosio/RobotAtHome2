@@ -1,0 +1,126 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+""" Robot@Home cruncher.py """
+
+__author__ = "Gregorio Ambrosio"
+__contact__ = "gambrosio[at]uma.es"
+__copyright__ = "Copyright 2021, Gregorio Ambrosio"
+__date__ = "2021/01/13"
+__license__ = "MIT"
+
+
+import os
+import shutil
+import sys
+import sqlite3
+import fire
+
+
+# =========================
+#      GLOBAL VARIABLES
+# =========================
+# Database connection
+CON = 0
+
+
+def copy_rgbd_files(rgbd_path):
+
+    """ Docstring """
+
+    sql_str_select_rgbd_files = "SELECT * FROM old2new_rgbd_files;"
+    cursor_obj = CON.cursor()
+    cursor_obj.execute(sql_str_select_rgbd_files)
+    rows = cursor_obj.fetchall()
+
+    for row in rows:
+        for i in [1, 2, 3]:
+            if row[i]:
+                shutil.copy(
+                    os.path.join(row[4], row[i]),
+                    os.path.join(rgbd_path, row[i+4])
+                )
+        sys.stdout.write("\rProcessing rgbd row %d " % (rows.index(row)))
+        sys.stdout.flush()
+    print("\n")
+
+
+def copy_scene_files(scene_path):
+
+    """ Docstring """
+
+    sql_str_select_rgbd_files = "SELECT * FROM old2new_scene_files;"
+    cursor_obj = CON.cursor()
+    cursor_obj.execute(sql_str_select_rgbd_files)
+    rows = cursor_obj.fetchall()
+
+    for row in rows:
+        shutil.copy(
+            os.path.join(row[1]),
+            os.path.join(scene_path, row[2])
+        )
+        sys.stdout.write("\rProcessing scene row %d " % (rows.index(row)))
+        sys.stdout.flush()
+    print("\n")
+
+
+def copy_files(db_name='rh.db', target_folder='rh_files'):
+
+    """ Docstring """
+
+    global CON
+
+    # =====================
+    #   SQLite initialize
+    # =====================
+
+    # global database connection
+    CON = sql_connection(db_name)
+
+    # Folder stuff
+    rgbd_path = os.path.join(target_folder, 'rgbd')
+    scene_path = os.path.join(target_folder, 'scene')
+
+    if not os.path.exists(target_folder):
+        os.makedirs(target_folder)
+    if not os.path.exists(rgbd_path):
+        os.makedirs(rgbd_path)
+    if not os.path.exists(scene_path):
+        os.makedirs(scene_path)
+
+    # copy_rgbd_files(rgbd_path)
+    copy_scene_files(scene_path)
+
+    # =====================
+    #  Closing connections
+    # =====================
+    CON.close()
+
+
+def sql_connection(database_name):
+
+    """ Docstring """
+
+    global CON
+
+    try:
+        CON = sqlite3.connect(database_name)
+        print("Connection is established: ", database_name)
+        return CON
+
+    except NameError:
+
+        print(NameError)
+
+def main():
+
+    """ Docstring """
+
+    fire.Fire(copy_files)
+
+    # main return
+    return 0
+
+
+if __name__ == "__main__":
+    main()
