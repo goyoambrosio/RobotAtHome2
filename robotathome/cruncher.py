@@ -13,8 +13,10 @@ __license__ = "MIT"
 import os
 import shutil
 import sys
+import re
 import sqlite3
 import fire
+import cv2
 
 
 # =========================
@@ -34,12 +36,21 @@ def copy_rgbd_files(rgbd_path):
     rows = cursor_obj.fetchall()
 
     for row in rows:
-        for i in [1, 2, 3]:
+        for i in [2, 3, 4]:
             if row[i]:
-                shutil.copy(
-                    os.path.join(row[4], row[i]),
-                    os.path.join(rgbd_path, row[i+4])
-                )
+                if not os.path.exists(os.path.join(rgbd_path, row[5])):
+                    os.makedirs(os.path.join(rgbd_path, row[5]))
+
+                file_ext = re.search(r"\.([^.]+)$", row[i]).group(1)
+                if file_ext == 'png':
+                    img = cv2.imread(os.path.join(row[1], row[i]), cv2.IMREAD_COLOR)
+                    img_rot = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+                    cv2.imwrite(os.path.join(rgbd_path, row[5], row[i+4]), img_rot)
+                else:
+                    shutil.copy(
+                        os.path.join(row[1], row[i]),
+                        os.path.join(rgbd_path, row[5], row[i+4])
+                    )
         sys.stdout.write("\rProcessing rgbd row %d " % (rows.index(row)))
         sys.stdout.flush()
     print("\n")
@@ -55,9 +66,11 @@ def copy_scene_files(scene_path):
     rows = cursor_obj.fetchall()
 
     for row in rows:
+        if not os.path.exists(os.path.join(scene_path, row[2])):
+            os.makedirs(os.path.join(scene_path, row[2]))
         shutil.copy(
             os.path.join(row[1]),
-            os.path.join(scene_path, row[2])
+            os.path.join(scene_path, row[2], row[3])
         )
         sys.stdout.write("\rProcessing scene row %d " % (rows.index(row)))
         sys.stdout.flush()
@@ -88,8 +101,8 @@ def copy_files(db_name='rh.db', target_folder='rh_files'):
     if not os.path.exists(scene_path):
         os.makedirs(scene_path)
 
-    # copy_rgbd_files(rgbd_path)
-    copy_scene_files(scene_path)
+    copy_rgbd_files(rgbd_path)
+    # copy_scene_files(scene_path)
 
     # =====================
     #  Closing connections
@@ -111,6 +124,7 @@ def sql_connection(database_name):
     except NameError:
 
         print(NameError)
+
 
 def main():
 
