@@ -4,56 +4,56 @@
 -- dataset version independent from the old one.
 -- n_scan.txt files are not considered because their data is stored in [raw|lsrscan]_scans tables.
 
-drop table if exists sensor_observations_files;
-create table sensor_observations_files as
+drop table if exists rh2_sensor_observations_files;
+create table rh2_sensor_observations_files as
 select 
-    sensor_observations.id, 
+    rh2_sensor_observations.id, 
 	sensor_file_1, 
 	sensor_file_2, 
 	sensor_file_3,
-	homes.name home_name,
-	substr(rooms.name,instr(rooms.name,"_")+1) room_name,
-	sensor_observations.home_session_id home_session,
-	sensor_observations.home_subsession_id home_subsession
-from sensor_observations
-inner join homes on homes.id=sensor_observations.home_id
-inner join rooms on rooms.id=sensor_observations.room_id
+	rh_homes.name home_name,
+	substr(rh_rooms.name,instr(rh_rooms.name,"_")+1) room_name,
+	rh2_sensor_observations.home_session_id home_session,
+	rh2_sensor_observations.home_subsession_id home_subsession
+from rh2_sensor_observations
+inner join rh_homes on rh_homes.id=rh2_sensor_observations.home_id
+inner join rh_rooms on rh_rooms.id=rh2_sensor_observations.room_id
 where instr(sensor_file_1,"scan") == 0;
 
 -- The new names are new_id + [intensity|depth|labels] + extension
-update sensor_observations_files
+update rh2_sensor_observations_files
 set sensor_file_1 = id || substr(sensor_file_1,instr(sensor_file_1,"_"))
 where sensor_file_1 <> "";
 
-update sensor_observations_files
+update rh2_sensor_observations_files
 set sensor_file_2 = id || substr(sensor_file_2,instr(sensor_file_2,"_"))
 where sensor_file_2 <> "";
 
-update sensor_observations_files
+update rh2_sensor_observations_files
 set sensor_file_3 = id || substr(sensor_file_3,instr(sensor_file_3,"_"))
 where sensor_file_3 <> "";
 
 -- This table helps to rename and relocates files through a python script
-drop table if exists old2new_rgbd_files;
-create table old2new_rgbd_files as
+drop table if exists rh2_old2new_rgbd_files;
+create table rh2_old2new_rgbd_files as
 select 
-    sensor_observations.id id, 
-	sensor_observations.files_path old_path,
-    sensor_observations.sensor_file_1 old_file_1, 
-    sensor_observations.sensor_file_2 old_file_2, 
-    sensor_observations.sensor_file_3 old_file_3, 
-	"session_"|| (sensor_observations_files.home_session + 1) || "/" ||
-	    sensor_observations_files.home_name || "/" || 
-	    sensor_observations_files.room_name || "/" ||
-	    "subsession_" || (sensor_observations_files.home_subsession + 1)  new_path,
-    sensor_observations_files.sensor_file_1 new_file_1,
-    sensor_observations_files.sensor_file_2 new_file_2,
-    sensor_observations_files.sensor_file_3 new_file_3
+    rh2_sensor_observations.id id, 
+	rh2_sensor_observations.files_path old_path,
+    rh2_sensor_observations.sensor_file_1 old_file_1, 
+    rh2_sensor_observations.sensor_file_2 old_file_2, 
+    rh2_sensor_observations.sensor_file_3 old_file_3, 
+	"session_"|| (rh2_sensor_observations_files.home_session + 1) || "/" ||
+	    rh2_sensor_observations_files.home_name || "/" || 
+	    rh2_sensor_observations_files.room_name || "/" ||
+	    "subsession_" || (rh2_sensor_observations_files.home_subsession + 1)  new_path,
+    rh2_sensor_observations_files.sensor_file_1 new_file_1,
+    rh2_sensor_observations_files.sensor_file_2 new_file_2,
+    rh2_sensor_observations_files.sensor_file_3 new_file_3
 from 
-    sensor_observations 
-inner join sensor_observations_files on sensor_observations.id = sensor_observations_files.id;
+    rh2_sensor_observations 
+inner join rh2_sensor_observations_files on rh2_sensor_observations.id = rh2_sensor_observations_files.id;
 
-drop table if exists sensor_observations_files;
+drop table if exists rh2_sensor_observations_files;
 
 
 

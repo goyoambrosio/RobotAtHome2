@@ -6,34 +6,34 @@
 -- files but with added information about objects and bounding boxes. Tha information
 -- has neen stored in lblscene_bboxes table.
 
-drop table if exists scenes_files;
-create table scenes_files as
+drop table if exists rh2_scene_files;
+create table rh2_scene_files as
 select 
-    rctrscene.id, 
-	homes.name home_name,
-	substr(rooms.name,instr(rooms.name,"_")+1) room_name,
-	rctrscene.home_session_id home_session,
-	rctrscene.home_subsession_id home_subsession,
-		scene_file
-from rctrscene
-inner join homes on homes.id=rctrscene.home_id
-inner join rooms on rooms.id=rctrscene.room_id;
+    rh_rctrscene.id, 
+	rh_homes.name home_name,
+	substr(rh_rooms.name,instr(rh_rooms.name,"_")+1) room_name,
+	rh_rctrscene.home_session_id home_session,
+	rh_rctrscene.home_subsession_id home_subsession,
+	rh_rctrscene.scene_file
+from rh_rctrscene
+inner join rh_homes on rh_homes.id=rh_rctrscene.home_id
+inner join rh_rooms on rh_rooms.id=rh_rctrscene.room_id;
 
-update scenes_files
+update rh2_scene_files
 set scene_file = id || "_scene.txt";
 
-drop table if exists old2new_scene_files;
-create table old2new_scene_files as
+drop table if exists rh2_old2new_scene_files;
+create table rh2_old2new_scene_files as
 select 
-    rctrscene.id id, 
-    rctrscene.scene_file old_file,
-	"session_"|| (scenes_files.home_session + 1) || "/" ||
-	    scenes_files.home_name || "/" || 
-	   scenes_files.room_name || "/" ||
-	    "subsession_" || (scenes_files.home_subsession + 1)  new_path,	
-    scenes_files.scene_file new_file
+    rh_rctrscene.id id, 
+    rh_rctrscene.scene_file old_file,
+	"session_"|| (rh2_scene_files.home_session + 1) || "/" ||
+	    rh2_scene_files.home_name || "/" || 
+	    rh2_scene_files.room_name || "/" ||
+	    "subsession_" || (rh2_scene_files.home_subsession + 1)  new_path,	
+    rh2_scene_files.scene_file new_file
 from 
-    rctrscene 
-inner join scenes_files on rctrscene.id = scenes_files.id;
+    rh_rctrscene 
+inner join rh2_scene_files on rh_rctrscene.id = rh2_scene_files.id;
 
-drop table if exists scenes_files;
+drop table if exists rh2_scene_files;

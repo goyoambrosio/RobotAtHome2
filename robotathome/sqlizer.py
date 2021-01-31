@@ -59,7 +59,12 @@ def dataset2sql(database_name='robotathome.db'):
     # =====================
     #    Filling tables
     # =====================
-    fill_tables()
+    # fill_tables()
+
+    # =======================
+    #  Executing sql scripts
+    # =======================
+    apply_sql_scripts()
 
     # =====================
     #  Closing connections
@@ -96,35 +101,35 @@ def create_tables(arg):
 
         # Table creation
 
-        cursor_obj.execute("DROP TABLE IF EXISTS sensors")
-        cursor_obj.execute("CREATE TABLE sensors(id integer PRIMARY KEY, "
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_sensors")
+        cursor_obj.execute("CREATE TABLE rh_sensors(id integer PRIMARY KEY, "
                            "sensor_type_id integer, "
                            "name text)")
 
-        cursor_obj.execute("DROP TABLE IF EXISTS sensor_types")
-        cursor_obj.execute("CREATE TABLE sensor_types(id integer PRIMARY KEY, "
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_sensor_types")
+        cursor_obj.execute("CREATE TABLE rh_sensor_types(id integer PRIMARY KEY, "
                            "name text)")
 
-        cursor_obj.execute("DROP TABLE IF EXISTS home_sessions")
-        cursor_obj.execute("CREATE TABLE home_sessions("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_home_sessions")
+        cursor_obj.execute("CREATE TABLE rh_home_sessions("
                            "id integer PRIMARY KEY, "
                            "home_id integer, "
                            "name text)"
                            )
 
-        cursor_obj.execute("DROP TABLE IF EXISTS homes")
-        cursor_obj.execute("CREATE TABLE homes(id integer PRIMARY KEY, name text)")
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_homes")
+        cursor_obj.execute("CREATE TABLE rh_homes(id integer PRIMARY KEY, name text)")
 
-        cursor_obj.execute("DROP TABLE IF EXISTS rooms")
-        cursor_obj.execute("CREATE TABLE rooms("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_rooms")
+        cursor_obj.execute("CREATE TABLE rh_rooms("
                            "id integer PRIMARY KEY, "
                            "home_id integer, "
                            "name text, "
                            "room_type_id integer)"
                            )
 
-        cursor_obj.execute("DROP TABLE IF EXISTS room_types")
-        cursor_obj.execute("CREATE TABLE room_types(id integer PRIMARY KEY, "
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_room_types")
+        cursor_obj.execute("CREATE TABLE rh_room_types(id integer PRIMARY KEY, "
                            "name text)")
 
         CON.commit()
@@ -137,12 +142,12 @@ def create_tables(arg):
 
         # Table creation
 
-        cursor_obj.execute("DROP TABLE IF EXISTS object_types")
-        cursor_obj.execute("CREATE TABLE object_types(id integer PRIMARY KEY, "
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_object_types")
+        cursor_obj.execute("CREATE TABLE rh_object_types(id integer PRIMARY KEY, "
                            "name text)")
 
-        cursor_obj.execute("DROP TABLE IF EXISTS objects")
-        sql_str = ("CREATE TABLE objects("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_objects")
+        sql_str = ("CREATE TABLE rh_objects("
                    "id integer PRIMARY KEY, "
                    "room_id integer, "
                    "home_id integer, "
@@ -186,8 +191,8 @@ def create_tables(arg):
         # print(sql_str)
         cursor_obj.execute(sql_str)
 
-        cursor_obj.execute("DROP TABLE IF EXISTS relations")
-        sql_str = ("CREATE TABLE relations("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_relations")
+        sql_str = ("CREATE TABLE rh_relations("
                    "id integer PRIMARY KEY, "
                    "room_id integer, "
                    "home_id integer, "
@@ -210,8 +215,8 @@ def create_tables(arg):
         # print(sql_str)
         cursor_obj.execute(sql_str)
 
-        cursor_obj.execute("DROP TABLE IF EXISTS observations")
-        sql_str = ("CREATE TABLE observations("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_observations")
+        sql_str = ("CREATE TABLE rh_observations("
                    "id integer PRIMARY KEY, "
                    "room_id integer, "
                    "home_id integer, "
@@ -279,8 +284,8 @@ def create_tables(arg):
         # print(sql_str)
         cursor_obj.execute(sql_str)
 
-        cursor_obj.execute("DROP TABLE IF EXISTS objects_in_observation")
-        cursor_obj.execute("CREATE TABLE objects_in_observation(id integer PRIMARY KEY, "
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_objects_in_observation")
+        cursor_obj.execute("CREATE TABLE rh_objects_in_observation(id integer PRIMARY KEY, "
                            "observation_id integer, "
                            "object_id)")
 
@@ -294,8 +299,8 @@ def create_tables(arg):
 
         # Table creation
 
-        cursor_obj.execute("DROP TABLE IF EXISTS raw")
-        sql_str = ("CREATE TABLE raw("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_raw")
+        sql_str = ("CREATE TABLE rh_raw("
                    "id integer PRIMARY KEY, "
                    "room_id integer, "
                    "home_session_id integer, "
@@ -323,8 +328,8 @@ def create_tables(arg):
         # print(sql_str)
         cursor_obj.execute(sql_str)
 
-        cursor_obj.execute("DROP TABLE IF EXISTS raw_scans")
-        sql_str = ("CREATE TABLE raw_scans("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_raw_scans")
+        sql_str = ("CREATE TABLE rh_raw_scans("
                    "id integer PRIMARY KEY, "
                    "shot_id integer, "
                    "scan real, "
@@ -345,8 +350,8 @@ def create_tables(arg):
 
         # Table creation
 
-        cursor_obj.execute("DROP TABLE IF EXISTS rgbd")
-        sql_str = ("CREATE TABLE rgbd("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_rgbd")
+        sql_str = ("CREATE TABLE rh_rgbd("
                    "id integer PRIMARY KEY, "
                    "room_id integer, "
                    "home_session_id integer, "
@@ -384,8 +389,8 @@ def create_tables(arg):
 
         # Table creation
 
-        cursor_obj.execute("DROP TABLE IF EXISTS lblrgbd")
-        sql_str = ("CREATE TABLE lblrgbd("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_lblrgbd")
+        sql_str = ("CREATE TABLE rh_lblrgbd("
                    "id integer PRIMARY KEY, "
                    "room_id integer, "
                    "home_session_id integer, "
@@ -413,8 +418,8 @@ def create_tables(arg):
         # print(sql_str)
         cursor_obj.execute(sql_str)
 
-        cursor_obj.execute("DROP TABLE IF EXISTS lblrgbd_labels")
-        sql_str = ("CREATE TABLE lblrgbd_labels("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_lblrgbd_labels")
+        sql_str = ("CREATE TABLE rh_lblrgbd_labels("
                    "id integer PRIMARY KEY, "
                    "local_id integer, "
                    "name text, "
@@ -435,8 +440,8 @@ def create_tables(arg):
 
         # Table creation
 
-        cursor_obj.execute("DROP TABLE IF EXISTS lsrscan")
-        sql_str = ("CREATE TABLE lsrscan("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_lsrscan")
+        sql_str = ("CREATE TABLE rh_lsrscan("
                    "id integer PRIMARY KEY, "
                    "room_id integer, "
                    "home_session_id integer, "
@@ -464,8 +469,8 @@ def create_tables(arg):
         # print(sql_str)
         cursor_obj.execute(sql_str)
 
-        cursor_obj.execute("DROP TABLE IF EXISTS lsrscan_scans")
-        sql_str = ("CREATE TABLE lsrscan_scans("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_lsrscan_scans")
+        sql_str = ("CREATE TABLE rh_lsrscan_scans("
                    "id integer PRIMARY KEY, "
                    "shot_id integer, "
                    "scan real, "
@@ -486,8 +491,8 @@ def create_tables(arg):
 
         # Table creation
 
-        cursor_obj.execute("DROP TABLE IF EXISTS rctrscene")
-        sql_str = ("CREATE TABLE rctrscene("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_rctrscene")
+        sql_str = ("CREATE TABLE rh_rctrscene("
                    "id integer PRIMARY KEY, "
                    "room_id integer, "
                    "home_session_id integer, "
@@ -509,8 +514,8 @@ def create_tables(arg):
 
         # Table creation
 
-        cursor_obj.execute("DROP TABLE IF EXISTS lblscene")
-        sql_str = ("CREATE TABLE lblscene("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_lblscene")
+        sql_str = ("CREATE TABLE rh_lblscene("
                    "id integer PRIMARY KEY, "
                    "room_id integer, "
                    "home_session_id integer, "
@@ -523,8 +528,8 @@ def create_tables(arg):
         cursor_obj.execute(sql_str)
 
 
-        cursor_obj.execute("DROP TABLE IF EXISTS lblscene_bboxes")
-        sql_str = ("CREATE TABLE lblscene_bboxes("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_lblscene_bboxes")
+        sql_str = ("CREATE TABLE rh_lblscene_bboxes("
                    "id integer PRIMARY KEY, "
                    "local_id integer, "
                    "scene_id integer, "
@@ -557,8 +562,8 @@ def create_tables(arg):
 
         # Table creation
 
-        cursor_obj.execute("DROP TABLE IF EXISTS twodgeomap")
-        sql_str = ("CREATE TABLE twodgeomap("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_twodgeomap")
+        sql_str = ("CREATE TABLE rh_twodgeomap("
                    "id integer PRIMARY KEY, "
                    "home_id integer, "
                    "room_id integer, "
@@ -580,8 +585,8 @@ def create_tables(arg):
 
         # Table creation
 
-        cursor_obj.execute("DROP TABLE IF EXISTS hometopo")
-        sql_str = ("CREATE TABLE hometopo("
+        cursor_obj.execute("DROP TABLE IF EXISTS rh_hometopo")
+        sql_str = ("CREATE TABLE rh_hometopo("
                    "id integer PRIMARY KEY, "
                    "home_id integer, "
                    "room1_id integer, "
@@ -751,7 +756,7 @@ def set_framework_data(dataunit_name):
     # ================
 
     SENSOR_TYPES_DICT = {0: "LASER SCANNER", 1: "RGBD CAMERA"}
-    cursor_obj.executemany("INSERT INTO sensor_types VALUES(?, ?)",
+    cursor_obj.executemany("INSERT INTO rh_sensor_types VALUES(?, ?)",
                            SENSOR_TYPES_DICT.items())
 
     # ================
@@ -763,7 +768,7 @@ def set_framework_data(dataunit_name):
                     [2, 1, "RGBD_2"],
                     [3, 1, "RGBD_3"],
                     [4, 1, "RGBD_4"]]
-    cursor_obj.executemany("INSERT INTO sensors VALUES(?, ?, ?)", sensors_list)
+    cursor_obj.executemany("INSERT INTO rh_sensors VALUES(?, ?, ?)", sensors_list)
     SENSORS_DICT_REVERSED = dict((x[2], x[0]) for x in sensors_list)
 
     # ============================================================
@@ -784,7 +789,7 @@ def set_framework_data(dataunit_name):
     homes_dict = dict(enumerate(homes, start=0))
     HOMES_DICT_REVERSED = dict(map(reversed, homes_dict.items()))
     # print(HOMES_DICT_REVERSED)
-    cursor_obj.executemany("INSERT INTO homes VALUES(?,?)",
+    cursor_obj.executemany("INSERT INTO rh_homes VALUES(?,?)",
                            list(enumerate(homes, start=0)))
 
     CON.commit()
@@ -792,7 +797,7 @@ def set_framework_data(dataunit_name):
     # ======================================
     #            HOME_SESSIONS
     # ======================================
-    sql_str = ("INSERT INTO home_sessions(id, home_id, name)"
+    sql_str = ("INSERT INTO rh_home_sessions(id, home_id, name)"
                "VALUES(?, ?, ?)")
     home_session_id = 0
     for home_session in home_sessions:
@@ -817,7 +822,7 @@ def set_framework_data(dataunit_name):
     room_types = list(dict.fromkeys(room_types))
     room_types_dict = dict(enumerate(room_types, start=0))
     ROOM_TYPES_DICT_REVERSED = dict(map(reversed, room_types_dict.items()))
-    cursor_obj.executemany("INSERT INTO room_types VALUES(?,?)",
+    cursor_obj.executemany("INSERT INTO rh_room_types VALUES(?,?)",
                            list(enumerate(room_types, start=0)))
     CON.commit()
 
@@ -825,8 +830,8 @@ def set_framework_data(dataunit_name):
     #                ROOMS
     # ======================================
 
-    sql_str = ("INSERT INTO rooms(id, home_id,"
-               "                  name, room_type_id)"
+    sql_str = ("INSERT INTO rh_rooms(id, home_id,"
+               "                     name, room_type_id)"
                "VALUES(?, ?, ?, ?)")
     room_id = 0
     rooms = []
@@ -873,7 +878,7 @@ def chelmnts(dataunit_name):
     # ================
 
     object_types_dict = dataunit.get_category_objects()
-    cursor_obj.executemany("INSERT INTO object_types VALUES(?,?)",
+    cursor_obj.executemany("INSERT INTO rh_object_types VALUES(?,?)",
                            object_types_dict.items())
     CON.commit()
 
@@ -905,46 +910,46 @@ def chelmnts(dataunit_name):
             for object in room.objects:
                 # print(home_id, home_session_id, home_subsession_id, room_id, object.id, object.name, object.type_id)
                 # print(object.features)
-                sql_str = "INSERT INTO objects(\
-                                               id, \
-                                               room_id, \
-                                               home_id, \
-                                               home_session_id,\
-                                               home_subsession_id,\
-                                               name, object_type_id, \
-                                               planarity, \
-                                               scatter, \
-                                               linearity, \
-                                               min_height, \
-                                               max_height, \
-                                               centroid_x, \
-                                               centroid_y, \
-                                               centroid_z, \
-                                               volume, \
-                                               biggest_area, \
-                                               orientation, \
-                                               hue_mean, \
-                                               saturation_mean, \
-                                               value_mean, \
-                                               hue_stdv, \
-                                               saturation_stdv, \
-                                               value_stdv, \
-                                               hue_histogram_0, \
-                                               hue_histogram_1, \
-                                               hue_histogram_2, \
-                                               hue_histogram_3, \
-                                               hue_histogram_4, \
-                                               value_histogram_0, \
-                                               value_histogram_1, \
-                                               value_histogram_2, \
-                                               value_histogram_3, \
-                                               value_histogram_4, \
-                                               saturation_histogram_0, \
-                                               saturation_histogram_1, \
-                                               saturation_histogram_2, \
-                                               saturation_histogram_3, \
-                                               saturation_histogram_4  \
-                                               )  \
+                sql_str = "INSERT INTO rh_objects(\
+                                                 id, \
+                                                 room_id, \
+                                                 home_id, \
+                                                 home_session_id,\
+                                                 home_subsession_id,\
+                                                 name, object_type_id, \
+                                                 planarity, \
+                                                 scatter, \
+                                                 linearity, \
+                                                 min_height, \
+                                                 max_height, \
+                                                 centroid_x, \
+                                                 centroid_y, \
+                                                 centroid_z, \
+                                                 volume, \
+                                                 biggest_area, \
+                                                 orientation, \
+                                                 hue_mean, \
+                                                 saturation_mean, \
+                                                 value_mean, \
+                                                 hue_stdv, \
+                                                 saturation_stdv, \
+                                                 value_stdv, \
+                                                 hue_histogram_0, \
+                                                 hue_histogram_1, \
+                                                 hue_histogram_2, \
+                                                 hue_histogram_3, \
+                                                 hue_histogram_4, \
+                                                 value_histogram_0, \
+                                                 value_histogram_1, \
+                                                 value_histogram_2, \
+                                                 value_histogram_3, \
+                                                 value_histogram_4, \
+                                                 saturation_histogram_0, \
+                                                 saturation_histogram_1, \
+                                                 saturation_histogram_2, \
+                                                 saturation_histogram_3, \
+                                                 saturation_histogram_4  \
+                                                 )  \
                                    VALUES(?, ?, ?, ?, ?, ?, ?, \
                                           ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, \
                                           ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, \
@@ -966,7 +971,7 @@ def chelmnts(dataunit_name):
             #    Relations
             # ===============
             for relation in room.relations:
-                sql_str = ("INSERT INTO relations("
+                sql_str = ("INSERT INTO rh_relations("
                            "id, "
                            "room_id, "
                            "home_id, "
@@ -1005,7 +1010,7 @@ def chelmnts(dataunit_name):
             # ===============
 
             for observation in room.observations:
-                sql_str = ("INSERT INTO observations("
+                sql_str = ("INSERT INTO rh_observations("
                            "id, "
                            "room_id, "
                            "home_id, "
@@ -1091,7 +1096,7 @@ def chelmnts(dataunit_name):
                 objects_in_observation_list = zip(observation.objects_id,
                                   [observation.id]*len(observation.objects_id))
                 # print(list(my_whatever))
-                sql_str = ("INSERT INTO objects_in_observation("
+                sql_str = ("INSERT INTO rh_objects_in_observation("
                            "object_id, "
                            "observation_id) "
                            "VALUES(?, ?) "
@@ -1127,7 +1132,7 @@ def sensor_data(dataunit_name, first_observation_id=0):
     scan_id = 0
 
     sql_str_sensor_observation = (
-        "INSERT INTO " + dataunit_name + "("
+        "INSERT INTO rh_" + dataunit_name + "("
         "id, "
         "room_id, "
         "home_session_id, "
@@ -1156,7 +1161,7 @@ def sensor_data(dataunit_name, first_observation_id=0):
         )
 
     sql_str_labels = (
-        "INSERT INTO " + dataunit_name + "_labels " + "("
+        "INSERT INTO rh_" + dataunit_name + "_labels " + "("
         "id, "
         "local_id, "
         "name, "
@@ -1167,13 +1172,13 @@ def sensor_data(dataunit_name, first_observation_id=0):
         )
 
     sql_str_scans = (
-        "INSERT INTO " + dataunit_name + "_scans " + "("
+        "INSERT INTO rh_" + dataunit_name + "_scans " + "("
         # "id, "
         "shot_id, "
         "scan, "
         "valid_scan, "
         "sensor_observation_id "
-         ") "
+        ") "
         "VALUES( ?, ?, ?, ? )"
         )
 
@@ -1236,7 +1241,7 @@ def sensor_data(dataunit_name, first_observation_id=0):
                                            )
 
                         laser_scan = sensor_observation.get_laser_scan()
-                        for shot_id in range(0, len(laser_scan.vector_of_scans)-1):
+                        for shot_id in range(0, len(laser_scan.vector_of_scans)):
                             cursor_obj.execute(sql_str_scans,
                                                (
                                                    # scan_id,
@@ -1306,7 +1311,7 @@ def sensor_data(dataunit_name, first_observation_id=0):
 
                     if sensor_observation.get_type() == "SensorLaserScanner":
                         laser_scan = sensor_observation.get_laser_scan()
-                        for shot_id in range(0, len(laser_scan.vector_of_scans)-1):
+                        for shot_id in range(0, len(laser_scan.vector_of_scans)):
                             cursor_obj.execute(sql_str_scans,
                                                (
                                                    # scan_id,
@@ -1324,12 +1329,6 @@ def sensor_data(dataunit_name, first_observation_id=0):
                     sys.stdout.write("\rsensor_observation: %d" % (sensor_observation_id))
                 # print("\n")
     print("\n")
-
-    CON.commit()
-
-    cursor_obj.execute("DROP INDEX IF EXISTS " + "idx_" + dataunit_name + "_timestamp")
-    sql_str = "create index idx_" + dataunit_name + "_timestamp on " + dataunit_name + "(time_stamp);"
-    cursor_obj.execute(sql_str)
 
     CON.commit()
 
@@ -1352,7 +1351,7 @@ def scene_data(dataunit_name):
     bb_id = 0
 
     sql_str_scene = (
-        "INSERT INTO " + dataunit_name + "("
+        "INSERT INTO rh_" + dataunit_name + "("
         "id, "
         "room_id, "
         "home_session_id, "
@@ -1364,7 +1363,7 @@ def scene_data(dataunit_name):
         )
 
     sql_str_bb = (
-        "INSERT INTO " + dataunit_name + "_bboxes" + "("
+        "INSERT INTO rh_" + dataunit_name + "_bboxes" + "("
         "id, "
         "local_id,"
         "scene_id, "
@@ -1388,7 +1387,7 @@ def scene_data(dataunit_name):
         )
 
     sql_str_select = (
-        "SELECT id FROM objects WHERE "
+        "SELECT id FROM rh_objects WHERE "
         "room_id = ? AND "
         "home_id = ? AND "
         "home_session_id = ? AND "
@@ -1487,7 +1486,7 @@ def twodgeomap(dataunit_name):
     point_id = 0
 
     sql_str_2dgeomap = (
-        "INSERT INTO twodgeomap("
+        "INSERT INTO rh_twodgeomap("
         "id, "
         "home_id, "
         "room_id, "
@@ -1543,7 +1542,7 @@ def hometopo(dataunit_name):
     topo_id = 0
 
     sql_str_hometopo = (
-        "INSERT INTO hometopo("
+        "INSERT INTO rh_hometopo("
         "id, "
         "home_id, "
         "room1_id, "
@@ -1572,6 +1571,23 @@ def hometopo(dataunit_name):
     CON.commit()
 
     print("\n")
+
+
+def apply_sql_scripts():
+
+    """ Docstring """
+
+    sql_file_names = ["create_view_sensor_observations.sql",
+                      "create_view_scene_bb_objects.sql",
+                      "create_new_rgbd_file_names.sql",
+                      "create_new_scene_file_names.sql"]
+
+    for sql_file_name in sql_file_names:
+        print("Running: ", sql_file_name)
+        sql_file = open(sql_file_name)
+        sql_as_string = sql_file.read()
+        cursor_obj = CON.cursor()
+        cursor_obj.executescript(sql_as_string)
 
 
 def main():
