@@ -30,7 +30,7 @@ def copy_rgbd_files(rgbd_path):
 
     """ Docstring """
 
-    sql_str_select_rgbd_files = "SELECT * FROM old2new_rgbd_files;"
+    sql_str_select_rgbd_files = "SELECT * FROM rh2_old2new_rgbd_files;"
     cursor_obj = CON.cursor()
     cursor_obj.execute(sql_str_select_rgbd_files)
     rows = cursor_obj.fetchall()
@@ -60,7 +60,7 @@ def copy_scene_files(scene_path):
 
     """ Docstring """
 
-    sql_str_select_rgbd_files = "SELECT * FROM old2new_scene_files;"
+    sql_str_select_rgbd_files = "SELECT * FROM rh2_old2new_scene_files;"
     cursor_obj = CON.cursor()
     cursor_obj.execute(sql_str_select_rgbd_files)
     rows = cursor_obj.fetchall()
@@ -102,7 +102,7 @@ def copy_files(db_name='rh.db', target_folder='rh_files'):
         os.makedirs(scene_path)
 
     copy_rgbd_files(rgbd_path)
-    # copy_scene_files(scene_path)
+    copy_scene_files(scene_path)
 
     # =====================
     #  Closing connections

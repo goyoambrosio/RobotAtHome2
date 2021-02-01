@@ -2738,6 +2738,11 @@ class Dataset():
                 words = home_folder.strip().split('_')
                 len_of_words = len(words)
                 home_subfolder = words[len_of_words - 1]
+                room_relative_path = (
+                    self.path.split('/')[-1] + '/' +
+                    home_folder + '/' +
+                    home_subfolder
+                )
                 room_folder = self.path + '/' + home_folder + '/' + home_subfolder
                 rooms = self.Rooms()
                 room_files = sorted(os.listdir(room_folder))
@@ -2784,7 +2789,7 @@ class Dataset():
                     #     room_name = room.name.split('_scene')[0]
                     # breakpoint()
                     room = self.Room(room_name,
-                                     room_file_path,
+                                     room_relative_path + '/' + room_file, #room_file_path,
                                      boundingboxes)
                     rooms.append(room)
                 home_session = self.HomeSession(home_subfolder, rooms)

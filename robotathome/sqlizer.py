@@ -59,7 +59,7 @@ def dataset2sql(database_name='robotathome.db'):
     # =====================
     #    Filling tables
     # =====================
-    # fill_tables()
+    fill_tables()
 
     # =======================
     #  Executing sql scripts
@@ -1584,10 +1584,14 @@ def apply_sql_scripts():
 
     for sql_file_name in sql_file_names:
         print("Running: ", sql_file_name)
-        sql_file = open(sql_file_name)
-        sql_as_string = sql_file.read()
-        cursor_obj = CON.cursor()
-        cursor_obj.executescript(sql_as_string)
+        try:
+            sql_file = open(sql_file_name)
+            sql_as_string = sql_file.read()
+            cursor_obj = CON.cursor()
+            cursor_obj.executescript(sql_as_string)
+        except Exception as e:
+            print("Oops! ", sys.exc_info()[0], " occurred.")
+            print('Error on line {}'.format(sys.exc_info()[-1].tb_lineno), type(e).__name__, e)
 
 
 def main():
@@ -1595,6 +1599,7 @@ def main():
     """ Docstring """
 
     fire.Fire(dataset2sql)
+
     # try:
     #     fire.Fire(dataset2sql)
     # except Exception as e:
