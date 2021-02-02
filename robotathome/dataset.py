@@ -1707,6 +1707,7 @@ class Dataset():
             return super().__str__() + s
 
     class DatasetUnitRawData(DatasetUnit):
+
         class HomeSession():
             def __init__(self, name, rooms):
                 self.name = name
@@ -1777,7 +1778,7 @@ class Dataset():
             def __init__(self, id='0', name='undefined',
                          sensor_pose_x='0', sensor_pose_y='0', sensor_pose_z='0',
                          sensor_pose_yaw='0', sensor_pose_pitch='0', sensor_pose_roll='0',
-                         time_stamp='0', files=[], path=""):
+                         time_stamp='0', files=[], path="", rel_path=""):
                 self.id = id
                 self.name = name
                 self.sensor_pose_x = sensor_pose_x
@@ -1789,6 +1790,7 @@ class Dataset():
                 self.time_stamp = time_stamp
                 self.files = files
                 self.path = path
+                self.rel_path = rel_path
 
             def __str__(self):
                 s = '\t' + self.id + ', ' + self.name + ', ' + \
@@ -1843,7 +1845,6 @@ class Dataset():
                 return str(type(self)).split('.')[-1][:-2]
 
         class Sensors(list):
-
             def __init__(self):
                 pass
 
@@ -2166,12 +2167,16 @@ class Dataset():
                 words = home_folder.strip().split('-')
                 len_of_words = len(words)
                 home_subfolder = words[len_of_words-2] + '-' + \
-                                 words[len_of_words - 1]
-                # print(home_folder)
+                                 words[len_of_words-1]
                 rooms = self.Rooms()
                 room_files = sorted(os.listdir(self.path + '/' +
                                                home_folder + '/' +
                                                home_subfolder))
+                room_relative_path = (
+                    self.path.split('/')[-1] + '/' +
+                    home_folder + '/' +
+                    home_subfolder
+                )
                 # print(room_files)
                 for room_file in room_files:
                     if room_file.endswith('.txt'):
@@ -2211,11 +2216,12 @@ class Dataset():
                                                          words[7],
                                                          words[8],
                                                          [],
-                                                         room_folder_path)
-
+                                                         room_folder_path,
+                                                         room_relative_path + "/" + room_file.split('.')[0])
                                     sensors.append(sensor)
                         room = self.Room(room_file.split('.')[0],
-                                         room_folder_path, sensors)
+                                         room_folder_path,
+                                         sensors)
                         rooms.append(room)
                         # print(room)
                 # print(rooms)
@@ -2334,7 +2340,7 @@ class Dataset():
             def __init__(self, id='0', name='undefined',
                          sensor_pose_x='0', sensor_pose_y='0', sensor_pose_z='0',
                          sensor_pose_yaw='0', sensor_pose_pitch='0', sensor_pose_roll='0',
-                         time_stamp='0', files=[], path=""):
+                         time_stamp='0', files=[], path="", rel_path=""):
                 self.id = id
                 self.name = name
                 self.sensor_pose_x = sensor_pose_x
@@ -2346,6 +2352,7 @@ class Dataset():
                 self.time_stamp = time_stamp
                 self.files = files
                 self.path = path
+                self.rel_path = rel_path
 
             def __str__(self):
                 s = '\t' + self.id + ', ' + self.name + ', ' + \
@@ -2522,6 +2529,11 @@ class Dataset():
                 room_folders = sorted(os.listdir(self.path + '/' +
                                                  home_folder + '/' +
                                                  home_subfolder))
+                room_relative_path = (
+                    self.path.split('/')[-1] + '/' +
+                    home_folder + '/' +
+                    home_subfolder
+                )
                 # print(room_folders)
                 rooms = self.Rooms()
                 for room_folder in room_folders:
@@ -2569,8 +2581,9 @@ class Dataset():
                                                              words[7],
                                                              words[8],
                                                              [],
-                                                             sensor_session_folder_path)
-
+                                                             sensor_session_folder_path,
+                                                             room_relative_path + "/" + room_folder + "/" + sensor_session_file.split('.')[0]
+                                                             )
                                         sensors.append(sensor)
                             sensor_session = self.SensorSession(sensor_session_file.split('.')[0],
                                                                 sensor_session_folder_path, sensors)

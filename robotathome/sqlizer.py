@@ -35,7 +35,7 @@ HOMES_DICT_REVERSED = {}
 ROOM_TYPES_DICT_REVERSED = {}
 ROOMS_DICT_REVERSED = {}
 
-def dataset2sql(database_name='robotathome.db'):
+def dataset2sql(dataset_path='.', database_name='robotathome.db'):
 
     """ Docstring """
 
@@ -47,7 +47,7 @@ def dataset2sql(database_name='robotathome.db'):
     # ===================
 
     # global RHDS
-    RHDS = Dataset("MyRobot@Home", autoload=False)
+    RHDS = Dataset("MyRobot@Home", path=dataset_path, autoload=False)
 
     # =====================
     #   SQLite initialize
@@ -1236,7 +1236,7 @@ def sensor_data(dataunit_name, first_observation_id=0):
                                                sensor_observation.files[0],
                                                sensor_observation.files[1] if (len(sensor_observation.files) > 1) else '',
                                                sensor_observation.files[2] if (len(sensor_observation.files) > 2) else '',
-                                               os.path.relpath(sensor_observation.path)
+                                               sensor_observation.rel_path # os.path.relpath(sensor_observation.path)
                                            )
                                            )
 
@@ -1286,7 +1286,7 @@ def sensor_data(dataunit_name, first_observation_id=0):
                                            sensor_observation.files[0],
                                            sensor_observation.files[1] if (len(sensor_observation.files) > 1) else '',
                                            sensor_observation.files[2] if (len(sensor_observation.files) > 2) else '',
-                                           os.path.relpath(sensor_observation.path)
+                                           sensor_observation.rel_path #os.path.relpath(sensor_observation.path)
                                        )
                                        )
                     if len(sensor_observation.files) > 2:
