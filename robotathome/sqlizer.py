@@ -93,6 +93,7 @@ def run_sql_script(sql_file_name):
     """ Docstring """
 
     try:
+        print("Running: ", sql_file_name)
         sql_file = open(sql_file_name)
         sql_as_string = sql_file.read()
         cursor_obj = CON.cursor()
@@ -112,201 +113,11 @@ def create_tables(arg):
 
         run_sql_script('create_tables_framework.sql')
 
-        # cursor_obj = CON.cursor()
-
-        # # Table creation
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_sensors")
-        # cursor_obj.execute("CREATE TABLE rh_sensors(id integer PRIMARY KEY, "
-        #                    "sensor_type_id integer, "
-        #                    "name text)")
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_sensor_types")
-        # cursor_obj.execute("CREATE TABLE rh_sensor_types(id integer PRIMARY KEY, "
-        #                    "name text)")
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_home_sessions")
-        # cursor_obj.execute("CREATE TABLE rh_home_sessions("
-        #                    "id integer PRIMARY KEY, "
-        #                    "home_id integer, "
-        #                    "name text)"
-        #                    )
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_homes")
-        # cursor_obj.execute("CREATE TABLE rh_homes(id integer PRIMARY KEY, name text)")
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_rooms")
-        # cursor_obj.execute("CREATE TABLE rh_rooms("
-        #                    "id integer PRIMARY KEY, "
-        #                    "home_id integer, "
-        #                    "name text, "
-        #                    "room_type_id integer)"
-        #                    )
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_room_types")
-        # cursor_obj.execute("CREATE TABLE rh_room_types(id integer PRIMARY KEY, "
-        #                    "name text)")
-
-        # CON.commit()
-
     def create_tables_chelmnts():
 
         """ Docstring """
 
         run_sql_script('create_tables_chelmnts.sql')
-
-        # cursor_obj = CON.cursor()
-
-        # # Table creation
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_object_types")
-        # cursor_obj.execute("CREATE TABLE rh_object_types(id integer PRIMARY KEY, "
-        #                    "name text)")
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_objects")
-        # sql_str = ("CREATE TABLE rh_objects("
-        #            "id integer PRIMARY KEY, "
-        #            "room_id integer, "
-        #            "home_id integer, "
-        #            "home_session_id integer, "
-        #            "home_subsession_id integer, "
-        #            "name text, "
-        #            "object_type_id integer, "
-        #            "planarity real, "
-        #            "scatter real, "
-        #            "linearity real, "
-        #            "min_height real, "
-        #            "max_height real, "
-        #            "centroid_x real, "
-        #            "centroid_y real, "
-        #            "centroid_z real, "
-        #            "volume real, "
-        #            "biggest_area real, "
-        #            "orientation real, "
-        #            "hue_mean real, "
-        #            "saturation_mean real, "
-        #            "value_mean real, "
-        #            "hue_stdv real, "
-        #            "saturation_stdv real, "
-        #            "value_stdv real, "
-        #            "hue_histogram_0 real, "
-        #            "hue_histogram_1 real, "
-        #            "hue_histogram_2 real, "
-        #            "hue_histogram_3 real, "
-        #            "hue_histogram_4 real, "
-        #            "value_histogram_0 real, "
-        #            "value_histogram_1 real, "
-        #            "value_histogram_2 real, "
-        #            "value_histogram_3 real, "
-        #            "value_histogram_4 real, "
-        #            "saturation_histogram_0 real, "
-        #            "saturation_histogram_1 real, "
-        #            "saturation_histogram_2 real, "
-        #            "saturation_histogram_3 real, "
-        #            "saturation_histogram_4 real)"
-        #            )
-        # # print(sql_str)
-        # cursor_obj.execute(sql_str)
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_relations")
-        # sql_str = ("CREATE TABLE rh_relations("
-        #            "id integer PRIMARY KEY, "
-        #            "room_id integer, "
-        #            "home_id integer, "
-        #            "home_session_id integer, "
-        #            "home_subsession_id integer, "
-        #            "obj1_id integer, "
-        #            "obj2_id integer, "
-        #            "minimum_distance real, "
-        #            "perpendicularity real, "
-        #            "vertical_distance real, "
-        #            "volume_ratio real, "
-        #            "is_on integer, "
-        #            "abs_hue_stdv_diff real, "
-        #            "abs_saturation_stdv_diff real, "
-        #            "abs_value_stdv_diff real, "
-        #            "abs_hue_mean_diff real, "
-        #            "abs_saturation_mean_diff real, "
-        #            "abs_value_mean_diff real)"
-        #            )
-        # # print(sql_str)
-        # cursor_obj.execute(sql_str)
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_observations")
-        # sql_str = ("CREATE TABLE rh_observations("
-        #            "id integer PRIMARY KEY, "
-        #            "room_id integer, "
-        #            "home_id integer, "
-        #            "home_session_id integer, "
-        #            "home_subsession_id integer, "
-        #            "sensor_id integer, "
-        #            "mean_hue real, "
-        #            "mean_saturation real, "
-        #            "mean_value real, "
-        #            "hue_stdv real, "
-        #            "saturation_stdv real, "
-        #            "value_stdv real, "
-        #            "hue_histogram_1 real, "
-        #            "hue_histogram_2 real, "
-        #            "hue_histogram_3 real, "
-        #            "hue_histogram_4 real, "
-        #            "hue_histogram_5 real, "
-        #            "saturation_histogram_1 real, "
-        #            "saturation_histogram_2 real, "
-        #            "saturation_histogram_3 real, "
-        #            "saturation_histogram_4 real, "
-        #            "saturation_histogram_5 real, "
-        #            "value_histogram_1 real, "
-        #            "value_histogram_2 real, "
-        #            "value_histogram_3 real, "
-        #            "value_histogram_4 real, "
-        #            "value_histogram_5 real, "
-        #            "distance real, "
-        #            "foot_print real, "
-        #            "volume real, "
-        #            "mean_mean_hue real, "
-        #            "mean_mean_saturation real, "
-        #            "mean_mean_value real, "
-        #            "mean_hue_stdv real, "
-        #            "mean_saturation_stdv real, "
-        #            "mean_value_stdv real, "
-        #            "mean_hue_histogram_1 real, "
-        #            "mean_hue_histogram_2 real, "
-        #            "mean_hue_histogram_3 real, "
-        #            "mean_hue_histogram_4 real, "
-        #            "mean_hue_histogram_5 real, "
-        #            "mean_saturation_histogram_1 real, "
-        #            "mean_saturation_histogram_2 real, "
-        #            "mean_saturation_histogram_3 real, "
-        #            "mean_saturation_histogram_4 real, "
-        #            "mean_saturation_histogram_5 real, "
-        #            "mean_value_histogram_1 real, "
-        #            "mean_value_histogram_2 real, "
-        #            "mean_value_histogram_3 real, "
-        #            "mean_value_histogram_4 real, "
-        #            "mean_value_histogram_5 real, "
-        #            "mean_distance real, "
-        #            "mean_foot_print real, "
-        #            "mean_volume real, "
-        #            "scan_area real, "
-        #            "scan_elongation real, "
-        #            "scan_mean_distance real, "
-        #            "scan_distance_stdv real, "
-        #            "scan_num_of_points integer, "
-        #            "scan_compactness real, "
-        #            "scan_compactness2 real, "
-        #            "scan_linearity real, "
-        #            "scan_scatter real)"
-        #            )
-        # # print(sql_str)
-        # cursor_obj.execute(sql_str)
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_objects_in_observation")
-        # cursor_obj.execute("CREATE TABLE rh_objects_in_observation(id integer PRIMARY KEY, "
-        #                    "observation_id integer, "
-        #                    "object_id)")
-
-        # CON.commit()
 
     def create_tables_raw():
 
@@ -314,93 +125,11 @@ def create_tables(arg):
 
         run_sql_script('create_tables_raw.sql')
 
-        # cursor_obj = CON.cursor()
-
-        # # Table creation
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_raw")
-        # sql_str = ("CREATE TABLE rh_raw("
-        #            "id integer PRIMARY KEY, "
-        #            "room_id integer, "
-        #            "home_session_id integer, "
-        #            "home_subsession_id integer, "
-        #            "home_id integer, "
-        #            "name text, "
-        #            "sensor_id integer, "
-        #            "sensor_pose_x real, "
-        #            "sensor_pose_y real, "
-        #            "sensor_pose_z real, "
-        #            "sensor_pose_yaw real, "
-        #            "sensor_pose_pitch real, "
-        #            "sensor_pose_roll real, "
-        #            "laser_aperture real, "
-        #            "laser_max_range real, "
-        #            "laser_num_of_scans integer,"
-        #            "time_stamp integer, "
-        #            "sensor_type integer, "
-        #            "sensor_file_1 text, "
-        #            "sensor_file_2 text, "
-        #            "sensor_file_3 text, "
-        #            "files_path text"
-        #            ")"
-        #            )
-        # # print(sql_str)
-        # cursor_obj.execute(sql_str)
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_raw_scans")
-        # sql_str = ("CREATE TABLE rh_raw_scans("
-        #            "id integer PRIMARY KEY, "
-        #            "shot_id integer, "
-        #            "scan real, "
-        #            "valid_scan integer, "
-        #            "sensor_observation_id integer"
-        #            ")"
-        #            )
-        # # print(sql_str)
-        # cursor_obj.execute(sql_str)
-
-        # CON.commit()
-
     def create_tables_rgbd():
 
         """ Docstring """
 
         run_sql_script('create_tables_rgbd.sql')
-
-        # cursor_obj = CON.cursor()
-
-        # # Table creation
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_rgbd")
-        # sql_str = ("CREATE TABLE rh_rgbd("
-        #            "id integer PRIMARY KEY, "
-        #            "room_id integer, "
-        #            "home_session_id integer, "
-        #            "home_subsession_id integer, "
-        #            "home_id integer, "
-        #            "name text, "
-        #            "sensor_id integer, "
-        #            "sensor_pose_x real, "
-        #            "sensor_pose_y real, "
-        #            "sensor_pose_z real, "
-        #            "sensor_pose_yaw real, "
-        #            "sensor_pose_pitch real, "
-        #            "sensor_pose_roll real, "
-        #            "laser_aperture real, "
-        #            "laser_max_range real, "
-        #            "laser_num_of_scans integer,"
-        #            "time_stamp integer, "
-        #            "sensor_type integer, "
-        #            "sensor_file_1 text, "
-        #            "sensor_file_2 text, "
-        #            "sensor_file_3 text, "
-        #            "files_path text"
-        #            ")"
-        #            )
-        # # print(sql_str)
-        # cursor_obj.execute(sql_str)
-
-        # CON.commit()
 
     def create_tables_lblrgbd():
 
@@ -408,106 +137,11 @@ def create_tables(arg):
 
         run_sql_script('create_tables_lblrgbd.sql')
 
-
-        # cursor_obj = CON.cursor()
-
-        # # Table creation
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_lblrgbd")
-        # sql_str = ("CREATE TABLE rh_lblrgbd("
-        #            "id integer PRIMARY KEY, "
-        #            "room_id integer, "
-        #            "home_session_id integer, "
-        #            "home_subsession_id integer, "
-        #            "home_id integer, "
-        #            "name text, "
-        #            "sensor_id integer, "
-        #            "sensor_pose_x real, "
-        #            "sensor_pose_y real, "
-        #            "sensor_pose_z real, "
-        #            "sensor_pose_yaw real, "
-        #            "sensor_pose_pitch real, "
-        #            "sensor_pose_roll real, "
-        #            "laser_aperture real, "
-        #            "laser_max_range real, "
-        #            "laser_num_of_scans integer,"
-        #            "time_stamp integer, "
-        #            "sensor_type integer, "
-        #            "sensor_file_1 text, "
-        #            "sensor_file_2 text, "
-        #            "sensor_file_3 text, "
-        #            "files_path text"
-        #            ")"
-        #            )
-        # # print(sql_str)
-        # cursor_obj.execute(sql_str)
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_lblrgbd_labels")
-        # sql_str = ("CREATE TABLE rh_lblrgbd_labels("
-        #            "id integer PRIMARY KEY, "
-        #            "local_id integer, "
-        #            "name text, "
-        #            "sensor_observation_id integer, "
-        #            "object_type_id integer"
-        #            ")"
-        #            )
-        # # print(sql_str)
-        # cursor_obj.execute(sql_str)
-
-        # CON.commit()
-
     def create_tables_lsrscan():
 
         """ Docstring """
 
         run_sql_script('create_tables_lsrscan.sql')
-
-        # cursor_obj = CON.cursor()
-
-        # # Table creation
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_lsrscan")
-        # sql_str = ("CREATE TABLE rh_lsrscan("
-        #            "id integer PRIMARY KEY, "
-        #            "room_id integer, "
-        #            "home_session_id integer, "
-        #            "home_subsession_id integer, "
-        #            "home_id integer, "
-        #            "name text, "
-        #            "sensor_id integer, "
-        #            "sensor_pose_x real, "
-        #            "sensor_pose_y real, "
-        #            "sensor_pose_z real, "
-        #            "sensor_pose_yaw real, "
-        #            "sensor_pose_pitch real, "
-        #            "sensor_pose_roll real, "
-        #            "laser_aperture real, "
-        #            "laser_max_range real, "
-        #            "laser_num_of_scans integer,"
-        #            "time_stamp integer, "
-        #            "sensor_type integer, "
-        #            "sensor_file_1 text, "
-        #            "sensor_file_2 text, "
-        #            "sensor_file_3 text, "
-        #            "files_path text"
-        #            ")"
-        #            )
-        # # print(sql_str)
-        # cursor_obj.execute(sql_str)
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_lsrscan_scans")
-        # sql_str = ("CREATE TABLE rh_lsrscan_scans("
-        #            "id integer PRIMARY KEY, "
-        #            "shot_id integer, "
-        #            "scan real, "
-        #            "valid_scan integer, "
-        #            "sensor_observation_id integer"
-        #            ")"
-        #            )
-        # # print(sql_str)
-        # cursor_obj.execute(sql_str)
-
-        # CON.commit()
 
     def create_tables_rctrscene():
 
@@ -515,74 +149,11 @@ def create_tables(arg):
 
         run_sql_script('create_tables_rctrscene.sql')
 
-        # cursor_obj = CON.cursor()
-
-        # # Table creation
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_rctrscene")
-        # sql_str = ("CREATE TABLE rh_rctrscene("
-        #            "id integer PRIMARY KEY, "
-        #            "room_id integer, "
-        #            "home_session_id integer, "
-        #            "home_subsession_id integer, "
-        #            "home_id integer, "
-        #            "scene_file text"
-        #            ")"
-        #            )
-        # # print(sql_str)
-        # cursor_obj.execute(sql_str)
-
-        # CON.commit()
-
     def create_tables_lblscene():
 
         """ Docstring """
 
         run_sql_script('create_tables_lblscene.sql')
-
-        # cursor_obj = CON.cursor()
-
-        # # Table creation
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_lblscene")
-        # sql_str = ("CREATE TABLE rh_lblscene("
-        #            "id integer PRIMARY KEY, "
-        #            "room_id integer, "
-        #            "home_session_id integer, "
-        #            "home_subsession_id integer, "
-        #            "home_id integer, "
-        #            "scene_file text"
-        #            ")"
-        #            )
-        # # print(sql_str)
-        # cursor_obj.execute(sql_str)
-
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_lblscene_bboxes")
-        # sql_str = ("CREATE TABLE rh_lblscene_bboxes("
-        #            "id integer PRIMARY KEY, "
-        #            "local_id integer, "
-        #            "scene_id integer, "
-        #            "object_id integer, "
-        #            "object_name text, "
-        #            "bb_pose_x real, "
-        #            "bb_pose_y real, "
-        #            "bb_pose_z real, "
-        #            "bb_pose_yaw real, "
-        #            "bb_pose_pitch real, "
-        #            "bb_pose_roll real, "
-        #            "bb_corner1_x real, "
-        #            "bb_corner1_y real, "
-        #            "bb_corner1_z real, "
-        #            "bb_corner2_x real, "
-        #            "bb_corner2_y real, "
-        #            "bb_corner2_z real"
-        #            ")"
-        #            )
-        # # print(sql_str)
-        # cursor_obj.execute(sql_str)
-
-        # CON.commit()
 
     def create_tables_2dgeomap():
 
@@ -590,47 +161,11 @@ def create_tables(arg):
 
         run_sql_script('create_tables_2dgeomap.sql')
 
-        # cursor_obj = CON.cursor()
-
-        # # Table creation
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_twodgeomap")
-        # sql_str = ("CREATE TABLE rh_twodgeomap("
-        #            "id integer PRIMARY KEY, "
-        #            "home_id integer, "
-        #            "room_id integer, "
-        #            "x real, "
-        #            "y real, "
-        #            "z real"
-        #            ")"
-        #            )
-        # # print(sql_str)
-        # cursor_obj.execute(sql_str)
-
-        # CON.commit()
-
     def create_tables_hometopo():
 
         """ Docstring """
 
         run_sql_script('create_tables_hometopo.sql')
-
-        # cursor_obj = CON.cursor()
-
-        # # Table creation
-
-        # cursor_obj.execute("DROP TABLE IF EXISTS rh_hometopo")
-        # sql_str = ("CREATE TABLE rh_hometopo("
-        #            "id integer PRIMARY KEY, "
-        #            "home_id integer, "
-        #            "room1_id integer, "
-        #            "room2_id integer "
-        #            ")"
-        #            )
-        # # print(sql_str)
-        # cursor_obj.execute(sql_str)
-
-        # CON.commit()
 
 
     switcher = {
@@ -756,11 +291,11 @@ def fill_tables():
 
     fill_tables_framework_data()
     fill_tables_chelmnts()
-    # fill_tables_raw()
-    # fill_tables_rgbd()
-    # fill_tables_lblrgbd()
-    # fill_tables_lsrscan()
-    # fill_tables_rctrscene()
+    fill_tables_raw()
+    fill_tables_rgbd()
+    fill_tables_lblrgbd()
+    fill_tables_lsrscan()
+    fill_tables_rctrscene()
     fill_tables_lblscene()
     fill_tables_twodgeomap()
     fill_tables_hometopo()
@@ -1619,8 +1154,8 @@ def add_new_tables_and_views():
                       "create_new_scene_file_names.sql"]
 
     for sql_file_name in sql_file_names:
-        print("Running: ", sql_file_name)
         run_sql_script(sql_file_name)
+
 
 def main():
 
