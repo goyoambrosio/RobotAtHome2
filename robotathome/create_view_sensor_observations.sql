@@ -15,6 +15,8 @@
 -- the raw table, plus 28728 rows added by extra scanning sessions not 
 -- included in the original raw table.
 
+BEGIN TRANSACTION;
+
 -- Create a view with rows from raw table not in lblrgbd table
 -- i.e., lblrgbd is a raw subset with labelled observations
 drop view if exists rh2_raw_not_in_lblrgbd;
@@ -68,3 +70,4 @@ union
 
 select * from rh_lsrscan;
 
+COMMIT;

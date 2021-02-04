@@ -423,6 +423,8 @@ def set_framework_data(dataunit_name):
     rooms_dict = dict(enumerate(rooms, start=0))
     ROOMS_DICT_REVERSED = dict(map(reversed, rooms_dict.items()))
 
+    print("\n")
+
     CON.commit()
 
 
@@ -674,6 +676,8 @@ def chelmnts(dataunit_name):
                            )
                 # Temporarily deactivate to get a faster development !!!!!!!!!
                 cursor_obj.executemany(sql_str, objects_in_observation_list)
+
+    print("\n")
 
     CON.commit()
 
@@ -1033,11 +1037,15 @@ def scene_data(dataunit_name):
                 bb_id += 1
             scene_id += 1
 
-    CON.commit()
+
     if bb_id > 0:
         print("scenes: %d, bounding boxes: %d" % (scene_id, bb_id))
     else:
         print("scenes: %d" % (scene_id))
+
+    print("\n")
+
+    CON.commit()
 
 
 def twodgeomap(dataunit_name):
@@ -1090,9 +1098,9 @@ def twodgeomap(dataunit_name):
                 sys.stdout.write("\rpoint: %d" % (point_id))
                 point_id += 1
 
-    CON.commit()
-
     print("\n")
+
+    CON.commit()
 
 
 def hometopo(dataunit_name):
@@ -1139,9 +1147,9 @@ def hometopo(dataunit_name):
             sys.stdout.write("\rpoint: %d" % (topo_id))
             topo_id += 1
 
-    CON.commit()
-
     print("\n")
+
+    CON.commit()
 
 
 def add_new_tables_and_views():

@@ -12,10 +12,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="robotathome",
-    version="0.2.11",
+    version="0.3.0",
     author="G. Ambrosio-Cestero",
     author_email="gambrosio@uma.es",
-    description="'This package provides Python API that assists in loading, parsing, and visualizing the annotations in Robot@Home Dataset",
+    description="'This package provides a Python API that assists in loading and parsing the annotations in Robot@Home Dataset",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/goyoambrosio/RobotAtHome_API",

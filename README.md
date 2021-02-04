@@ -1,4 +1,4 @@
-# Robot@Home Dataset API 0.2.11 #
+# Robot@Home Dataset API 0.3.0 #
 
 The Robot-at-Home dataset (Robot@Home, paper
 [here](http://mapir.uma.es/papersrepo/2017/2017-raul-IJRR-Robot_at_home_dataset.pdf))
@@ -13,9 +13,9 @@ for more information on Robot@Home, including for the data, paper, and
 tutorials. The exact format of the annotations is also described on the
 [Robot@Home website](http://mapir.isa.uma.es/mapirwebsite/index.php/mapir-downloads/203-robot-at-home-dataset.html).
 
-In addition to this API, please [download](https://zenodo.org/record/3901564)
+In addition to this API, please [download](https://zenodo.org/record/4495821)
 the Robot@Home Dataset in order to run the demos and use the API (also, you'll
-be able to download it using the API)
+be able to download it using the API).
 
 To install
 

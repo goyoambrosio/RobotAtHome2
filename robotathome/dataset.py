@@ -3,10 +3,10 @@
 
 """ Robot@Home Python API """
 
-__author__ = "Gregorio Ambrosio"
+__author__ = "Gregorio Ambrosio Cestero"
 __contact__ = "gambrosio[at]uma.es"
-__copyright__ = "Copyright 2020, Gregorio Ambrosio"
-__date__ = "2021/01/13"
+__copyright__ = "Copyright 2020, 2021, Gregorio Ambrosio Cestero"
+__date__ = "2021/02/03"
 __license__ = "MIT"
 
 import os
@@ -113,19 +113,6 @@ class Dataset():
 
         def download(self):
 
-            # Old method. Just for reference. To remove in a near future.
-            #
-            # downloaded_file = wget.download(self.url,os.path.dirname(self.path)+"/")
-            # downloaded_file = os.path.normpath(downloaded_file)
-            # session = requests.Session()
-            # response = session.get(self.url, stream=True)
-            # response.raise_for_status()
-            # with open(self.path, "wb") as downloaded_file:
-            #     total_length = int(response.headers.get('content-length'))
-            #     for ch in progress.bar(response.iter_content(chunk_size = 8*1024), expected_size=(total_length/1024) + 1):
-            #         if ch:
-            #             downloaded_file.write(ch)
-
             downloaded = False
 
             # urlretrieve progression stuff
@@ -191,7 +178,7 @@ class Dataset():
             value, params = cgi.parse_header(blah)
             remote_filename = params["filename"]
             local_filename = os.path.dirname(self.path) + "/" + remote_filename
-
+            #breakpoint()
             # main loop
             while downloaded is not True:
                 if os.path.exists(local_filename) is False:
@@ -218,7 +205,7 @@ class Dataset():
                             print("Extracting files from %s: " % (os.path.basename(local_filename)))
                             tarfile.TarFile.fileobject = get_file_progress_file_object_class(on_progress)
                             tf = tarfile.open(fileobj=ProgressFileObject(local_filename))
-                            tf.extractall()
+                            tf.extractall(path=os.path.dirname(self.path))
                         except:
                             print("Something went wrong with the extraction process. Data could be corrupted")
                         else:
@@ -2833,8 +2820,8 @@ class Dataset():
         self.url = url
         self.autoload = autoload
 
-        print ("Robot@Home Dataset (v0.2.11)")
-        print ("===========================")
+        print ("Robot@Home Dataset (v0.3.0)")
+        print ("============================")
 
         self.unit = {}
 
@@ -2842,65 +2829,65 @@ class Dataset():
         self.unit["chelmnts"] = self.DatasetUnitCharacterizedElements(
             "Characterized elements",
             os.path.abspath(self.path + "/" + "Robot@Home-dataset_characterized-elements"),
-            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_characterized-elements.tgz?download=1",
-            "a351580e4f791c21dfc7dbcfd88914b5",
-            31448194)
+            "https://zenodo.org/record/4495821/files/Robot@Home-dataset_characterized-elements.tgz?download=1",
+            "2b4d99dd258e619bf53d7cf7cbf9843c",
+            31450784)
 
         self.unit["2dgeomap"] = self.DatasetUnit2DGeometricMaps(
             "2D geometric maps",
             os.path.abspath(self.path + "/" + "Robot@Home-dataset_2d_geometric_maps"),
-            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_2d_geometric_maps.tgz?download=1",
+            "https://zenodo.org/record/4495821/files/Robot@Home-dataset_2d_geometric_maps.tgz?download=1",
             "cf622ee997bc620e297bff8d3a2491d3",
             8240734)
 
         self.unit["hometopo"] = self.DatasetUnitHomesTopologies(
             "Home's topologies",
             os.path.abspath(self.path + "/" + "Robot@Home-dataset_homes-topologies"),
-           "https://zenodo.org/record/3901564/files/Robot@Home-dataset_homes-topologies.tgz?download=1",
-           "eac54dacae77070d1b4722e64968921e",
-            40871)
+           "https://zenodo.org/record/4495821/files/Robot@Home-dataset_homes-topologies.tgz?download=1",
+           "78f65c424099fb6a040b43d65166fc7d",
+            41019)
 
         self.unit["raw"] = self.DatasetUnitRawData(
             "Raw data",
             os.path.abspath(self.path + "/" + "Robot@Home-dataset_raw_data-plain_text-all"),
-            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_raw_data-plain_text-all.tgz?download=1",
-            "d647d9757440bcb908349e624312a42d",
+            "https://zenodo.org/record/4495821/files/Robot@Home-dataset_raw_data-plain_text-all.tgz?download=1",
+            "5d14ceed9a84fb0016bf2144df8f3efb",
             20002442369)
 
         self.unit["lsrscan"] = self.DatasetUnitLaserScans(
             "Laser scans",
             os.path.abspath(self.path + "/" + "Robot@Home-dataset_laser_scans-plain_text-all"),
-            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_laser_scans-plain_text-all.tgz?download=1",
-            "34cf2cb72028e9f203fae449ce4a8270",
+            "https://zenodo.org/record/4495821/files/Robot@Home-dataset_laser_scans-plain_text-all.tgz?download=1",
+            "61b7a671a843355dcf7c2ba80bed6c45",
             227829791)
 
         self.unit["rgbd"] = self.DatasetUnitRawData(
             "RGB-D data",
             os.path.abspath(self.path + "/" + "Robot@Home-dataset_rgbd_data-plain_text-all"),
-            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_rgbd_data-plain_text-all.tgz?download=1",
-            "f4ad609d0368fe89e3050510c95892b0",
+            "https://zenodo.org/record/4495821/files/Robot@Home-dataset_rgbd_data-plain_text-all.tgz?download=1",
+            "1d3218acd80aa88c66f713ffdb2bd4d4",
             19896608308)
 
         self.unit["lblrgbd"] = self.DatasetUnitRawData(
             "Labelled RGB-D data",
             os.path.abspath(self.path + "/" + "Robot@Home-dataset_labelled-rgbd-data_plain-text_all"),
-            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_labelled-rgbd-data_plain-text_all.tgz?download=1",
-            "e562d4e494a5ac1c83ef0edd6a768f90",
+            "https://zenodo.org/record/4495821/files/Robot@Home-dataset_labelled-rgbd-data_plain-text_all.tgz?download=1",
+            "8165eefb59dbacc5faa539ad4ab3080e",
             16739353847)
 
         self.unit["lblscene"] = self.DatasetUnitSceneData(
             "Labelled scene data",
             os.path.abspath(self.path + "/" + "Robot@Home-dataset_labelled-scenes_plain-text_all"),
-            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_labelled-scenes_plain-text_all.tgz?download=1",
-            "18f949b06455e1dbc8874e298c04d880",
+            "https://zenodo.org/record/4495821/files/Robot@Home-dataset_labelled-scenes_plain-text_all.tgz?download=1",
+            "17342b5bcdd37845bf772ebd32905c59",
             7947369064)
 
         self.unit["rctrscene"] = self.DatasetUnitSceneData(
             "Reconstructed scene data",
             os.path.abspath(self.path + "/" + "Robot@Home-dataset_reconstructed-scenes_plain-text_all"),
-            "https://zenodo.org/record/3901564/files/Robot@Home-dataset_reconstructed-scenes_plain-text_all.tgz?download=1",
-            "0d13c07e02deb09baee5c51b4f87d065 ",
-            7947567151)
+            "https://zenodo.org/record/4495821/files/Robot@Home-dataset_reconstructed-scenes_plain-text_all.tgz?download=1",
+            "cdcd1a41f47f17e823b4c9f46737ff91",
+            7947563808)
 
 
 
@@ -2940,7 +2927,7 @@ class Dataset():
         for index, unit in self.unit.items():
             s += index + " : " + unit.name + " "
             if unit.__data_loaded__:
-                s += "(loaded " + humanize.naturalsize(unit.expected_size) + ")\n"
+                s += "(expected " + humanize.naturalsize(unit.expected_size) + ")\n"
             else:
                 s += "(unloaded)\n"
             #s += unit.__str__()
