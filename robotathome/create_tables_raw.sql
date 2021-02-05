@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS `rh_raw_scans` (
 	`valid_scan`	integer,
 	`sensor_observation_id`	integer,
 	PRIMARY KEY(`id`)
+  FOREIGN KEY(`sensor_observation_id`) REFERENCES `rh_raw`(`id`)
 );
 
 -- Indexes for rh_raw_scans
@@ -44,11 +45,12 @@ CREATE TABLE IF NOT EXISTS `rh_raw` (
 	`sensor_file_2`	text,
 	`sensor_file_3`	text,
 	`files_path`	text,
-	FOREIGN KEY(`room_id`) REFERENCES `rh_rooms`(`id`),
-	FOREIGN KEY(`home_session_id`) REFERENCES `rh_home_sessions`(`id`),
-	FOREIGN KEY(`sensor_id`) REFERENCES `rh_sensors`(`id`),
 	PRIMARY KEY(`id`),
-	FOREIGN KEY(`home_id`) REFERENCES `rh_homes`(`id`)
+	FOREIGN KEY(`home_session_id`) REFERENCES `rh_home_sessions`(`id`),
+	FOREIGN KEY(`home_id`) REFERENCES `rh_homes`(`id`),
+	FOREIGN KEY(`room_id`) REFERENCES `rh_rooms`(`id`),
+	FOREIGN KEY(`sensor_id`) REFERENCES `rh_sensors`(`id`),
+  FOREIGN KEY(`sensor_type`) REFERENCES `rh_sensor_types`(`id`)
 );
 
 -- Indexes for rh_raw
