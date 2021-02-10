@@ -1,7 +1,7 @@
 # Robot@Home Dataset API #
 
-![PyPI](https://img.shields.io/pypi/v/robotathome)
-![Conda](https://img.shields.io/conda/v/gambrosio/robotathome)
+[![PyPI](https://img.shields.io/pypi/v/robotathome)](https://pypi.org/project/robotathome/)
+[![Conda](https://img.shields.io/conda/v/gambrosio/robotathome)](https://anaconda.org/gambrosio/robotathome)
 [![Zenodo](https://img.shields.io/badge/zenodo-2.0.0-blue)](https://zenodo.org/record/4499043)
 
 The Robot-at-Home dataset (Robot@Home, paper
