@@ -1,6 +1,6 @@
 # Robot@Home Dataset API #
 
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/goyoambrosio/RobotAtHome_API?style=plastic)
+![PyPI](https://img.shields.io/pypi/v/robotathome)
 
 The Robot-at-Home dataset (Robot@Home, paper
 [here](http://mapir.uma.es/papersrepo/2017/2017-raul-IJRR-Robot_at_home_dataset.pdf))
