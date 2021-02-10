@@ -9,6 +9,7 @@ __copyright__ = "Copyright 2020, 2021, Gregorio Ambrosio Cestero"
 __date__ = "2021/02/03"
 __license__ = "MIT"
 
+import version
 import os
 import hashlib
 import humanize
@@ -2820,8 +2821,7 @@ class Dataset():
         self.url = url
         self.autoload = autoload
 
-        print ("Robot@Home Dataset (v0.3.0)")
-        print ("============================")
+        print (version.get_version_str())
 
         self.unit = {}
 
@@ -2943,6 +2943,8 @@ class Dataset():
 
 
 def main():
+    print (version.get_version_str())
+
     return 0
 
 
