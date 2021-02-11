@@ -17,7 +17,7 @@ for more information on Robot@Home, including for the data, paper, and
 tutorials. The exact format of the annotations is also described on the
 [Robot@Home website](http://mapir.isa.uma.es/mapirwebsite/index.php/mapir-downloads/203-robot-at-home-dataset.html).
 
-In addition to this API, please [download](https://zenodo.org/record/4495821)
+In addition to this API, please [download](https://doi.org/10.5281/zenodo.4530453)
 the Robot@Home Dataset in order to run the demos and use the API (also, you'll
 be able to download it using the API).
 
