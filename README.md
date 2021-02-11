@@ -2,7 +2,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/robotathome)](https://pypi.org/project/robotathome/)
 [![Conda](https://img.shields.io/conda/v/gambrosio/robotathome)](https://anaconda.org/gambrosio/robotathome)
-[![Zenodo](https://img.shields.io/badge/zenodo-2.0.0-blue)](https://zenodo.org/record/4499043)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4530453.svg)](https://doi.org/10.5281/zenodo.4530453)
 
 The Robot-at-Home dataset (Robot@Home, paper
 [here](http://mapir.uma.es/papersrepo/2017/2017-raul-IJRR-Robot_at_home_dataset.pdf))
