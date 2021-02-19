@@ -61,10 +61,14 @@ setup(
 
     install_requires=[
         "humanize >= 3.0.0",
-        "numpy",
+        "numpy >= 1.20.1",
         "click >= 7.1.2",
         "urllib3 >= 1.25.10",
-        "loguru"
+        "loguru >= 0.5.3",
+        "opencv-python >= 4.5.1",
+        "pandas >= 1.2.2",
+        "mxnet >= 1.6.0",
+        "gluoncv >= 0.8.0"
     ],
 
     python_requires='>=3.7',

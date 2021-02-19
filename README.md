@@ -1,7 +1,6 @@
 # Robot@Home Dataset API #
 
 [![PyPI](https://img.shields.io/pypi/v/robotathome)](https://pypi.org/project/robotathome/)
-[![Conda](https://img.shields.io/conda/v/gambrosio/robotathome)](https://anaconda.org/gambrosio/robotathome)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4530453.svg)](https://doi.org/10.5281/zenodo.4530453)
 
 The Robot-at-Home dataset (Robot@Home, paper
@@ -27,13 +26,8 @@ To install
 pip install robotathome
 ```
 
-or under conda environment
+or to upgrade 
 
 ```
-conda config --append channels gambrosio
-conda install robotathome
+pip install --upgrade robotathome
 ```
-
-Be careful with the opencv library because the pip installation is based on an
-unofficial opencv-python package, while the conda installation is based on the
-official opencv, usually at an earlier stage than the unofficial one.
