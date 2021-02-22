@@ -10,13 +10,14 @@ __license__ = "MIT"
 import sys
 import time
 import re
-import datetime
+import datetime as dt
 import sqlite3
 import os
 import cv2
 import numpy as np
 import pandas as pd
 from mxnet import image
+from mxnet import context
 from gluoncv import model_zoo, data, utils
 from matplotlib import pyplot as plt
 import robotathome as rh
@@ -27,7 +28,7 @@ def time_win2unixepoch(time_stamp):
     ''' Doctring '''
     seconds = time_stamp / 10000000
     epoch = seconds - 11644473600
-    datetime_ = datetime.datetime(2000, 1, 1, 0, 0, 0)
+    datetime_ = dt.datetime(2000, 1, 1, 0, 0, 0)
     return datetime_.fromtimestamp(epoch)
 
 
@@ -35,7 +36,7 @@ def time_unixepoch2win(date):
     ''' Doctring '''
     match = re.compile(r'^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)$').match(date)
     if match:
-        datetime_ = datetime.datetime(*map(int, match.groups()))
+        datetime_ = dt.datetime(*map(int, match.groups()))
         windows_timestamp = (time.mktime(datetime_.timetuple()) + 11644473600) * 10000000
     else:
         print("Invalid date format specified: " + date)
@@ -93,6 +94,13 @@ def current_log_level():
 def is_being_logged(level_name='DEBUG'):
     current_log_level_no, _ = current_log_level()
     return current_log_level_no <= get_log_level_no(level_name)
+
+
+def rename_if_exist(file_name, tail='.bak'):
+    if os.path.isfile(file_name):
+        rh.logger.warning("This file name already exists. Adding .bak")
+        new_file_name = file_name + tail
+        os.rename(file_name, new_file_name)
 
 
 class RobotAtHome():
@@ -381,6 +389,7 @@ class RobotAtHome():
                     '_', str(home_subsession),
                     '_', room_name,
                     '_', sensor_name,
+                    dt.datetime.now().strftime("_%Y%m%d%H%M%S"),
                     '.avi'
                 ]
             )
@@ -473,6 +482,7 @@ class RobotAtHome():
                     '_', str(home_subsession),
                     '_', room_name,
                     '_RGBD_3412',
+                    dt.datetime.now().strftime("_%Y%m%d%H%M%S"),
                     '.avi'
                 ]
             )
@@ -677,7 +687,8 @@ class RobotAtHome():
                           home_subsession=0,
                           room_name='alma_masterroom1',
                           sensor_name='RGBD_1',
-                          video_file_name=None
+                          video_file_name=None,
+                          gpu=False
                           ):
 
         """
@@ -715,6 +726,7 @@ class RobotAtHome():
                     '_', room_name,
                     '_', sensor_name,
                     '_by_YOLO',
+                    dt.datetime.now().strftime("_%Y%m%d%H%M%S"),
                     '.avi'
                 ]
             )
@@ -722,6 +734,8 @@ class RobotAtHome():
         video_path_file_name = os.path.abspath(os.path.join(self.__wspc_path,
                                                             video_file_name)
                                                )
+        rh.rename_if_exist(video_path_file_name)
+
         out = cv2.VideoWriter(video_path_file_name,
                               fourcc,
                               frames_per_second,
@@ -735,7 +749,10 @@ class RobotAtHome():
 
 
         #  get NN model
-        net = model_zoo.get_model('yolo3_darknet53_coco', pretrained=True)
+        ctx_ = context.gpu() if gpu else context.cpu()
+        net = model_zoo.get_model('yolo3_darknet53_coco',
+                                  pretrained=True,
+                                  ctx=ctx_)
 
         nn_out = []
         i = 0
@@ -808,7 +825,8 @@ class RobotAtHome():
                           home_subsession=0,
                           room_name='alma_masterroom1',
                           sensor_name='RGBD_1',
-                          video_file_name=None
+                          video_file_name=None,
+                          gpu=False
                           ):
 
         """
@@ -846,6 +864,7 @@ class RobotAtHome():
                     '_', room_name,
                     '_', sensor_name,
                     '_by_RCNN',
+                    dt.datetime.now().strftime("_%Y%m%d%H%M%S"),
                     '.avi'
                 ]
             )
@@ -866,8 +885,15 @@ class RobotAtHome():
 
 
         #  get NN model
-        net = model_zoo.get_model('faster_rcnn_resnet50_v1b_coco', pretrained=True)
-
+        # import mxnet as mx
+        # ctx = mx.gpu() if gpu else mx.cpu()  # Set context
+        # ctx = context.cpu()
+        # ctx = context.cpu_pinned()
+        # ctx = context.gpu(dev_id)
+        ctx_ = context.gpu() if gpu else context.cpu()
+        net = model_zoo.get_model('faster_rcnn_resnet50_v1b_coco',
+                                  pretrained=True,
+                                  ctx=ctx_) 
         nn_out = []
         i = 0
         for _, row in rows.iterrows():

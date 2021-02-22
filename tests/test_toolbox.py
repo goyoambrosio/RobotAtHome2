@@ -310,7 +310,8 @@ class Test(unittest.TestCase):
             'anto-s1',
             0,
             'anto_livingroom1',
-            'RGBD_2'
+            'RGBD_2',
+            # gpu=True
         )
         self.assertTupleEqual(detections.shape, (355, 3))
         video_file_size = os.path.getsize(
@@ -330,9 +331,10 @@ class Test(unittest.TestCase):
             'anto-s1',
             0,
             'anto_livingroom1',
-            'RGBD_2'
+            'RGBD_2',
+            # gpu=True
+
         )
-        breakpoint()
         self.assertTupleEqual(detections.shape, (355, 3))
         video_file_size = os.path.getsize(
             os.path.join(self.wspc_path, video_file_name)
