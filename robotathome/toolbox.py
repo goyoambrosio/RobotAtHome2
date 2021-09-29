@@ -4,7 +4,7 @@
 __author__ = "Gregorio Ambrosio"
 __contact__ = "gambrosio[at]uma.es"
 __copyright__ = "Copyright 2021, Gregorio Ambrosio"
-__date__ = "2021/02/22"
+__date__ = "2021/07/27"
 __license__ = "MIT"
 
 import sys
@@ -19,6 +19,7 @@ from mxnet import image
 from mxnet import context
 import gluoncv as gcv
 from gluoncv import model_zoo, data, utils
+import fiftyone as fo
 # from matplotlib import pyplot as plt
 # import helpers
 import robotathome as rh
@@ -243,20 +244,20 @@ class RobotAtHome():
         """
 
         sql_str = """
-        select 
-            home_session_id, rh_home_sessions.name as home_session_name, 
-            rh_raw.home_id, rh_homes.name as home_name, 
-            rh_raw.room_id, rh_rooms.name as room_name, 
+        select
+            home_session_id, rh_home_sessions.name as home_session_name,
+            rh_raw.home_id, rh_homes.name as home_name,
+            rh_raw.room_id, rh_rooms.name as room_name,
             rh_raw.home_subsession_id
         from rh_raw
         inner join rh_home_sessions on home_session_id = rh_home_sessions.id
         inner join rh_homes on rh_raw.home_id = rh_homes.id
         inner join rh_rooms on rh_raw.room_id = rh_rooms.id
-        group by 
-            home_session_id, 
-            rh_raw.home_id, 
+        group by
+            home_session_id,
+            rh_raw.home_id,
             rh_raw.room_id,
-            rh_raw.home_subsession_id 
+            rh_raw.home_subsession_id
 
         order by
             rh_raw.home_session_id
@@ -311,7 +312,6 @@ class RobotAtHome():
         #          room_name,
         #          sensor_name)
         # cur.execute(sql_str, parms)
-        3
         # cur.execute(sql_str)
         # rows = cur.fetchall()
 
@@ -708,14 +708,14 @@ class RobotAtHome():
 
     def get_depth_image_from_lblrgbd(self, so_id):
         """
-        This function 
+        This function
 
         Parameters
         ----------
 
         Returns
         -------
-        A gray levels cv2 image 
+        A gray levels cv2 image
 
         """
 
@@ -735,7 +735,7 @@ class RobotAtHome():
         rh.logger.debug("rgb_image_path_file_name: {}",
                         rgb_image_path_file_name)
         img = cv2.imread(rgb_image_path_file_name, cv2.IMREAD_COLOR)
-        
+
         return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     def lblrgbd_plot_labels(self, so_id):
@@ -1165,6 +1165,10 @@ class RobotAtHome():
 
 
     """
+    Fiftyone
+    """
+
+    """
     Lab
     """
 
@@ -1216,6 +1220,11 @@ class RobotAtHome():
     def get_objects_from_sensor_observations(self, so_id):
         """TODO """
         pass
+
+    def download_db(self):
+        """TODO """
+        pass
+
 
 
 def main():
