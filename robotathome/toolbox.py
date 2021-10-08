@@ -19,7 +19,7 @@ from mxnet import image
 from mxnet import context
 import gluoncv as gcv
 from gluoncv import model_zoo, data, utils
-import fiftyone as fo
+# import fiftyone as fo
 # from matplotlib import pyplot as plt
 # import helpers
 import robotathome as rh
@@ -27,8 +27,22 @@ import robotathome as rh
 
 
 class RobotAtHome():
-    """
-    RobotAtHome class with methods for Robot@Home dataset v2.x.y
+    """RobotAtHome class with methods for Robot@Home dataset v2.x.y
+
+    The RobotAtHome class encapsulates methods to access the RobotAtHome
+    database. <https://doi.org/10.5281/zenodo.4530453>
+
+    Attributes:
+        rh_path (str, optional):
+            root path for robotathome database, usually rh.db
+        wspc_path (str, optional):
+            workspace path where temporary files are stored
+        db_filename (str, optional):
+            default database name
+        rgbd_path (str, optional):
+           path that completes rh_path, where rgbd files are stored
+        scene_path (str, optional):
+           path that coompletes rh_path, where scene files are stored
     """
 
     def __init__(self,
@@ -1221,9 +1235,6 @@ class RobotAtHome():
         """TODO """
         pass
 
-    def download_db(self):
-        """TODO """
-        pass
 
 
 

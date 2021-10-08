@@ -11,6 +11,14 @@ import os
 import datetime as dt
 import time
 import re
+import hashlib
+import tarfile
+import io
+import sys
+import requests
+from tqdm.autonotebook import tqdm
+# import tqdm
+# from tqdm import tqdm
 import numpy as np
 import cv2
 import matplotlib.patches as mpatches
@@ -209,7 +217,7 @@ def object_detection_with_gluoncv(img,
     H: height
     W: width
     C: channels (3 for color images, 1 for B&W images)
-       
+
     CHW: RR...R, GG..G, BB..B
     HWC: RGB, RGB, ... RGB
 
@@ -274,3 +282,131 @@ def bin2rgba(img):
         img[:,:,i] = color_mask[i]*255
     plt.imshow(img, interpolation='nearest')
     plt.show()
+
+
+
+def download(url: str, path: str = os.getcwd()) -> None:
+    """
+    Download file with progressbar
+
+    Args:
+        url: a hyperlink that points to a location where the file to download
+    resides.
+        path: path where the file will be stored
+
+    Example:
+        >>> import robotathome as rh
+        >>> rh.download_file('https://...','~/Download')
+    """
+    # if not filename:
+    #     local_filename = os.path.join(".", url.split('/')[-1])
+    # else:
+    #     local_filename = filename
+
+    # print("Unexpected error: ",sys.exc_info()[0], " occurred.")
+
+    req = requests.get(url, stream=True)
+    rh.logger.debug("Status code: {}", req.status_code)
+
+    try:
+        req.raise_for_status()
+    except requests.exceptions.RequestException as error_code:
+        rh.logger.info("The file couldn\'t be retrieved")
+        rh.logger.error("Error: {}", error_code)
+        # Whoops it wasn't a 200
+        return "Error: " + str(error_code)
+    else:
+        if (os.path.isdir(os.path.expanduser(path))):
+            remote_filename = req.headers.get("Content-Disposition").split("filename=")[1]
+            rh.logger.debug("remote_filename: {}", remote_filename)
+            local_filename = os.path.expanduser(os.path.join(path, remote_filename.strip(' " " ')))
+            rh.logger.debug("local_filename: {}", local_filename)
+            file_size = int(req.headers['Content-Length'])
+            chunk = 1
+            chunk_size = 2**20 # 1024 for KB, 1024*1024 for MB
+            num_bars = int(file_size / chunk_size)
+            try:
+                with open(local_filename, 'wb') as fp:
+                    for chunk in tqdm(req.iter_content(chunk_size=chunk_size),
+                                      total=num_bars,
+                                      unit='MB',
+                                      # unit_scale=1,
+                                      # unit_divisor=2**10,
+                                      desc=local_filename,
+                                      leave=True  # progressbar stays
+                                      ):
+                        fp.write(chunk)
+                rh.logger.info('Sucessfully downloaded: {}', local_filename)
+            except:
+                rh.logger.info('Something went wrong trying to download {}', local_filename)
+            finally:
+                fp.close()
+
+        else:
+            rh.logger.error("Error: The directory {} doesn\'t exist", path)
+            rh.logger.info("The file couldn\'t be retrieved")
+    return 
+
+def get_md5(filename: str, path: str = os.getcwd()) -> str:
+    """Computes MD5 hash of a given file
+
+    Args:
+        filename: the filename to get the md5 hash
+
+        path: the path where the filename is located
+
+    Returns:
+        a string with the MD5 hash value
+    """
+
+    try:
+        local_filename = os.path.join(os.path.expanduser(path), filename)
+        chunk_size = 65536
+        hasher = hashlib.md5()
+        with open(local_filename, 'rb') as afile:
+            buf = afile.read(chunk_size)
+            while len(buf) > 0:
+                hasher.update(buf)
+                buf = afile.read(chunk_size)
+        rh.logger.debug("MD5 checksum for {} : {}",
+                        local_filename,
+                        hasher.hexdigest()
+                        )
+        return hasher.hexdigest()
+    except Exception as error_code:
+        rh.logger.error("Error: {}", error_code)
+        return ''
+
+def untar(tar_filename: str, destination_path: str) -> None:
+
+    class ProgressFileObject(io.FileIO):
+        def __init__(self, path, *args, **kwargs):
+            self._total_size = os.path.getsize(path)
+            io.FileIO.__init__(self, path, *args, **kwargs)
+
+        def read(self, size):
+            sys.stdout.write("\rUncompressing %d of %d MB (%d%%)" % (self.tell() / 1048576, self._total_size / 1048576, self.tell()*100/self._total_size))
+            sys.stdout.flush()
+            return io.FileIO.read(self, size)
+
+    # local_filename = "./" + tar_filename
+    try:
+        rh.logger.info("Extracting files from %s: " % (os.path.basename(tar_filename)))
+        file_obj=ProgressFileObject(tar_filename)
+        tf = tarfile.open(fileobj=file_obj)
+        members = tf.getmembers()
+        progress = tqdm(members)
+        for member in progress:
+            # rh.logger.debug("member: {}", member)
+            # rh.logger.debug("path: {}", destination_path)
+            tf.extract(member, path=destination_path)
+            # set the progress description of the progress bar
+            progress.set_description(f"Extracting {member.name}")
+        # tf.extractall(members=members, path=path)
+        file_obj.close()
+    except Exception as error_code:
+        rh.logger.info("Error: {}", error_code)
+    else:
+        tf.close()
+        print()
+        rh.logger.info("Extraction success. Don't forget to remove %s if you are not plenty of space." % (os.path.basename(tar_filename)))

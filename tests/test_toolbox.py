@@ -21,16 +21,19 @@ from PIL import Image
 import gluoncv as gcv
 
 class Test(unittest.TestCase):
-    ''' Test of get_sensor_observation_files '''
+    """Test class of toolbox module """
 
     # @unittest.skip("testing skipping")
     def setUp(self):
+        """ The setUp() method allow you to define instructions that will be
+                executed before and after each test method"""
         rh.log.enable_logger(sink=sys.stderr, level="TRACE")
         rh.logger.trace("*** Test.setUp")
         rh.logger.info("""
         Remember:
         python -m unittest <testModule>.<className>.<function_name>
         e.g.
+        cd ~/Dropbox/GIT/RobotAtHome_API/tests
         python -m unittest test_toolbox.Test.test_get_home_names
         """)
 
@@ -47,6 +50,8 @@ class Test(unittest.TestCase):
         self.rh_obj = rh.RobotAtHome(self.rh_path, self.wspc_path)
 
     def tearDown(self):
+        """The tearDown() method allow you to define instructions that will be
+               executed before each test method"""
         rh.logger.trace("*** Test.tearDown")
         del self.rh_obj
 
