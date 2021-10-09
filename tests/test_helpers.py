@@ -80,24 +80,22 @@ class Test(unittest.TestCase):
 
         rh.logger.trace("*** Testing get_md5")
         rh.logger.info("Computing MD5 hash value of Robot@Home2_db.tgz (ver. 2.0.1)")
-        self.assertEqual(rh.get_md5('Robot@Home2_db.tgz','~/WORKSPACE'),
+        self.assertEqual(rh.get_md5('~/WORKSPACE/Robot@Home2_db.tgz'),
                          'c2a3536b6b98b907c56eda3a78300cbe')
 
         rh.logger.info("Computing MD5 hash value of Robot@Home2_files.tgz (ver. 2.0.1)")
-        self.assertEqual(rh.get_md5('Robot@Home2_files.tgz','~/WORKSPACE'),
+        self.assertEqual(rh.get_md5('~/WORKSPACE/Robot@Home2_files.tgz'),
                          'c55465536738ec3470c75e1671bab5f2')
 
-    def test_untar(self):
+    def test_uncompress(self):
         """Testing untar(local_filename)
 
         Example:
-            $ python -m unittest test_helpers.Test.test_untar
+            $ python -m unittest test_helpers.Test.test_uncompress
         """
-
-        rh.logger.trace("*** Testing untar")
-        rh.untar(os.path.expanduser('sample.tgz'), os.path.expanduser('~/WORKSPACE'))
-        # rh.untar('Robot@Home2_db.tgz','~/WORKSPACE/')
-
-        # rh.decompress('sample.tgz','./')
-        # rh.decompress('Robot@Home2_db.tgz','./')
+        rh.logger.trace("*** Testing uncompress")
+        rh.logger.info("Uncompressing ~/WORKSPACE/Robot@Home2_db.tgz")
+        rh.uncompress('~/WORKSPACE/Robot@Home2_db.tgz', '~/WORKSPACE')
+        # rh.logger.info("Uncompressing ~/WORKSPACE/Robot@Home2_files.tgz")
+        # rh.uncompress('~/WORKSPACE/Robot@Home2_files.tgz', '~/WORKSPACE')
 
