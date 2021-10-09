@@ -108,7 +108,7 @@ c55465536738ec3470c75e1671bab5f2  Robot@Home2_files.tgz
 and to finish unzip files
 
 ```
-$ pv /home/user/Downloads/Robot@Home2_db.tgz | tar -J -xf - -C /home/user/WORKSPACE/files
+$ pv /home/user/Downloads/Robot@Home2_db.tgz | tar -J -xf - -C /home/user/WORKSPACE/
 $ pv /home/user/Downloads/Robot@Home2_files.tgz | tar -xzf - -C /home/user/WORKSPACE/files
 ```
 
