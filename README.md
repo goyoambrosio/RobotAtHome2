@@ -82,7 +82,7 @@ and check it out in python
 ## Downloading the dataset
 
 Robot@Home resides in Zenodo site where all data versions can be downloaded.
-Last version ([v2.0.1](https://zenodo.org/record/4530453)) is composed of two
+Latest version ([v2.0.1](https://zenodo.org/record/4530453)) is composed of two
 files: `Robot@Home2_db.tgz` and `Robot@Home2_files.tgz`. The first one contains the
 database, and the second one contains the bunch of RGBD images and 3D scenes
 
