@@ -145,8 +145,8 @@ Installing Jupyter in Anaconda distribution is an easy task
 
 ## Time to install Robot@Home2
 
-If you have followed previous sections you have the right working environment to
-open [this notebok](https://github.com/goyoambrosio/RobotAtHome_API/blob/master/notebooks/10-Download-and-install.ipynb) with Jupyter to download and install both toolbox and dataset.
+If you have followed the previous sections you have the right working environment to
+open [this notebook](https://github.com/goyoambrosio/RobotAtHome_API/blob/master/notebooks/10-Download-and-install.ipynb) with Jupyter to download and install both the toolbox and the dataset.
 
 However, if jupyter notebook is not your choice right now you can try the
 following instructions.
