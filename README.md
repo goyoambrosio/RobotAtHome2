@@ -66,7 +66,7 @@ Download the Anaconda installer
     $ cd ~/Downloads
     $ wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
 
-> replace `~/Downloads` with the path to the file you downloaded.
+> replace `~/Downloads` with the path of your choice
 
 
 </div>
