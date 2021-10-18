@@ -66,10 +66,8 @@ Download the Anaconda installer
     $ cd ~/Downloads
     $ wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
 
-<div class="notes" id="orgc0b6ee5">
-<p>
-replace <code>~/Downloads</code> with the path to the file you downloaded.
-</p>
+> replace `~/Downloads` with the path to the file you downloaded.
+
 
 </div>
 
@@ -175,7 +173,7 @@ other distributions
 ## Time to install Robot@Home2
 
 If you have followed previous sections you have the right working environment to
-open this notebok with Jupyter to download and install both toolbox and dataset.
+open [[https://github.com/goyoambrosio/RobotAtHome_API/blob/master/notebooks/10-Download-and-install.ipynb][this notebok]] with Jupyter to download and install both toolbox and dataset.
 
 However, if jupyter notebook is not your choice right now you can try the
 following instructions.
