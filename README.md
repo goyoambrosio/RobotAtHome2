@@ -45,7 +45,7 @@ used in data science and machine learning disciplines in the Python framework.
 The second one is the integration of the data set with the GluonCV library to
 apply deep learning algorithms in artificial vision.
 
-## Prerequisites: Python development environment installation
+## Prerequisites: Installing the Python Development Environment
 
 Launched in 1991, Python has achieved enormous popularity in the scientific community in recent years. Python is an interpreted high-level general-purpose programming language with a many useful features. It's platform independent, simple, consistent and with a great code readability. Moreover, it has an extensive set of libraries that help to reduce development time.
 
