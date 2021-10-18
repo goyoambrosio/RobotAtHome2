@@ -141,8 +141,6 @@ Installing Jupyter in Anaconda distribution is an easy task
 
 > remember to previously activate your virtual environment with `conda activate` command
 
-> `pip` is a common Python package manager that is included in Anaconda and many other distributions
-
 ## Time to install Robot@Home2
 
 If you have followed the previous sections you have the right working environment to
@@ -161,8 +159,7 @@ Confirm you are in the right virtual environment and install it
 $ pip install robotathome
 ```
 
-> pip is a common Python package manager that is included in Anaconda and many
-> other distributions
+> `pip` is a common Python package manager that is included in Anaconda and many other distributions
 
 and check it in Python
 
