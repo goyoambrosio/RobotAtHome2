@@ -45,41 +45,167 @@ used in data science and machine learning disciplines in the Python framework.
 The second one is the integration of the data set with the GluonCV library to
 apply deep learning algorithms in artificial vision.
 
-## Installing the toolbox
+## Prerequisites: Python development environment installation
 
-To can install the Robot@Home2 Toolbox through the Python package manager.
+Launched in 1991, Python has achieved enormous popularity in the scientific community in recent years. Python is an interpreted high-level general-purpose programming language with a many useful features. It's platform independent, simple, consistent and with a great code readability. Moreover, it has an extensive set of libraries that help to reduce development time.
 
-It's recommended to install it under a python environment.
+Artificial Intelligence (AI) and Machine Learning (ML) projects differ from software projects in other areas due to differences in the technology stack and the skills needed to deal with them.
 
-If you are using conda you can create an environment:
+Python offers AI and ML programmers many features that help to develop and test complex algorithms. Even in Computer Vision (CV), there are solid software libraries that allow developers to focus on their research areas.
 
-```
-$ conda create --name rh python=3.9
-```
+There are several different Python distributions, each one created with a different approach and for different audiences.
 
-Change **rh** for your chosen environment name.
+Robot@Home2 Toolbox is written in Python and works well with Anaconda which is a distribution of the Python and R programming languages for scientific computing. Of course, other distributions can be used to run the toolbox.
 
-Then activate it
+### Installation in Linux
 
-```
-$ conda activate rh
-```
+To install Anaconda in Linux you must follow these steps.
 
-Now you can install Robot@Home2 Toolbox
+Download the Anaconda installer
+
+    $ cd ~/Downloads
+    $ wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
+
+<div class="notes" id="orgc0b6ee5">
+<p>
+replace <code>~/Downloads</code> with the path to the file you downloaded.
+</p>
+
+</div>
+
+Install the distribution
+
+    $ bash ~/Downloads/Anaconda3-2021.05-Linux-x86_64.sh
+
+<div class="notes" id="orge09fe72">
+<p>
+include the <code>bash</code> command regardless of whether or not you are using Bash shell.
+</p>
+
+</div>
+
+Review and agree the license agreement. Accept the default install location.
+
+When the installer prompts *“Do you wish the installer to initialize Anaconda3 by running conda init?”*, we recommend *“yes”*.
+
+Finally, for the installation to take effect
+
+    $ source ~/.bashrc
+
+For more detailed/updated installation information, go to [Anaconda installation page](https://docs.anaconda.com/anaconda/install/).
+
+### Verifying your installation
+
+Enter the command `python`. This command runs the Python shell. If Anaconda is installed and working, the version information it displays when it starts up will include `“Anaconda”`. To exit the Python shell, enter the `quit()` command.
+
+    $ python
+    Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
+    [GCC 7.5.0] :: Anaconda, Inc. on linux
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> quit()
+
+You can also display a list of installed packages and their versions running `conda list`
+
+    $ conda list
+    # packages in environment at /home/user/anaconda3:
+    #
+    # Name                    Version                   Build  Channel
+    ...
+
+### Making a virtual environment
+
+A virtual environment is a Python environment such that the Python interpreter, libraries and scripts installed into it are isolated from those installed in other virtual environments
+
+When a virtual environment is active, the installations tools install Python packages into the virtual environment without needing to be told to do so explicitly and without interfering in other virtual environments.
+
+That's the reason why it's recommended to work with a virtual environment specifically for Robot@Home2. To do that with conda
+
+    $ conda create --name rh python=3.9
+
+<div class="notes" id="orga447755">
+<p>
+change <code>rh</code> to a name of your choice
+</p>
+
+</div>
+
+<div class="notes" id="org431e2b5">
+<p>
+Robot@Home2 runs with python 3.7 or higher
+</p>
+
+</div>
+
+once it has been created, it can already be activated
+
+    $ conda activate rh
+
+to deactivate run
+
+    $ conda deactivate
+
+### Literate programming with Jupyter
+
+Literate programming is a programming paradigm introduced by Donald Knuth in which a computer program is given an explanation of its logic in a natural language, such as English, interspersed with snippets of macros and traditional source code. The approach is typically used in scientific computing and in data science routinely for reproducible research and open access purposes.
+
+On the other hand, the [Jupyter](https://jupyter.org) *Notebook* is an open-source web application that allows you to create and share documents that contain live code, equations, visualizations and narrative text. Additionally *JupyterLab* is a web-based interactive development environment for Jupyter notebooks, code, and data.
+
+Jupyter is an application of literate programming and Robot@Home2 includes Jupyter notebooks for introductions, easy learning, and technical explanations.
+
+Installing Jupyter in Anaconda distribution is an easy task
+
+    $ conda install -c conda-forge jupyterlab
+
+<div class="notes" id="org2484622">
+<p>
+remember to previously activate your virtual environment with <code>conda activate</code>
+command
+</p>
+
+</div>
+
+<div class="notes" id="org6d9c1f5">
+<p>
+&gt; pip is a common Python package manager that is included in Anaconda and many
+other distributions
+</p>
+
+</div>
+
+## Time to install Robot@Home2
+
+If you have followed previous sections you have the right working environment to
+open this notebok with Jupyter to download and install both toolbox and dataset.
+
+However, if jupyter notebook is not your choice right now you can try the
+following instructions.
+
+### Installing the toolbox
+
+Robot@Home2 Toolbox can be installed through the Python package manager.
+
+Confirm you are in the right virtual environment and install it
 
 ```
 $ pip install robotathome
 ```
 
-and check it out in python
+> pip is a common Python package manager that is included in Anaconda and many
+> other distributions
+
+and check it in Python
 
 ```
+$ python
+Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
+[GCC 7.5.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
 >>> import robotathome as rh
 >>> print (rh.__version__)
 0.4.9
 ```
 
-## Downloading the dataset
+### Downloading the dataset
 
 Robot@Home resides in Zenodo site where all data versions can be downloaded.
 Latest version ([v2.0.1](https://zenodo.org/record/4530453)) is composed of two
@@ -137,7 +263,7 @@ else:
     print('Integrity of Robot@Home2_files.tgz is compromised, please download again')
 ```
 
-## Still trying the old version
+### Still trying the old version
 
 This package still provides the Python API (dataset.py) that assists in loading,
 parsing, and visualizing the annotations in the original Robot@Home (versions
