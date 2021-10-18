@@ -75,12 +75,7 @@ Install the distribution
 
     $ bash ~/Downloads/Anaconda3-2021.05-Linux-x86_64.sh
 
-<div class="notes" id="orge09fe72">
-<p>
-include the <code>bash</code> command regardless of whether or not you are using Bash shell.
-</p>
-
-</div>
+> include the `bash` command regardless of whether or not you are using Bash shell.
 
 Review and agree the license agreement. Accept the default install location.
 
@@ -120,19 +115,9 @@ That's the reason why it's recommended to work with a virtual environment specif
 
     $ conda create --name rh python=3.9
 
-<div class="notes" id="orga447755">
-<p>
-change <code>rh</code> to a name of your choice
-</p>
+> change `rh` to a name of your choice
 
-</div>
-
-<div class="notes" id="org431e2b5">
-<p>
-Robot@Home2 runs with python 3.7 or higher
-</p>
-
-</div>
+> Robot@Home2 runs with python 3.7 or higher
 
 once it has been created, it can already be activated
 
@@ -154,26 +139,14 @@ Installing Jupyter in Anaconda distribution is an easy task
 
     $ conda install -c conda-forge jupyterlab
 
-<div class="notes" id="org2484622">
-<p>
-remember to previously activate your virtual environment with <code>conda activate</code>
-command
-</p>
+> remember to previously activate your virtual environment with `conda activate` command
 
-</div>
-
-<div class="notes" id="org6d9c1f5">
-<p>
-&gt; pip is a common Python package manager that is included in Anaconda and many
-other distributions
-</p>
-
-</div>
+> pip is a common Python package manager that is included in Anaconda and many other distributions
 
 ## Time to install Robot@Home2
 
 If you have followed previous sections you have the right working environment to
-open [[https://github.com/goyoambrosio/RobotAtHome_API/blob/master/notebooks/10-Download-and-install.ipynb][this notebok]] with Jupyter to download and install both toolbox and dataset.
+open [this notebok](https://github.com/goyoambrosio/RobotAtHome_API/blob/master/notebooks/10-Download-and-install.ipynb) with Jupyter to download and install both toolbox and dataset.
 
 However, if jupyter notebook is not your choice right now you can try the
 following instructions.
