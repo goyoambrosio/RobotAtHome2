@@ -1,0 +1,492 @@
+
+# #+BEGIN_abstract
+# This is the abstract
+# #+END_abstract
+
+
+* Header Information (Ver.7.5) :noexport:
+
+[[info:org#Export Settings]]
+[[https://orgmode.org/manual/Export-Settings.html#Export-Settings][13.2 Export Settings]]
+
+
+** Identification
+
+# [[https://orgmode.org/manual/Export-settings.html][Export settings]]
+#+TITLE: README
+#+SUBTITLE: Robot@Home2
+#+DESCRIPTION: Org based README file 
+#+KEYWORDS: readme, org, R@H2, rh
+# Use keybind C-c . or C-c < or free format like "Saturday 9th, 2019"
+#+DATE: <2021-10-19 Tue>
+#+AUTHOR: Gregorio Ambrosio Cestero
+#+EMAIL: gambrosio@uma.es
+#+LANGUAGE: en
+
+** Org settings
+
+# #+STARTUP: hidestars
+# #+STARTUP: hideblocks
+# #+STARTUP: nohideblocks
+#+STARTUP: overview
+#+STARTUP: indent
+#+STARTUP: logdrawer
+
+#+COLUMNS: %25ITEM %TAGS %TODO
+
+
+** Export settings (specific)
+*** Code
+
+ # To avoid evaluating code on export use the following header argument:
+ #+PROPERTY: header-args :eval never-export
+
+*** ODT
+
+ # [[https://orgmode.org/manual/ODT-specific-export-settings.html][ODT specific export settings]]
+ # Style file application does not work fine for me. Apply with Load Style after
+ # file creation.
+ # #+ODT_STYLES_FILE: ~/cloud/Dropbox/DOCUMENTS/TEMPLATES/ODT/my_odt_template.odt
+ # [[https://orgmode.org/manual/ASCII_002fLatin_002d1_002fUTF_002d8-export.html#ASCII_002fLatin_002d1_002fUTF_002d8-export][ASCII specific export setting]] (also for ODT)
+ # #+DESCRIPTION and #+KEYWORDS are included as metadata in the aoutput file.
+
+
+ # Abstract does not work when export in ODT format. Use it for Latex
+ # #+BEGIN_ABSTRACT
+ # Abstract
+ # #+END_ABSTRACT
+ # #+TOC: headlines 2
+
+*** reveal.js
+
+#+REVEAL_INIT_OPTIONS: width:1280, height:1024, slideNumber:"c/t"
+#+OPTIONS: num:nil toc:nil ^:nil
+#+REVEAL_TRANS: fade
+#+REVEAL_THEME: moon
+#+REVEAL_HEAD_PREAMBLE: <meta name="AAAAAA" content="AAAAA">
+#+REVEAL_POSTAMBLE: <p> Created by Gregorio Ambrosio Cestero </p>
+#+REVEAL_HLEVEL: 1
+# #+REVEAL_ROOT: https://cdn.jsdelivr.net/npm/reveal.js@3.8.0
+#+REVEAL_ROOT: ./reveal.js
+#+OPTIONS: reveal_single_file:nil
+#+REVEAL_EXTRA_CSS: ./assets/css/goyo.css
+#+REVEAL_SLIDE_FOOTER: <p><a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons License" style="border-width:0" align="middle" src="./assets/img/license.png" /></a>  2019 Gregorio Ambrosio Cestero</p>
+*** ioslide
+
+#+COMPANY: Goyo AC
+#+WWW: http://goyoambrosio.com
+#+GITHUB: http://github.com/goyoambrosio
+#+TWITTER: gambrosio
+
+#+FAVICON: assets/img/goyologo_circle.png
+#+ICON: assets/img/goyologo_circle.png
+#+HASHTAG: gambrosio
+
+
+*** Pandoc
+
+ #+BEGIN_COMMENT
+ # Useful commands
+ # Pandoc ignores some headers options (as PROPERTIES). Use export (C-c-e o o) instead.
+ cd ~/cloud/Dropbox/DOCUMENTS/TEMPLATES
+ pandoc this_file.org --reference-doc=/home/goyo/cloud/Dropbox/DOCUMENTS/TEMPLATES/DOCX/my_docx_template.docx -o this_file.docx
+ soffice --nologo --writer this_file.docx
+ #+END_COMMENT
+
+*** LaTeX
+
+[[https://orgmode.org/manual/LaTeX-specific-export-settings.html#LaTeX-specific-export-settings][13.10.2 LaTeX specific export settings]]
+[[https://orgmode.org/manual/Images-in-LaTeX-export.html][13.10.6 Images in LaTeX export]]
+
+
+# LaTeX specific export settings
+# ================================
+
+#+LATEX_COMPILER: pdflatex
+#+LATEX_CLASS: article
+#+LATEX_CLASS_OPTIONS: [a4paper]
+#+LATEX_CLASS_OPTIONS: [10pt]
+
+#+LATEX_HEADER: \linespread{1.1}
+# #+LATEX_HEADER: \usepackage[a4paper,innermargin=1in,outermargin=0.75in,vmargin=1.5cm]{geometry}
+#+LATEX_HEADER: \usepackage[a4paper,width=150mm,top=25mm,bottom=25mm]{geometry}
+#+LATEX_HEADER: \usepackage[english]{babel}
+# #+LATEX_HEADER: \usepackage[english,spanish]{babel}
+#+LATEX_HEADER: \usepackage[dvipsnames]{xcolor}
+#+LATEX_HEADER: \hypersetup{citecolor=olive,colorlinks=true,urlcolor=Turquoise,linkcolor=olive,linkbordercolor=blue,pdfborderstyle={/S/U/W 1}}
+# #+LATEX_HEADER: \hypersetup{ hidelinks = true, }
+# #+LATEX_HEADER: \usepackage[dvipsnames]{xcolor}
+
+#+LATEX_HEADER: \usepackage{fancyhdr}
+#+LATEX_HEADER: \pagestyle{fancy}
+#+LATEX_HEADER: \fancyhead{} % clear all header fields
+#+LATEX_HEADER: \fancyhead[L]{Gregorio Ambrosio Cestero}
+#+LATEX_HEADER: \fancyhead[R]{\textbf{PhD related info}}
+#+LATEX_HEADER: \fancyfoot[C]{}
+#+LATEX_HEADER: \fancyfoot[R]{\thepage}
+
+# Fix the space between paragraphs
+#+LATEX_HEADER: \parskip=5pt
+
+# #+LATEX_HEADER_EXTRA:
+# #+LATEX_COMPILER:
+
+# BibTeX related
+# ================
+
+#+LATEX_HEADER: \usepackage[square,numbers,sort]{natbib}
+# #+LATEX_HEADER: \usepackage[square,numbers,sort&compress]{natbib}
+#+LATEX_HEADER: \usepackage[hyperpageref]{backref}
+
+# Allows hyperref package and the natbib package with options 'numbers' and 'sort&compress' to work together. 
+# #+LATEX_HEADER: \usepackage{hypernat}  
+
+*** ipython
+
+#+OX-IPYNB-LANGUAGE: ipython
+
+
+** Export settings (general)
+
+
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+#+CREATOR: Emacs 27.1 (Org mode 9.4)
+
+#+OPTIONS: ':nil *:t -:t ::t <:t H:6 \n:nil ^:t arch:headline author:t
+#+OPTIONS: broken-links:nil c:nil creator:nil d:(not "LOGBOOK") date:t e:t
+#+OPTIONS: email:t f:t inline:t num:t p:nil pri:nil prop:t stat:t tags:t
+#+OPTIONS: tasks:t tex:t timestamp:t title:t toc:t todo:nil |:t
+
+
+# TOC related
+# #+OPTIONS: toc:t          include all levels in TOC
+# #+OPTIONS: toc:2          only include two levels in TOC
+# #+OPTIONS: toc:nil        no default TOC at all
+
+# To move the TOC to a different location:
+# #+OPTIONS: toc:nil        no default TOC
+# ...
+# #+TOC: headlines 2        insert TOC here, with two headline levels
+
+# Use the TOC keyword to generate list of tables (resp. all listings) with captions.
+# #+TOC: listings           build a list of listings
+# #+TOC: tables             build a list of tables
+
+* Robot@Home2 Dataset Toolbox
+
+[[https://pypi.org/project/robotathome/][https://img.shields.io/pypi/v/robotathome]] [[https://pypi.org/project/robotathome/][https://img.shields.io/pypi/v/robotathome]]
+
+The [[http://mapir.uma.es/papersrepo/2017/2017-raul-IJRR-Robot_at_home_dataset.pdf][Robot@Home]] dataset is a collection of raw and processed data from five
+domestic settings compiled by a mobile robot equipped with 4 RGB-D cameras and a
+2D laser scanner. Its main purpose is to serve as a testbed for semantic mapping
+algorithms through the categorization of objects and/or rooms.
+
+Nevertheless, the Robot@Home dataset has been updated to **Robot@Home2**. This
+update is made up of a relational database file in SQLite format with all the
+original data and a size of only 2,2 GB. The image and scene files have been
+reorganized and now takes only 25,9 GB.
+
+The database, named ~rh.db~, is a relational sql database accessible with the
+SQLite engine that usually accompanies the python environment and is popularly
+used in the development of current applications in both fixed (linux and
+windows) and mobile environments. (android).
+
+The data files have been organized into two main groups. On the one hand, the
+files with RGBD data (RGB images and depth images) and on the other the 3D
+scenes in point cloud files.
+
+The intensity (RGB) and depth (D) image files have a standard *png* format so
+they can be opened directly. In addition, the files are linked to the data in
+the database through tables that relate them. Moreover, the database contains
+tables that relate the files of the new version with those of the old version.
+  
+In the case of 3D scene files, these are plain text files that store the
+coordinates and colors of the points that make up the 3D cloud. These files can
+be easily visualized with current software for the visualization of point
+clouds like [[https://www.meshlab.net/][MeshLab]].
+
+You no longer need to waste time diving the obscure data formats (despite an API
+~dataset.py~ for that is provided). Instead, you can simply surf the dataset
+through SQL queries or the new toolbox.
+
+The toolbox (~toolbox.py~) has been coded for various purposes. The first one
+consists of encapsulating frequent queries as functions and integrating the
+results with a data analysis library such as Pandas. Pandas library is widely
+used in data science and machine learning disciplines in the Python framework.
+The second one is the integration of the data set with the GluonCV library to
+apply deep learning algorithms in artificial vision.
+
+** Prerequisites: Installing the Python Development Environment
+
+ Launched in 1991, Python has achieved enormous popularity in the scientific
+ community in recent years. Python is an interpreted high-level general-purpose
+ programming language with a many useful features. It's platform independent,
+ simple, consistent and with a great code readability. Moreover, it has an
+ extensive set of libraries that help to reduce development time.
+
+ Artificial Intelligence (AI) and Machine Learning (ML) projects differ from
+ software projects in other areas due to differences in the technology stack and
+ the skills needed to deal with them.
+
+ Python offers AI and ML programmers many features that help to develop and test
+ complex algorithms. Even in Computer Vision (CV), there are solid software
+ libraries that allow developers to focus on their research areas.
+
+ There are several different Python distributions, each one created with a
+ different approach and for different audiences.
+
+ Robot@Home2 Toolbox is written in Python and works well with Anaconda which is
+ a distribution of the Python and R programming languages for scientific
+ computing. Of course, other distributions can be used to run the toolbox.
+
+*** Installation in Linux
+
+To install Anaconda in Linux you must follow these steps.
+
+Download the Anaconda installer
+
+#+begin_example
+$ cd ~/Downloads
+$ wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
+#+end_example
+
+#+begin_notes
+replace `~/Downloads` with the path of your choice
+#+end_notes
+
+Install the distribution
+
+#+begin_example
+$ bash ~/Downloads/Anaconda3-2021.05-Linux-x86_64.sh
+#+end_example
+
+#+begin_notes
+include the `bash` command regardless of whether or not you are using Bash shell.
+#+end_notes
+
+Review and agree the license agreement. Accept the default install location.
+
+When the installer prompts *Do you wish the installer to initialize Anaconda3 by
+running conda init?*, we recommend *yes*.
+
+Finally, for the installation to take effect
+
+#+begin_example
+$ source ~/.bashrc
+#+end_example
+
+For more detailed/updated installation information, go to [[https://docs.anaconda.com/anaconda/install/][Anaconda installation page]].
+
+*** Verifying your installation
+
+Enter the command ~python~. This command runs the Python shell. If Anaconda is
+installed and working, the version information it displays when it starts up
+will include ~“Anaconda”~. To exit the Python shell, enter the ~quit()~ command.
+
+#+begin_example
+$ python
+Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
+[GCC 7.5.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> quit()
+#+end_example
+
+You can also display a list of installed packages and their versions running
+~conda list~
+
+#+begin_example
+$ conda list
+# packages in environment at /home/user/anaconda3:
+#
+# Name                    Version                   Build  Channel
+...
+#+end_example
+
+*** Making a virtual environment
+
+A virtual environment is a Python environment such that the Python interpreter,
+libraries and scripts installed into it are isolated from those installed in
+other virtual environments
+
+When a virtual environment is active, the installations tools install Python
+packages into the virtual environment without needing to be told to do so
+explicitly and without interfering in other virtual environments.
+
+That's the reason why it's recommended to work with a virtual environment
+specifically for Robot@Home2. To do that with conda
+
+#+begin_example
+$ conda create --name rh python=3.9
+#+end_example
+
+#+begin_notes
+change `rh` to a name of your choice
+#+end_notes
+
+#+begin_notes
+Robot@Home2 runs with python 3.7 or higher
+#+end_notes
+
+once it has been created, it can already be activated
+
+#+begin_example
+$ conda activate rh
+#+end_example
+
+to deactivate run
+
+#+begin_example
+$ conda deactivate
+#+end_example
+
+
+*** Literate programming with Jupyter
+
+Literate programming is a programming paradigm introduced by Donald Knuth in
+which a computer program is given an explanation of its logic in a natural
+language, such as English, interspersed with snippets of macros and traditional
+source code. The approach is typically used in scientific computing and in data
+science routinely for reproducible research and open access purposes.
+
+On the other hand, the *[[https://jupyter.org][Jupyter]] *Notebook* is an open-source web application that
+allows you to create and share documents that contain live code, equations,
+visualizations and narrative text. Additionally *JupyterLab* is a web-based
+interactive development environment for Jupyter notebooks, code, and data.
+
+Jupyter is an application of literate programming and Robot@Home2 includes
+Jupyter notebooks for introductions, easy learning, and technical explanations.
+
+Installing Jupyter in Anaconda distribution is an easy task
+
+#+begin_example
+$ conda install -c conda-forge jupyterlab
+#+end_example
+
+#+begin_notes
+remember to previously activate your virtual environment with `conda activate` command
+#+end_notes
+
+** Time to install Robot@Home2
+
+If you have followed the previous sections you have the right working
+environment to open [[https://github.com/goyoambrosio/RobotAtHome_API/blob/master/notebooks/10-Download-and-install.ipynb][this notebook]] with Jupyter to download and install both the
+toolbox and the dataset.
+
+However, if jupyter notebook is not your choice right now you can try the
+following instructions.
+
+*** Installing the toolbox
+
+Robot@Home2 Toolbox can be installed through the Python package manager.
+
+Confirm you are in the right virtual environment and install it
+
+#+begin_example
+$ pip install robotathome
+#+end_example
+
+#+begin_notes
+~pip~ is a common Python package manager that is included in Anaconda and many
+other distributions
+#+end_notes
+
+and check it in Python
+
+#+begin_example
+$ python
+Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
+[GCC 7.5.0] :: Anaconda, Inc. on linux
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import robotathome as rh
+>>> print (rh.__version__)
+0.4.9
+#+end_example
+
+*** Downloading the dataset
+
+Robot@Home resides in Zenodo site where all data versions can be downloaded.
+Latest version [[https://zenodo.org/record/4530453][v2.0.1]] is composed of two files: ~Robot@Home2_db.tgz~ and
+~Robot@Home2_files.tgz~. The first one contains the database, and the second one
+contains the bunch of RGBD images and 3D scenes.
+
+You can choose to download it on your own or through the new brand toolbox.
+
+In case you are considering Linux
+
+
+#+begin_src bash
+wget https://zenodo.org/record/4530453/files/Robot@Home2_db.tgz
+wget https://zenodo.org/record/4530453/files/Robot@Home2_files.tgz
+#+end_src
+
+check the files integrity
+
+#+begin_example
+$ md5sum Robot@Home2_db.tgz 
+c2a3536b6b98b907c56eda3a78300cbe  Robot@Home2_db.tgz
+
+$ md5sum Robot@Home2_files.tgz 
+c55465536738ec3470c75e1671bab5f2  Robot@Home2_files.tgz
+#+end_example
+
+and to finish unzip files
+
+#+begin_example
+$ pv /home/user/Downloads/Robot@Home2_db.tgz | tar -J -xf - -C /home/user/WORKSPACE/
+$ pv /home/user/Downloads/Robot@Home2_files.tgz | tar -xzf - -C /home/user/WORKSPACE/files
+#+end_example
+
+or even better, now you can do the same programmatically using the toolbox
+
+#+begin_src python
+import robotathome as rh
+
+# Download files
+rh.download('https://zenodo.org/record/4530453/files/Robot@Home2_db.tgz', '~/Downloads')
+rh.download('https://zenodo.org/record/4530453/files/Robot@Home2_files.tgz', '~/Downloads')
+
+# Compute md5 checksums
+md5_checksum_db = rh.get_md5('~/Downloads/Robot@Home2_db.tgz')
+md5_checksum_files = rh.get_md5('~/Downloads/Robot@Home2_files.tgz')
+
+# Check the files integrity and download
+if md5_checksum_db == 'c2a3536b6b98b907c56eda3a78300cbe':
+    rh.uncompress('~/Downloads/Robot@Home2_db.tgz', '~/WORKSPACE')
+else:
+    print('Integrity of Robot@Home2_db.tgz is compromised, please download again')
+    
+if md5_checksum_files == 'c55465536738ec3470c75e1671bab5f2':
+    rh.uncompress('~/Downloads/Robot@Home2_files.tgz', '~/WORKSPACE/files')
+else:
+    print('Integrity of Robot@Home2_files.tgz is compromised, please download again')
+#+end_src
+
+* References :noexport:
+
+# To prevent the addition of a separate section called References before the bibliography
+#+LATEX: \renewcommand{\bibsection}
+
+# Org-ref commands ([[https://github.com/jkitchin/org-ref/blob/master/org-ref.org][The org-ref manual]])
+# =======================================
+
+# [[nocite:*]]    # Uncomment to include a full list of references contained in
+# the bib file 
+bibliography:~/cloud/Dropbox/DOCUMENTS/PhD/PhD.bib
+bibliographystyle:ieeetr
+
+
+* Emacs Setup                                                    :noexport:
+  This document has local variables in its postembule, which should
+  allow org-mode to work seamlessly without any setup. If you're
+  uncomfortable using such variables, you can safely ignore them at
+  startup. Exporting may require that you copy them in your .emacs.
+
+# Local Variables:
+# mode: org
+# coding: utf-8-unix
+# ispell-dictionary: "english"
+# org-hide-emphasis-markers: t
+# eval: (auto-fill-mode)
+# eval: (fci-mode)
+# End:
