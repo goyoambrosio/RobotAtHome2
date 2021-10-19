@@ -89,9 +89,9 @@ $ wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
 #+end_example
 
 
-#+begin_comment
+#+begin_quote
 replace `~/Downloads` with the path of your choice
-#+end_comment
+#+end_quote
 
 
 Install the distribution
@@ -159,13 +159,13 @@ specifically for Robot@Home2. To do that with conda
 $ conda create --name rh python=3.9
 #+end_example
 
-#+begin_notes
+#+begin_quote
 change `rh` to a name of your choice
-#+end_notes
+#+end_quote
 
-#+begin_notes
+#+begin_quote
 Robot@Home2 runs with python 3.7 or higher
-#+end_notes
+#+end_quote
 
 once it has been created, it can already be activated
 
@@ -202,9 +202,9 @@ Installing Jupyter in Anaconda distribution is an easy task
 $ conda install -c conda-forge jupyterlab
 #+end_example
 
-#+begin_notes
+#+begin_quote
 remember to previously activate your virtual environment with `conda activate` command
-#+end_notes
+#+end_quote
 
 * Time to install Robot@Home2
 
@@ -225,10 +225,10 @@ Confirm you are in the right virtual environment and install it
 $ pip install robotathome
 #+end_example
 
-#+begin_notes
+#+begin_quote
 ~pip~ is a common Python package manager that is included in Anaconda and many
 other distributions
-#+end_notes
+#+end_quote
 
 and check it in Python
 
