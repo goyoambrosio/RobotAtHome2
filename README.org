@@ -83,11 +83,10 @@ To install Anaconda in Linux you must follow these steps.
 
 Download the Anaconda installer
 
-#+begin_example
-$ cd ~/Downloads
-$ wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
-#+end_example
-
+#+begin_src sh
+cd ~/Downloads
+wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
+#+end_src
 
 #+begin_quote
 replace `~/Downloads` with the path of your choice
