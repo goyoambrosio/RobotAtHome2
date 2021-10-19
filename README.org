@@ -1,3 +1,19 @@
+#+TITLE: README
+#+SUBTITLE: Robot@Home2
+#+DESCRIPTION: Org based README file 
+#+KEYWORDS: readme, org, R@H2, rh
+#+DATE: <2021-10-19 Tue>
+#+AUTHOR: Gregorio Ambrosio Cestero
+#+EMAIL: gambrosio@uma.es
+#+LANGUAGE: en
+
+#+html: <a href="https://pypi.org/project/robotathome/">
+#+html:   <img src="https://img.shields.io/pypi/v/robotathome" alt="version"/>
+#+html: </a>
+#+html: <a href="https://doi.org/10.5281/zenodo.4530453">
+#+html:   <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4530453.svg" alt="DOI" />
+#+html: </a>
+
 * Robot@Home2 Dataset Toolbox
 
 [[https://pypi.org/project/robotathome/][https://img.shields.io/pypi/v/robotathome]] [[https://pypi.org/project/robotathome/][https://img.shields.io/pypi/v/robotathome]]
