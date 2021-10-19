@@ -347,6 +347,152 @@ class RobotAtHome():
 
         return df_rows
 
+    def get_labels_from_lblrgbd(self, so_id):
+        """
+        This function return labels rows for the observations referenced by
+        sensor_observation_id
+
+        SQL query
+
+        select * from rh_lblrgbd_labels
+            where sensor_observation_id = so_id
+
+        Parameters
+        ----------
+        so_id : int
+            The primary key value to identify a row in the table
+            rh_lbl_rgbd_labels.
+
+        Returns
+        -------
+        A dataframe with the query result. An empty dataframe is returned when
+        no rows are available, i.e., when the sensor observation does not
+        belong to rh_lblrgbd (labelled rgbd)
+        """
+
+        # Get a cursor to execute SQLite statements
+        cur = self.__con.cursor()
+
+        # # Build the query
+        # sql_str = (
+        #     '''
+        #     select * from rh_lblrgbd_labels
+        #     where sensor_observation_id = ?
+        #     '''
+        # )
+
+        # parms = (so_id,)
+        # cur.execute(sql_str, parms)
+        # rows = cur.fetchall()
+
+        sql_str = (
+            '''
+            select * from rh_lblrgbd_labels
+            where sensor_observation_id = {}
+            '''.format(so_id)
+        )
+
+        df_rows = pd.read_sql_query(sql_str, self.__con)
+
+        # print(df.shape)
+        # rows = df.to_records()
+        # for row in rows:
+        #     print(row)
+
+        return df_rows
+
+    def __get_mask(self, label_path_file_name):
+        mask = []
+        with open(label_path_file_name, "r") as file_handler:
+            line = file_handler.readline()
+            while line:
+                words = line.strip().split()
+                if words[0][0] != '#':
+                    num_of_labels = int(words[0])
+                    break
+                line = file_handler.readline()
+
+            for i in range(num_of_labels):
+                line = file_handler.readline()
+                words = line.strip().split()
+
+            num_of_rows = 0
+            line = file_handler.readline()
+            while line:
+                num_of_rows += 1
+                words = line.strip().split()
+                mask.append(list(map(int, words)))
+                line = file_handler.readline()
+
+        rh.logger.debug("mask height: {}", len(mask))
+        rh.logger.debug("mask width : {}", len(mask[0]))
+
+        mask = np.array(mask)
+        mask = np.rot90(mask)
+
+        return mask
+
+    def get_mask_from_lblrgbd(self, so_id):
+        """
+        This function 
+
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+        """
+        # Get a cursor to execute SQLite statements
+        # cur = self.__con.cursor()
+
+        # sql_str = (
+        #     '''
+        #     select pth, f3
+        #     from rh_temp_lblrgbd
+        #     where id = {}
+        #     '''.format(so_id)
+        # )
+
+        sql_str = (
+            f'''
+            select pth, f3
+            from rh_temp_lblrgbd
+            where id = {so_id}
+            '''
+        )
+
+        df_rows = pd.read_sql_query(sql_str, self.__con)
+        rh.logger.debug("df_rows.shape: {}", df_rows.shape)
+        # print(df_rows)
+        # print(df_rows.loc[0,"pth"])
+        # print(df_rows.loc[0,"f3"])
+        label_path_file_name = os.path.join(self.__rh_path,
+                                            self.__rgbd_path,
+                                            df_rows.loc[0, "pth"],
+                                            df_rows.loc[0, "f3"])
+
+        rh.logger.debug("label_path_file_name: {}", label_path_file_name)
+        mask = self.__get_mask(label_path_file_name)
+
+        return mask
+
+    def get_label_mask(self, mask, labels):
+        """
+        Returns a binary 2D array (pixels being 1s and 0s)
+        """
+        masks = []
+        for label in labels:
+            arr = mask & (2**(label))
+            np.clip(arr, 0, 1, out=arr)
+            arr = np.uint8(arr[:,2:-2])
+            masks.append(arr)
+        return masks
+
+
+    """
+    OpenCV
+    """
     def get_video_from_rgbd(self,
                             source='lblrgbd',
                             home_session_name='alma-s1',
@@ -545,148 +691,6 @@ class RobotAtHome():
             cv2.destroyAllWindows()
 
         return video_file_name
-
-    def get_labels_from_lblrgbd(self, so_id):
-        """
-        This function return labels rows for the observations referenced by
-        sensor_observation_id
-
-        SQL query
-
-        select * from rh_lblrgbd_labels
-            where sensor_observation_id = so_id
-
-        Parameters
-        ----------
-        so_id : int
-            The primary key value to identify a row in the table
-            rh_lbl_rgbd_labels.
-
-        Returns
-        -------
-        A dataframe with the query result. An empty dataframe is returned when
-        no rows are available, i.e., when the sensor observation does not
-        belong to rh_lblrgbd (labelled rgbd)
-        """
-
-        # Get a cursor to execute SQLite statements
-        cur = self.__con.cursor()
-
-        # # Build the query
-        # sql_str = (
-        #     '''
-        #     select * from rh_lblrgbd_labels
-        #     where sensor_observation_id = ?
-        #     '''
-        # )
-
-        # parms = (so_id,)
-        # cur.execute(sql_str, parms)
-        # rows = cur.fetchall()
-
-        sql_str = (
-            '''
-            select * from rh_lblrgbd_labels
-            where sensor_observation_id = {}
-            '''.format(so_id)
-        )
-
-        df_rows = pd.read_sql_query(sql_str, self.__con)
-
-        # print(df.shape)
-        # rows = df.to_records()
-        # for row in rows:
-        #     print(row)
-
-        return df_rows
-
-    def __get_mask(self, label_path_file_name):
-        mask = []
-        with open(label_path_file_name, "r") as file_handler:
-            line = file_handler.readline()
-            while line:
-                words = line.strip().split()
-                if words[0][0] != '#':
-                    num_of_labels = int(words[0])
-                    break
-                line = file_handler.readline()
-
-            for i in range(num_of_labels):
-                line = file_handler.readline()
-                words = line.strip().split()
-
-            num_of_rows = 0
-            line = file_handler.readline()
-            while line:
-                num_of_rows += 1
-                words = line.strip().split()
-                mask.append(list(map(int, words)))
-                line = file_handler.readline()
-
-        rh.logger.debug("mask height: {}", len(mask))
-        rh.logger.debug("mask width : {}", len(mask[0]))
-
-        mask = np.array(mask)
-        mask = np.rot90(mask)
-
-        return mask
-
-    def get_mask_from_lblrgbd(self, so_id):
-        """
-        This function 
-
-        Parameters
-        ----------
-
-        Returns
-        -------
-
-        """
-        # Get a cursor to execute SQLite statements
-        # cur = self.__con.cursor()
-
-        # sql_str = (
-        #     '''
-        #     select pth, f3
-        #     from rh_temp_lblrgbd
-        #     where id = {}
-        #     '''.format(so_id)
-        # )
-
-        sql_str = (
-            f'''
-            select pth, f3
-            from rh_temp_lblrgbd
-            where id = {so_id}
-            '''
-        )
-
-        df_rows = pd.read_sql_query(sql_str, self.__con)
-        rh.logger.debug("df_rows.shape: {}", df_rows.shape)
-        # print(df_rows)
-        # print(df_rows.loc[0,"pth"])
-        # print(df_rows.loc[0,"f3"])
-        label_path_file_name = os.path.join(self.__rh_path,
-                                            self.__rgbd_path,
-                                            df_rows.loc[0, "pth"],
-                                            df_rows.loc[0, "f3"])
-
-        rh.logger.debug("label_path_file_name: {}", label_path_file_name)
-        mask = self.__get_mask(label_path_file_name)
-
-        return mask
-
-    def get_label_mask(self, mask, labels):
-        """
-        Returns a binary 2D array (pixels being 1s and 0s)
-        """
-        masks = []
-        for label in labels:
-            arr = mask & (2**(label))
-            np.clip(arr, 0, 1, out=arr)
-            arr = np.uint8(arr[:,2:-2])
-            masks.append(arr)
-        return masks
 
     def get_rgb_image_from_lblrgbd(self, so_id):
         """
