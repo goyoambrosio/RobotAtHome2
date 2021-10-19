@@ -96,7 +96,7 @@ replace `~/Downloads` with the path of your choice
 Install the distribution
 
 #+begin_src shell
-$ bash ~/Downloads/Anaconda3-2021.05-Linux-x86_64.sh
+bash ~/Downloads/Anaconda3-2021.05-Linux-x86_64.sh
 #+end_src
 
 #+begin_quote
@@ -111,7 +111,7 @@ running conda init?*, we recommend *yes*.
 Finally, for the installation to take effect
 
 #+begin_src shell
-$ source ~/.bashrc
+source ~/.bashrc
 #+end_src
 
 For more detailed/updated installation information, go to [[https://docs.anaconda.com/anaconda/install/][Anaconda installation page]].
@@ -123,7 +123,7 @@ installed and working, the version information it displays when it starts up
 will include ~“Anaconda”~. To exit the Python shell, enter the ~quit()~ command.
 
 #+begin_src shell
-$ python
+python
 Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
 [GCC 7.5.0] :: Anaconda, Inc. on linux
 Type "help", "copyright", "credits" or "license" for more information.
@@ -134,7 +134,7 @@ You can also display a list of installed packages and their versions running
 ~conda list~
 
 #+begin_src shell
-$ conda list
+conda list
 # packages in environment at /home/user/anaconda3:
 #
 # Name                    Version                   Build  Channel
@@ -155,7 +155,7 @@ That's the reason why it's recommended to work with a virtual environment
 specifically for Robot@Home2. To do that with conda
 
 #+begin_src shell
-$ conda create --name rh python=3.9
+conda create --name rh python=3.9
 #+end_src
 
 #+begin_quote
@@ -169,13 +169,13 @@ Robot@Home2 runs with python 3.7 or higher
 once it has been created, it can already be activated
 
 #+begin_src shell
-$ conda activate rh
+conda activate rh
 #+end_src
 
 to deactivate run
 
 #+begin_src shell
-$ conda deactivate
+conda deactivate
 #+end_src
 
 
@@ -198,7 +198,7 @@ Jupyter notebooks for introductions, easy learning, and technical explanations.
 Installing Jupyter in Anaconda distribution is an easy task
 
 #+begin_src shell
-$ conda install -c conda-forge jupyterlab
+conda install -c conda-forge jupyterlab
 #+end_src
 
 #+begin_quote
@@ -221,7 +221,7 @@ Robot@Home2 Toolbox can be installed through the Python package manager.
 Confirm you are in the right virtual environment and install it
 
 #+begin_src shell
-$ pip install robotathome
+pip install robotathome
 #+end_src
 
 #+begin_quote
@@ -232,7 +232,7 @@ other distributions
 and check it in Python
 
 #+begin_src shell
-$ python
+python
 Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
 [GCC 7.5.0] :: Anaconda, Inc. on linux
 Type "help", "copyright", "credits" or "license" for more information.
@@ -261,18 +261,18 @@ wget https://zenodo.org/record/4530453/files/Robot@Home2_files.tgz
 check the files integrity
 
 #+begin_src shell
-$ md5sum Robot@Home2_db.tgz 
+md5sum Robot@Home2_db.tgz 
 c2a3536b6b98b907c56eda3a78300cbe  Robot@Home2_db.tgz
 
-$ md5sum Robot@Home2_files.tgz 
+md5sum Robot@Home2_files.tgz 
 c55465536738ec3470c75e1671bab5f2  Robot@Home2_files.tgz
 #+end_src
 
 and to finish unzip files
 
 #+begin_src shell
-$ pv /home/user/Downloads/Robot@Home2_db.tgz | tar -J -xf - -C /home/user/WORKSPACE/
-$ pv /home/user/Downloads/Robot@Home2_files.tgz | tar -xzf - -C /home/user/WORKSPACE/files
+pv /home/user/Downloads/Robot@Home2_db.tgz | tar -J -xf - -C /home/user/WORKSPACE/
+pv /home/user/Downloads/Robot@Home2_files.tgz | tar -xzf - -C /home/user/WORKSPACE/files
 #+end_src
 
 or even better, now you can do the same programmatically using the toolbox
