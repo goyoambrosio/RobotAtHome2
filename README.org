@@ -235,14 +235,14 @@ and check it in Python
 python
 #+end_src
 
-#+begin_quote
+#+begin_example
 Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
 [GCC 7.5.0] :: Anaconda, Inc. on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import robotathome as rh
 >>> print (rh.__version__)
 0.4.9
-#+end_quote
+#+end_example
 
 ** Downloading the dataset
 
@@ -264,19 +264,19 @@ wget https://zenodo.org/record/4530453/files/Robot@Home2_files.tgz
 check the files integrity
 
 #+begin_src shell
-  md5sum Robot@Home2_db.tgz
+md5sum Robot@Home2_db.tgz
 #+end_src
 
 #+begin_quote
-c2a3536b6b98b907c56eda3a78300cbe  Robot@Home2_db.tgz
+c2a3536b6b98b907c56eda3a78300cbe
 #+end_quote
 
 #+begin_src shell
-  md5sum Robot@Home2_files.tgz 
+md5sum Robot@Home2_files.tgz 
 #+end_src
 
 #+begin_quote
-c55465536738ec3470c75e1671bab5f2  Robot@Home2_files.tgz
+c55465536738ec3470c75e1671bab5f2
 #+end_quote
 
 and to finish unzip files
