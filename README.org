@@ -14,6 +14,8 @@
 #+html:   <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4530453.svg" alt="DOI" />
 #+html: </a>
 
+
+
 The [[http://mapir.uma.es/papersrepo/2017/2017-raul-IJRR-Robot_at_home_dataset.pdf][Robot@Home]] dataset is a collection of raw and processed data from five
 domestic settings compiled by a mobile robot equipped with 4 RGB-D cameras and a
 2D laser scanner. Its main purpose is to serve as a testbed for semantic mapping
