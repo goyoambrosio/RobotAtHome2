@@ -141,12 +141,12 @@ Type "help", "copyright", "credits" or "license" for more information.
 conda list
 #+end_src
 
-#+begin_quote
+#+begin_example
 # packages in environment at /home/user/anaconda3:
 #
 # Name                    Version                   Build  Channel
 ...
-#+end_quote
+#+end_example
 
 ** Making a virtual environment
 
