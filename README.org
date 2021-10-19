@@ -124,22 +124,29 @@ will include ~“Anaconda”~. To exit the Python shell, enter the ~quit()~ comm
 
 #+begin_src shell
 python
+#+end_src
+
+#+begin_example
 Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
 [GCC 7.5.0] :: Anaconda, Inc. on linux
 Type "help", "copyright", "credits" or "license" for more information.
 >>> quit()
-#+end_src
-
-You can also display a list of installed packages and their versions running
-~conda list~
-
+#+end_example
+  
+  
+  You can also display a list of installed packages and their versions running
+  ~conda list~
+  
 #+begin_src shell
 conda list
+#+end_src
+
+#+begin_quote
 # packages in environment at /home/user/anaconda3:
 #
 # Name                    Version                   Build  Channel
 ...
-#+end_src
+#+end_quote
 
 ** Making a virtual environment
 
