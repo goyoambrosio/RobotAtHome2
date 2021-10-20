@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-__version__ = "0.4.10"
+__version__ = "0.4.16.2"
 from robotathome.version import *
 from robotathome.helpers import *
 from robotathome.toolbox import *
