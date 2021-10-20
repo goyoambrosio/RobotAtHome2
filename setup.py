@@ -60,16 +60,16 @@ setup(
     packages=find_packages(),
 
     install_requires=[
-        "humanize >= 3.0.0",
-        "numpy >= 1.20.1",
-        "click >= 7.1.2",
-        "urllib3 >= 1.25.10",
+        "humanize >= 3.12.0",
+        "click >= 8.0.3",
+        "urllib3 >= 1.26.7",
         "loguru >= 0.5.3",
-        "opencv-python >= 4.5.1",
-        "pandas >= 1.2.2",
-        "mxnet >= 1.6.0",
-        "gluoncv >= 0.8.0"
+        "pandas >= 1.3.4",
+        "mxnet >= 1.8.0",
+        "gluoncv >= 0.10.4",
+        "opencv-python >= 4.5.3",
+        "numpy >= 1.21.2"
     ],
 
-    python_requires='>=3.7',
+    python_requires='>=3.9',
 )
