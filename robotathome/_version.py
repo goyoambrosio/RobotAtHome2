@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 """
-Get version for RobotAtHome package
+Get version for RobotAtHome2 package
 """
 
 import os
 
+__all__=['get_version_str']
 
 def _read(rel_path):
     """ Docstring """
@@ -25,7 +26,6 @@ def _get_version(rel_path):
 def get_version_str():
     """ Docstring """
 
-    _s = "Robot@Home Dataset (" + _get_version("__init__.py") + ")" + "\n"
-    _s += "============================"
+    s = "Robot@Home2 Dataset (v" + _get_version("__init__.py") + ")"
 
-    return _s
+    return s
