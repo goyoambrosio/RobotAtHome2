@@ -74,15 +74,19 @@ To install Anaconda in Linux you must follow these steps.
 
 Download the Anaconda installer
 
-    $ cd ~/Downloads
-    $ wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
+```shell
+$ cd ~/Downloads
+$ wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
+```
 
 > replace `~/Downloads` with the path of your choice
 
 
 Install the distribution
 
-    $ bash ~/Downloads/Anaconda3-2021.05-Linux-x86_64.sh
+```shell
+$ bash ~/Downloads/Anaconda3-2021.05-Linux-x86_64.sh
+```
 
 > include the `bash` command regardless of whether or not you are using Bash shell.
 
@@ -92,7 +96,10 @@ When the installer prompts *“Do you wish the installer to initialize Anaconda3
 
 Finally, for the installation to take effect
 
-    $ source ~/.bashrc
+```shell
+$ source ~/.bashrc
+```
+
 
 For more detailed/updated installation information, go to [Anaconda installation page](https://docs.anaconda.com/anaconda/install/).
 
@@ -145,7 +152,9 @@ explicitly and without interfering in other virtual environments.
 That's the reason why it's recommended to work with a virtual environment
 specifically for Robot@Home2. To do that with conda
 
-    $ conda create --name rh python=3.9
+```shell
+$ conda create --name rh python=3.9
+```
 
 > change `rh` to a name of your choice
 
@@ -154,11 +163,14 @@ specifically for Robot@Home2. To do that with conda
 
 once it has been created, it can already be activated
 
-    $ conda activate rh
-
+```shell
+$ conda activate rh
+```
 to deactivate run
 
-    $ conda deactivate
+```shell
+$ conda deactivate
+```
 
 ## Time to install Robot@Home2
 
@@ -168,11 +180,15 @@ Robot@Home2 Toolbox can be installed through the Python package manager.
 
 1.  Confirm you are in the right virtual environment
 
-        $ conda activate <env_name>
+    ```shell
+    $ conda activate rh
+    ```
 
 2.  Enter this command to install `robotathome` with [Jupyter](https://jupyter.org) to run notebooks.
 
-        $ pip install robotathome[interactive]
+    ```shell
+    $ pip install robotathome[interactive]
+    ```
 
     > `pip` is a common Python package manager that is included in Anaconda and many other distributions
 
