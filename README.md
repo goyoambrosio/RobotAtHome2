@@ -131,7 +131,7 @@ You can also display a list of installed packages and their versions running `co
 ### Verifying in Windows
 
 Click Start, search, or select **Anaconda Prompt** from the menu. After opening
-Anaconda Prompt or the terminal and enter the command `python`. This command runs
+Anaconda Prompt on the terminal enter the command `python`. This command runs
 the Python shell. If Anaconda is installed and working, the version
 information it displays when it starts up will include `Anaconda` . To exit
 the Python shell, enter the command `quit()`.
@@ -172,6 +172,37 @@ to deactivate run
 $ conda deactivate
 ```
 
+### Literate programming with Jupyter
+
+Literate programming is a programming paradigm introduced by Donald Knuth in
+which a computer program is given an explanation of its logic in a natural
+language, such as English, interspersed with snippets of macros and traditional
+source code. The approach is typically used in scientific computing and in data
+science routinely for reproducible research and open access purposes.
+
+On the other hand, the **[Jupyter](https://jupyter.org) \*Notebook** is an open-source web application that
+allows you to create and share documents that contain live code, equations,
+visualizations and narrative text. Additionally **JupyterLab** is a web-based
+interactive development environment for Jupyter notebooks, code, and data.
+
+Jupyter is an application of literate programming and Robot@Home2 includes
+Jupyter notebooks for introductions, easy learning, and technical explanations.
+
+Installing Jupyter in Anaconda distribution is an easy task
+
+```shell
+$ conda install -c conda-forge jupyterlab
+```
+
+> remember to previously activate your virtual environment with \`conda activate\` command
+
+If you have followed the previous sections you have the right working
+environment to open [this notebook](https://github.com/goyoambrosio/RobotAtHome_API/blob/master/notebooks/10-Download-and-install.ipynb) with Jupyter to download and install both the toolbox and the dataset.
+
+However, if jupyter notebook is not your choice right now you can try the
+following instructions.
+
+
 ## Time to install Robot@Home2
 
 ### Installing the toolbox
@@ -187,23 +218,33 @@ Robot@Home2 Toolbox can be installed through the Python package manager.
 2.  Enter this command to install `robotathome` with [Jupyter](https://jupyter.org) to run notebooks.
 
     ```shell
-    $ pip install robotathome[interactive]
+    $ pip install robotathome
     ```
 
     > `pip` is a common Python package manager that is included in Anaconda and many other distributions
 
+    If you have note previously installed `jupyterlab` you can do it right now adding
+    the `interactive` option to the `pip` command as follows:
+    
+    ```shell
+    $ pip install robotathome[interactive]
+    ```
     > `interactive` will include jupyter and needed libraries.
 
 3.  Run `python` and import the `robotathome` library
 
-        $ python
+    ```
+    $ python
 
-        Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
-        [GCC 7.5.0] :: Anaconda, Inc. on linux
-        Type "help", "copyright", "credits" or "license" for more information.
-        >>> import robotathome as rh
-        >>> print (rh.__version__)
-        0.5.0
+    Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
+    [GCC 7.5.0] :: Anaconda, Inc. on linux
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> import robotathome as rh
+    >>> print (rh.__version__)
+    0.5.0
+    ```
+
+4.  Congratulations ! the `robotathome` package has been installed successfully.
 
 
 ### Downloading the dataset

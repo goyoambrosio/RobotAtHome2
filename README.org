@@ -156,7 +156,7 @@ For more detailed/updated installation information, go to [[https://docs.anacond
 ** Verifying in Windows
 
    Click Start, search, or select *Anaconda Prompt* from the menu. After opening
-   Anaconda Prompt or the terminal and enter the command =python=. This command runs
+   Anaconda Prompt on the terminal enter the command =python=. This command runs
    the Python shell. If Anaconda is installed and working, the version
    information it displays when it starts up will include ~Anaconda~ . To exit
    the Python shell, enter the command =quit()=.
@@ -253,13 +253,20 @@ conda activate <env_name>
 2. Enter this command to install ~robotathome~ with [[https://jupyter.org][Jupyter]] to run notebooks.
 
 #+begin_src shell
-pip install robotathome[interactive]
+pip install robotathome
 #+end_src
 
 #+begin_quote
 ~pip~ is a common Python package manager that is included in Anaconda and many
 other distributions
 #+end_quote
+
+If you have note previously installed ~jupyterlab~ you can do it right now
+adding the ~interactive~ option to the ~pip~ command as follows:
+    
+#+begin_src shell
+$ pip install robotathome[interactive]
+#+end_src
 
 #+begin_quote
 ~interactive~ will include jupyter and needed libraries.
@@ -279,6 +286,8 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> print (rh.__version__)
 0.5.0
 #+end_example
+
+4. Congratulations ! the ~robotathome~ package has been installed successfully.
 
 ** Downloading the dataset
 
