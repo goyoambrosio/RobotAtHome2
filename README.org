@@ -14,8 +14,6 @@
 #+html:   <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.4530453.svg" alt="DOI" />
 #+html: </a>
 
-
-
 The [[http://mapir.uma.es/papersrepo/2017/2017-raul-IJRR-Robot_at_home_dataset.pdf][Robot@Home]] dataset is a collection of raw and processed data from five
 domestic settings compiled by a mobile robot equipped with 4 RGB-D cameras and a
 2D laser scanner. Its main purpose is to serve as a testbed for semantic mapping
@@ -79,7 +77,7 @@ apply deep learning algorithms in artificial vision.
  a distribution of the Python and R programming languages for scientific
  computing. Of course, other distributions can be used to run the toolbox.
 
-** Installation in Linux
+** Short installation on Linux
 
 To install Anaconda in Linux you must follow these steps.
 
@@ -93,7 +91,6 @@ wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
 #+begin_quote
 replace `~/Downloads` with the path of your choice
 #+end_quote
-
 
 Install the distribution
 
@@ -118,37 +115,55 @@ source ~/.bashrc
 
 For more detailed/updated installation information, go to [[https://docs.anaconda.com/anaconda/install/][Anaconda installation page]].
 
-** Verifying your installation
+** Installation on Windows
 
-Enter the command ~python~. This command runs the Python shell. If Anaconda is
-installed and working, the version information it displays when it starts up
-will include ~“Anaconda”~. To exit the Python shell, enter the ~quit()~ command.
+   Due to the graphic abundance of the installation procedure, we refer you to
+   the specific [[https://docs.anaconda.com/anaconda/install/windows/][Anaconda documentation page for installation on Windows]].
 
-#+begin_src shell
-python
-#+end_src
 
-#+begin_example
-Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
-[GCC 7.5.0] :: Anaconda, Inc. on linux
-Type "help", "copyright", "credits" or "license" for more information.
->>> quit()
-#+end_example
+** Verifying your installation on Linux
+
+   Enter the command ~python~. This command runs the Python shell. If Anaconda is
+   installed and working, the version information it displays when it starts up
+   will include ~“Anaconda”~. To exit the Python shell, enter the ~quit()~ command.
+
+
+   #+begin_src shell
+   python
+   #+end_src
+
+   #+begin_example
+   Python 3.9.7 (default, Sep 16 2021, 13:09:58)
+   [GCC 7.5.0] :: Anaconda, Inc. on linux
+   Type "help", "copyright", "credits" or "license" for more information.
+   >>> quit()
+   #+end_example
   
+   You can also display a list of installed packages and their versions running
+   ~conda list~
   
-  You can also display a list of installed packages and their versions running
-  ~conda list~
-  
-#+begin_src shell
-conda list
-#+end_src
+   #+begin_src shell
+   conda list
+   #+end_src
 
-#+begin_example
-# packages in environment at /home/user/anaconda3:
-#
-# Name                    Version                   Build  Channel
-...
-#+end_example
+   #+begin_example
+   # packages in environment at /home/user/anaconda3:
+   #
+   # Name                    Version                   Build  Channel
+   ...
+   #+end_example
+
+** Verifying in Windows
+
+   Click Start, search, or select *Anaconda Prompt* from the menu. After opening
+   Anaconda Prompt or the terminal and enter the command =python=. This command runs
+   the Python shell. If Anaconda is installed and working, the version
+   information it displays when it starts up will include ~Anaconda~ . To exit
+   the Python shell, enter the command =quit()=.
+
+   As in Linux you can also display a list of installed packages and their
+   versions running ~conda list~
+
 
 ** Making a virtual environment
 
@@ -172,7 +187,8 @@ change `rh` to a name of your choice
 #+end_quote
 
 #+begin_quote
-Robot@Home2 runs with python 3.7 or higher
+Robot@Home2 runs with python 3.6 or higher. Also, version 3.6 is recommended for
+Windows
 #+end_quote
 
 once it has been created, it can already be activated
@@ -188,7 +204,7 @@ conda deactivate
 #+end_src
 
 
-** Literate programming with Jupyter
+** Literate programming with Jupyter :noexport:
 
 Literate programming is a programming paradigm introduced by Donald Knuth in
 which a computer program is given an explanation of its logic in a natural
@@ -214,8 +230,6 @@ conda install -c conda-forge jupyterlab
 remember to previously activate your virtual environment with `conda activate` command
 #+end_quote
 
-* Time to install Robot@Home2
-
 If you have followed the previous sections you have the right working
 environment to open [[https://github.com/goyoambrosio/RobotAtHome_API/blob/master/notebooks/10-Download-and-install.ipynb][this notebook]] with Jupyter to download and install both the
 toolbox and the dataset.
@@ -223,14 +237,23 @@ toolbox and the dataset.
 However, if jupyter notebook is not your choice right now you can try the
 following instructions.
 
+
+* Time to install Robot@Home2
+
 ** Installing the toolbox
 
 Robot@Home2 Toolbox can be installed through the Python package manager.
 
-Confirm you are in the right virtual environment and install it
+1. Confirm you are in the right virtual environment
 
 #+begin_src shell
-pip install robotathome
+conda activate <env_name>
+#+end_src
+
+2. Enter this command to install ~robotathome~ with [[https://jupyter.org][Jupyter]] to run notebooks.
+
+#+begin_src shell
+pip install robotathome[interactive]
 #+end_src
 
 #+begin_quote
@@ -238,7 +261,11 @@ pip install robotathome
 other distributions
 #+end_quote
 
-and check it in Python
+#+begin_quote
+~interactive~ will include jupyter and needed libraries.
+#+end_quote
+
+3. Run ~python~ and import the ~robotathome~ library
 
 #+begin_src shell
 python
@@ -250,7 +277,7 @@ Python 3.7.11 (default, Jul 27 2021, 14:32:16)
 Type "help", "copyright", "credits" or "license" for more information.
 >>> import robotathome as rh
 >>> print (rh.__version__)
-0.4.9
+0.5.0
 #+end_example
 
 ** Downloading the dataset
@@ -320,3 +347,10 @@ else:
     print('Integrity of Robot@Home2_files.tgz is compromised, please download again')
 #+end_src
 
+** Still trying the old version :noexport:
+
+This package still provides the Python API (dataset.py) that assists in loading,
+parsing, and visualizing the annotations in the original Robot@Home (versions
+[[https://zenodo.org/record/3901564][1.0.1]] and [[https://zenodo.org/record/4495821][1.0.2]]). Please visit http://mapir.isa.uma.es/ for more information on
+Robot@Home, including for the data, paper, and tutorials. The exact format of
+the annotations is also described on the [[http://mapir.isa.uma.es/mapirwebsite/index.php/mapir-downloads/203-robot-at-home-dataset.html][Robot@Home website]].

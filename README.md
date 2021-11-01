@@ -47,17 +47,28 @@ apply deep learning algorithms in artificial vision.
 
 ## Prerequisites: Installing the Python Development Environment
 
-Launched in 1991, Python has achieved enormous popularity in the scientific community in recent years. Python is an interpreted high-level general-purpose programming language with a many useful features. It's platform independent, simple, consistent and with a great code readability. Moreover, it has an extensive set of libraries that help to reduce development time.
+Launched in 1991, Python has achieved enormous popularity in the scientific
+community in recent years. Python is an interpreted high-level general-purpose
+programming language with a many useful features. It's platform independent,
+simple, consistent and with a great code readability. Moreover, it has an
+extensive set of libraries that help to reduce development time.
 
-Artificial Intelligence (AI) and Machine Learning (ML) projects differ from software projects in other areas due to differences in the technology stack and the skills needed to deal with them.
+Artificial Intelligence (AI) and Machine Learning (ML) projects differ from
+software projects in other areas due to differences in the technology stack and
+the skills needed to deal with them.
 
-Python offers AI and ML programmers many features that help to develop and test complex algorithms. Even in Computer Vision (CV), there are solid software libraries that allow developers to focus on their research areas.
+Python offers AI and ML programmers many features that help to develop and test
+complex algorithms. Even in Computer Vision (CV), there are solid software
+libraries that allow developers to focus on their research areas.
 
-There are several different Python distributions, each one created with a different approach and for different audiences.
+There are several different Python distributions, each one created with a
+different approach and for different audiences.
 
-Robot@Home2 Toolbox is written in Python and works well with Anaconda which is a distribution of the Python and R programming languages for scientific computing. Of course, other distributions can be used to run the toolbox.
+Robot@Home2 Toolbox is written in Python and works well with Anaconda which is a
+distribution of the Python and R programming languages for scientific computing.
+Of course, other distributions can be used to run the toolbox.
 
-### Installation in Linux
+### Short installation on Linux
 
 To install Anaconda in Linux you must follow these steps.
 
@@ -68,8 +79,6 @@ Download the Anaconda installer
 
 > replace `~/Downloads` with the path of your choice
 
-
-</div>
 
 Install the distribution
 
@@ -87,12 +96,19 @@ Finally, for the installation to take effect
 
 For more detailed/updated installation information, go to [Anaconda installation page](https://docs.anaconda.com/anaconda/install/).
 
-### Verifying your installation
+### Installation on Windows
 
-Enter the command `python`. This command runs the Python shell. If Anaconda is installed and working, the version information it displays when it starts up will include `“Anaconda”`. To exit the Python shell, enter the `quit()` command.
+Due to the graphic abundance of the installation procedure, we refer you to
+the specific [Anaconda documentation page for installation on Windows](https://docs.anaconda.com/anaconda/install/windows/).
+
+### Verifying your installation on Linux
+
+Enter the command `python`. This command runs the Python shell. If Anaconda is
+installed and working, the version information it displays when it starts up
+will include `“Anaconda”`. To exit the Python shell, enter the `quit()` command.
 
     $ python
-    Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
+    Python 3.9.7 (default, Sep 16 2021, 13:09:58)
     [GCC 7.5.0] :: Anaconda, Inc. on linux
     Type "help", "copyright", "credits" or "license" for more information.
     >>> quit()
@@ -105,19 +121,36 @@ You can also display a list of installed packages and their versions running `co
     # Name                    Version                   Build  Channel
     ...
 
+### Verifying in Windows
+
+Click Start, search, or select **Anaconda Prompt** from the menu. After opening
+Anaconda Prompt or the terminal and enter the command `python`. This command runs
+the Python shell. If Anaconda is installed and working, the version
+information it displays when it starts up will include `Anaconda` . To exit
+the Python shell, enter the command `quit()`.
+
+As in Linux you can also display a list of installed packages and their
+versions running `conda list`
+
 ### Making a virtual environment
 
-A virtual environment is a Python environment such that the Python interpreter, libraries and scripts installed into it are isolated from those installed in other virtual environments
+A virtual environment is a Python environment such that the Python interpreter,
+libraries and scripts installed into it are isolated from those installed in
+other virtual environments
 
-When a virtual environment is active, the installations tools install Python packages into the virtual environment without needing to be told to do so explicitly and without interfering in other virtual environments.
+When a virtual environment is active, the installations tools install Python
+packages into the virtual environment without needing to be told to do so
+explicitly and without interfering in other virtual environments.
 
-That's the reason why it's recommended to work with a virtual environment specifically for Robot@Home2. To do that with conda
+That's the reason why it's recommended to work with a virtual environment
+specifically for Robot@Home2. To do that with conda
 
     $ conda create --name rh python=3.9
 
 > change `rh` to a name of your choice
 
-> Robot@Home2 runs with python 3.7 or higher
+> Robot@Home2 runs with python 3.6 or higher. Also, version 3.6 is recommended for
+> Windows
 
 once it has been created, it can already be activated
 
@@ -127,51 +160,37 @@ to deactivate run
 
     $ conda deactivate
 
-### Literate programming with Jupyter
-
-Literate programming is a programming paradigm introduced by Donald Knuth in which a computer program is given an explanation of its logic in a natural language, such as English, interspersed with snippets of macros and traditional source code. The approach is typically used in scientific computing and in data science routinely for reproducible research and open access purposes.
-
-On the other hand, the [Jupyter](https://jupyter.org) *Notebook* is an open-source web application that allows you to create and share documents that contain live code, equations, visualizations and narrative text. Additionally *JupyterLab* is a web-based interactive development environment for Jupyter notebooks, code, and data.
-
-Jupyter is an application of literate programming and Robot@Home2 includes Jupyter notebooks for introductions, easy learning, and technical explanations.
-
-Installing Jupyter in Anaconda distribution is an easy task
-
-    $ conda install -c conda-forge jupyterlab
-
-> remember to previously activate your virtual environment with `conda activate` command
-
 ## Time to install Robot@Home2
-
-If you have followed the previous sections you have the right working environment to
-open [this notebook](https://github.com/goyoambrosio/RobotAtHome_API/blob/master/notebooks/10-Download-and-install.ipynb) with Jupyter to download and install both the toolbox and the dataset.
-
-However, if jupyter notebook is not your choice right now you can try the
-following instructions.
 
 ### Installing the toolbox
 
 Robot@Home2 Toolbox can be installed through the Python package manager.
 
-Confirm you are in the right virtual environment and install it
+1.  Confirm you are in the right virtual environment
 
-```
-$ pip install robotathome
-```
+    conda activate <env_name>
 
-> `pip` is a common Python package manager that is included in Anaconda and many other distributions
+1.  Enter this command to install `robotathome` with [Jupyter](https://jupyter.org) to run notebooks.
 
-and check it in Python
+    pip install robotathome[interactive]
 
-```
-$ python
-Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
-[GCC 7.5.0] :: Anaconda, Inc. on linux
-Type "help", "copyright", "credits" or "license" for more information.
->>> import robotathome as rh
->>> print (rh.__version__)
-0.4.9
-```
+> `pip` is a common Python package manager that is included in Anaconda and many
+> other distributions
+
+> `interactive` will include jupyter and needed libraries.
+
+1.  Run `python` and import the `robotathome` library
+
+    python
+
+    Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
+    [GCC 7.5.0] :: Anaconda, Inc. on linux
+    Type "help", "copyright", "credits" or "license" for more information.
+    >>> import robotathome as rh
+    >>> print (rh.__version__)
+    0.5.0
+
+
 
 ### Downloading the dataset
 
@@ -231,14 +250,5 @@ else:
     print('Integrity of Robot@Home2_files.tgz is compromised, please download again')
 ```
 
-### Still trying the old version
 
-This package still provides the Python API (dataset.py) that assists in loading,
-parsing, and visualizing the annotations in the original Robot@Home (versions
-[1.0.1](https://zenodo.org/record/3901564) and
-[1.0.2](https://zenodo.org/record/4495821)). Please visit
-http://mapir.isa.uma.es/ for more information on Robot@Home, including for the
-data, paper, and tutorials. The exact format of the annotations is also
-described on the [Robot@Home
-website](http://mapir.isa.uma.es/mapirwebsite/index.php/mapir-downloads/203-robot-at-home-dataset.html).
 

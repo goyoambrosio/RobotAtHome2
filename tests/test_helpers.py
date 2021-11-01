@@ -14,7 +14,6 @@ __date__ = "2021/09/13"
 __license__ = "MIT"
 
 import unittest
-import os
 import sys
 import robotathome as rh
 
@@ -80,15 +79,15 @@ class Test(unittest.TestCase):
 
         rh.logger.trace("*** Testing get_md5")
         rh.logger.info("Computing MD5 hash value of Robot@Home2_db.tgz (ver. 2.0.1)")
-        self.assertEqual(rh.get_md5('~/WORKSPACE/Robot@Home2_db.tgz'),
+        self.assertEqual(rh.get_md5('~/WORKSPACE/download/Robot@Home2_db.tgz'),
                          'c2a3536b6b98b907c56eda3a78300cbe')
 
         rh.logger.info("Computing MD5 hash value of Robot@Home2_files.tgz (ver. 2.0.1)")
-        self.assertEqual(rh.get_md5('~/WORKSPACE/Robot@Home2_files.tgz'),
+        self.assertEqual(rh.get_md5('~/WORKSPACE/download/Robot@Home2_files.tgz'),
                          'c55465536738ec3470c75e1671bab5f2')
 
     def test_uncompress(self):
-        """Testing untar(local_filename)
+        """Testing uncompress(local_filename)
 
         Example:
             $ python -m unittest test_helpers.Test.test_uncompress

@@ -16,7 +16,7 @@ import tarfile
 import io
 import sys
 import requests
-from tqdm.autonotebook import tqdm
+from tqdm.auto import tqdm
 from .log import logger
 
 __all__ = ['download', 'get_md5', 'uncompress',
