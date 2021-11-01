@@ -201,14 +201,14 @@ You can choose to download it on your own or through the new brand toolbox.
 
 In case you are considering Linux
 
-```
+```shell
 $ wget https://zenodo.org/record/4530453/files/Robot@Home2_db.tgz
 $ wget https://zenodo.org/record/4530453/files/Robot@Home2_files.tgz
 ```
 
 check the files integrity
 
-```bash
+```shell
 $ md5sum Robot@Home2_db.tgz 
 c2a3536b6b98b907c56eda3a78300cbe  Robot@Home2_db.tgz
 
@@ -218,7 +218,7 @@ c55465536738ec3470c75e1671bab5f2  Robot@Home2_files.tgz
 
 and to finish unzip files
 
-```bash
+```shell
 $ pv /home/user/Downloads/Robot@Home2_db.tgz | tar -J -xf - -C /home/user/WORKSPACE/
 $ pv /home/user/Downloads/Robot@Home2_files.tgz | tar -xzf - -C /home/user/WORKSPACE/files
 ```
