@@ -223,7 +223,7 @@ Robot@Home2 Toolbox can be installed through the Python package manager.
 
     > `pip` is a common Python package manager that is included in Anaconda and many other distributions
 
-    If you have note previously installed `jupyterlab` you can do it right now adding
+    If you have not previously installed `jupyterlab` you can do it right now adding
     the `interactive` option to the `pip` command as follows:
     
     ```shell
