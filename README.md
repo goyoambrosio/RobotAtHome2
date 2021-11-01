@@ -168,28 +168,26 @@ Robot@Home2 Toolbox can be installed through the Python package manager.
 
 1.  Confirm you are in the right virtual environment
 
-    conda activate <env_name>
+        $ conda activate <env_name>
 
-1.  Enter this command to install `robotathome` with [Jupyter](https://jupyter.org) to run notebooks.
+2.  Enter this command to install `robotathome` with [Jupyter](https://jupyter.org) to run notebooks.
 
-    pip install robotathome[interactive]
+        $ pip install robotathome[interactive]
 
-> `pip` is a common Python package manager that is included in Anaconda and many
-> other distributions
+    > `pip` is a common Python package manager that is included in Anaconda and many other distributions
 
-> `interactive` will include jupyter and needed libraries.
+    > `interactive` will include jupyter and needed libraries.
 
-1.  Run `python` and import the `robotathome` library
+3.  Run `python` and import the `robotathome` library
 
-    python
+        $ python
 
-    Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
-    [GCC 7.5.0] :: Anaconda, Inc. on linux
-    Type "help", "copyright", "credits" or "license" for more information.
-    >>> import robotathome as rh
-    >>> print (rh.__version__)
-    0.5.0
-
+        Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
+        [GCC 7.5.0] :: Anaconda, Inc. on linux
+        Type "help", "copyright", "credits" or "license" for more information.
+        >>> import robotathome as rh
+        >>> print (rh.__version__)
+        0.5.0
 
 
 ### Downloading the dataset
@@ -210,7 +208,7 @@ $ wget https://zenodo.org/record/4530453/files/Robot@Home2_files.tgz
 
 check the files integrity
 
-```{bash}
+```bash
 $ md5sum Robot@Home2_db.tgz 
 c2a3536b6b98b907c56eda3a78300cbe  Robot@Home2_db.tgz
 
@@ -220,14 +218,14 @@ c55465536738ec3470c75e1671bab5f2  Robot@Home2_files.tgz
 
 and to finish unzip files
 
-```
+```bash
 $ pv /home/user/Downloads/Robot@Home2_db.tgz | tar -J -xf - -C /home/user/WORKSPACE/
 $ pv /home/user/Downloads/Robot@Home2_files.tgz | tar -xzf - -C /home/user/WORKSPACE/files
 ```
 
 or even better, now you can do the same programmatically using the toolbox
 
-```{python}
+```python
 import robotathome as rh
 
 # Download files
