@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8; buffer-read-only: t -*-
 
-__version__ = "0.9.0"
+__version__ = "1.0.0"
 
 from ._version import *
 from .log import *
@@ -9,7 +9,7 @@ from .helpers import *
 
 # from . import cv # rh.cv.say_hello
 # from .cv import say_hello, hello_cv # rh.say_hello
-from .cv import * 
+from .cv import *
 from .core import RobotAtHome
 
 __all__=[]

@@ -101,21 +101,6 @@ class Test(unittest.TestCase):
         con = self.rh_obj.get_con()
         logger.debug("con: {}", con)
 
-    # @logger.catch
-    def test_select_column(self):
-        """
-        Testing of RobotAtHome.select_column(column_name, table_name)
-        """
-        logger.trace("*** Testing of RobotAtHome.select_column(column_name, table_name)")
-        logger.info("Extracting table names from the database")
-        column = self.rh_obj.select_column('tbl_name', 'sqlite_master') # or sqlite_temp_master
-        logger.info("\ncolumn (dataframe): {}", column)
-        logger.debug("\ncolumn (numpy records): \n{}", column.to_records())
-        logger.debug("\ncolumn (numpy): \n{}", column.to_numpy()) # or column.values
-        logger.debug("\ncolumn (nested list): \n{}", column.to_numpy().tolist()) # or column.values.tolist()
-        self.assertEqual(len(column), 29) # notice: 30 in earlier versions
-        logger.debug("Lenght of column list: {}", len(column))
-
 
     """
     Framework
@@ -414,6 +399,20 @@ class Test(unittest.TestCase):
     """
     Stuff
     """
+    # @logger.catch
+    def test_select_column(self):
+        """
+        Testing of RobotAtHome.select_column(column_name, table_name)
+        """
+        logger.trace("*** Testing of RobotAtHome.select_column(column_name, table_name)")
+        logger.info("Extracting table names from the database")
+        column = self.rh_obj.select_column('tbl_name', 'sqlite_master') # or sqlite_temp_master
+        logger.info("\ncolumn (dataframe): {}", column)
+        logger.debug("\ncolumn (numpy records): \n{}", column.to_records())
+        logger.debug("\ncolumn (numpy): \n{}", column.to_numpy()) # or column.values
+        logger.debug("\ncolumn (nested list): \n{}", column.to_numpy().tolist()) # or column.values.tolist()
+        self.assertEqual(len(column), 29) # notice: 30 in earlier versions
+        logger.debug("Lenght of column list: {}", len(column))
 
     def test_query(self):
         """
@@ -442,79 +441,6 @@ class Test(unittest.TestCase):
             logger.info("\nrows: \n{}", rows)
             for row in rows:
                 logger.info(row)
-
-    def test_get_sensor_observation_files(self):
-        """
-        Testing of get_sensor_observation_files
-        """
-        logger.trace("*** Testing of RobotAtHome.get_sensor_observation_files()")
-        logger.info("Extracting file names from sensor_observations")
-
-        rows = self.rh_obj.get_sensor_observation_files('lblrgbd',
-                                                        'anto-s1',
-                                                        0,
-                                                        'anto_livingroom1',
-                                                        'RGBD_2')
-        logger.info("\nrows: \n{}", rows)
-        self.assertEqual(len(rows), 355)
-        logger.debug("Number of returned rows: {}", len(rows))
-
-    def test_get_labels_from_lblrgbd(self):
-        """
-        Testing of get_labels_from_lblrgbd
-        """
-        logger.trace("*** Testing of RobotAtHome.get_labels_from_lblrgbd()")
-        logger.info("Getting labels for a lblrgbd sensor_observations")
-        df_rows = self.rh_obj.get_labels_from_lblrgbd(100000)
-        logger.info("\n{}", df_rows)
-        self.assertEqual(df_rows.shape, (11, 5))
-        logger.debug("Number of returned rows: {}", len(df_rows))
-
-    def test_get_mask_from_lblrgbd(self):
-        """
-        Testing of get_maak_from_lblrgbd
-        """
-        logger.trace("*** Testing of RobotAtHome.get_mask_from_lbl_rgbd()")
-        logger.info("Getting mask for a lblrgbd sensor observation")
-        mask = self.rh_obj.get_mask_from_lblrgbd(100000)
-        logger.info("mask height: {}", len(mask))
-        logger.info("mask width : {}", len(mask[0]))
-        self.assertListEqual([len(mask), len(mask[0])], [320, 244])
-
-    def test_create_table_linking_observations_and_lblrgbd(self):
-        """
-        Testing create_table_linking_observations_and_lblrgbd
-        """
-        logger.trace("*** Testing of RobotAtHome.create_table_linking_observations_and_lblrgbd()")
-        logger.info("Linking lblrgbd and observations")
-        self.rh_obj.create_table_linking_observations_and_lblrgbd()
-
-
-    def test_get_object_type_names(self):
-        """
-        Testing of RobotAtHome.get_object_type_names()
-        """
-        logger.trace("*** Testing of RobotAtHome.get_object_type_names()")
-        logger.info("Extracting object type names from the database")
-        column = self.rh_obj.get_object_type_names()
-        logger.info("\ncolumn: {}", column)
-        self.assertEqual(len(column), 183)
-        logger.debug("Length of object type names list: {}", len(column))
-
-    def test_get_sensor_data(self):
-        """Testing of get_observation_data
-        """
-        logger.trace("*** Testing of RobotAtHome.get_sensor_data()")
-        logger.info("Extracting sensor data from the corresponding tables")
-
-        sensor_data_table_names = self.rh_obj.get_names_of_sensor_data_tables()
-        logger.info("\nsensor data tables:\n{}", sensor_data_table_names)
-
-        for table_name in sensor_data_table_names:
-            df = self.rh_obj.get_sensor_data(table_name)
-            logger.info("\ndata:\n{}", df.info())
-            logger.info("\nrow #1:\n{}", df.loc[1].transpose())
-
 
 
 

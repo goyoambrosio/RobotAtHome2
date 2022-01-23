@@ -13,20 +13,8 @@ import sys
 import pandas as pd
 import matplotlib.pyplot as plt
 
-# from robotathome import RobotAtHome, logger, set_log_level, say_hello, hello_cv
 import robotathome as rh
 from robotathome import logger, set_log_level
-
-# import os
-# import sys
-# import numpy as np
-# from matplotlib import pyplot as plt
-# import matplotlib.patches as mpatches
-# import matplotlib.pyplot as plt
-# import cv2
-# import imagehash
-# from PIL import Image
-# import gluoncv as gcv
 
 class Test(unittest.TestCase):
     """Test class of toolbox module """
@@ -41,7 +29,6 @@ class Test(unittest.TestCase):
 
             $ cd ~/cloud/GIT/RobotAtHome_API/tests
             $ python -m unittest test_reader.Test.test_get_home_names
-
 
         """
 
@@ -93,15 +80,6 @@ class Test(unittest.TestCase):
 
         logger.info(rh.say_hello())
 
-    def test_hello_cv(self):
-        """Testing of hello_cv
-        """
-        logger.trace("*** Testing of hello_cv()")
-        logger.info("Running hello_cv in opencv.py")
-
-        logger.info(rh.hello_cv())
-
-
     def test_get_labeled_img(self):
         """Testing of get_labeled_img
         """
@@ -129,20 +107,27 @@ class Test(unittest.TestCase):
         logger.info("\nlabel masks type: \n{}", type(labels['mask'].iat[0]))
         rh.plot_labeled_img(labels, rgb_f)
 
-
     def test_get_scan_xy(self):
+        """ Docstring
+        """
         id = 200000 # 0 <= id <= inf
         laser_scan = self.rh.get_laser_scan(id)
         xy = rh.get_scan_xy(laser_scan)
         print(xy)
 
     def test_plot_scan(self):
+        """ Docstring
+        """
         id = 200000 # 0 <= id <= inf
         laser_scan = self.rh.get_laser_scan(id)
         rh.plot_scan(laser_scan)
 
 
-
+    def test_plot_scene(self):
+        scenes = self.rh.get_scenes()
+        s_id = 0
+        logger.info("\nScene file: \n{}", scenes.iloc[s_id].scene_file)
+        rh.plot_scene(scenes.iloc[s_id].scene_file)
 
 if __name__ == '__main__':
     unittest.main()

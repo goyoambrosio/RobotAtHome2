@@ -64,8 +64,6 @@ class RobotAtHome():
             logger.error("object cannot be instantiated")
             # return None
             raise e
-        else:
-            self.__create_temp_views()
 
     def __del__(self):
         """ Robot@Home destructor method"""
@@ -107,63 +105,6 @@ class RobotAtHome():
         This function returns the sql connection variable
         """
         return self.__con
-
-    def select_column(self, column_name, table_name):
-        '''
-        Returns a dataframe with grouped column values
-        (without repetition)
-        '''
-
-        # Get a cursor to execute SQLite statements
-        cur = self.__con.cursor()
-
-        # Build the query
-        # sql_str = ("select " + column_name + " from " + table_name + " group by " + column_name + ";")
-        # rows = cur.execute(sql_str)
-        # logger.debug(rows)
-        # for row in rows:
-        #     print(row)
-        # logger.debug(rows2list(rows))
-
-        sql_str = (f"select {column_name}  from {table_name} group by {column_name};")
-        df_rows = pd.read_sql_query(sql_str, self.__con)
-        return df_rows
-
-    def query(self, sql, df=True):
-        """Execute a sqlquery over robotathome database
-
-        Parameters
-        ----------
-        sql: can be a string with a sql query or a file name that contains the
-             sql query
-        df:  boolean indicating if result is returned as a DataFrame (True) or
-             as a sqlite row list (False).  This option (False) is mandatory if
-             the query string has more than one sql command, i.e., it's a script
-
-        Returns
-        -------
-        ans: a DataFrame or a sqlite row list
-
-        """
-
-
-        if os.path.isfile(sql):
-            script = open(sql, 'r')
-            query = script.read()
-        else:
-            query = sql
-
-        if df:
-            ans = pd.read_sql_query(query, self.__con)
-        else:
-            cur = self.__con.cursor()
-            cur.executescript(query)
-            ans = cur.fetchall()
-
-        if os.path.isfile(sql):
-            script.close()
-
-        return ans
 
 
     """
@@ -1045,507 +986,55 @@ class RobotAtHome():
     """
     Stuff
     """
-
-    def get_sensor_observation_files(self,
-                                     source='lblrgbd',
-                                     home_session_name='alma-s1',
-                                     home_subsession=0,
-                                     room_name='alma_masterroom1',
-                                     sensor_name='RGBD_1'
-                                     ):
-
-        """
-        This functions queries the database to extract sensor observation
-        files filtered by home_session_name, home_subsession, room_name, and
-        sensor_name.
-        """
+    def select_column(self, column_name, table_name):
+        '''
+        Returns a dataframe with grouped column values
+        (without repetition)
+        '''
 
         # Get a cursor to execute SQLite statements
         cur = self.__con.cursor()
-
-        sensor_observation_table = self.__aliases[source]
-
-        # Just to doc a cumbersone alternative code:
-        #
-        # Build the query
-        # sql_str = (
-        #     '''
-        #     select id, t, pth, f1, f2, f3
-        #     from
-        #     ''' +
-        #     sensor_observation_table +
-        #     '''
-        #     where
-        #         hs_name = ? and
-        #         hss_id = ? and
-        #         r_name = ? and
-        #         s_name = ?
-        #     order by t
-        #     '''
-        # )
-        #
-        # parms = (home_session_name,
-        #          home_subsession,
-        #          room_name,
-        #          sensor_name)
-        # cur.execute(sql_str, parms)
-        # cur.execute(sql_str)
-        # rows = cur.fetchall()
-
-        sql_str = (
-            f'''
-            select id, t, pth, f1, f2, f3
-            from {sensor_observation_table}
-            where
-                hs_name = '{home_session_name}' and
-                hss_id = {home_subsession} and
-                r_name = '{room_name}' and
-                s_name = '{sensor_name}'
-            order by t
-            '''
-        )
-        logger.debug(sql_str)
-
+        sql_str = (f"select {column_name}  from {table_name} group by {column_name};")
         df_rows = pd.read_sql_query(sql_str, self.__con)
-
         return df_rows
 
-    def get_labels_from_lblrgbd(self, so_id):
-        """
-        This function return labels rows for the observations referenced by
-        sensor_observation_id
-
-        SQL query
-
-        select * from rh_lblrgbd_labels
-            where sensor_observation_id = so_id
+    def query(self, sql, df=True):
+        """Execute a sqlquery over robotathome database
 
         Parameters
         ----------
-        so_id : int
-            The primary key value to identify a row in the table
-            rh_lbl_rgbd_labels.
+        sql: can be a string with a sql query or a file name that contains the
+             sql query
+        df:  boolean indicating if result is returned as a DataFrame (True) or
+             as a sqlite row list (False).  This option (False) is mandatory if
+             the query string has more than one sql command, i.e., it's a script
 
         Returns
         -------
-        A dataframe with the query result. An empty dataframe is returned when
-        no rows are available, i.e., when the sensor observation does not
-        belong to rh_lblrgbd (labelled rgbd)
-        """
-
-        # Get a cursor to execute SQLite statements
-        cur = self.__con.cursor()
-
-        # # Build the query
-        # sql_str = (
-        #     '''
-        #     select * from rh_lblrgbd_labels
-        #     where sensor_observation_id = ?
-        #     '''
-        # )
-
-        # parms = (so_id,)
-        # cur.execute(sql_str, parms)
-        # rows = cur.fetchall()
-
-        sql_str = (
-            '''
-            select * from rh_lblrgbd_labels
-            where sensor_observation_id = {}
-            '''.format(so_id)
-        )
-
-        df_rows = pd.read_sql_query(sql_str, self.__con)
-
-        # print(df.shape)
-        # rows = df.to_records()
-        # for row in rows:
-        #     print(row)
-
-        return df_rows
-
-    def __get_mask(self, label_path_file_name):
-        mask = []
-        with open(label_path_file_name, "r") as file_handler:
-            line = file_handler.readline()
-            while line:
-                words = line.strip().split()
-                if words[0][0] != '#':
-                    num_of_labels = int(words[0])
-                    break
-                line = file_handler.readline()
-
-            for i in range(num_of_labels):
-                line = file_handler.readline()
-                words = line.strip().split()
-
-            num_of_rows = 0
-            line = file_handler.readline()
-            while line:
-                num_of_rows += 1
-                words = line.strip().split()
-                mask.append(list(map(int, words)))
-                line = file_handler.readline()
-
-        logger.debug("mask height: {}", len(mask))
-        logger.debug("mask width : {}", len(mask[0]))
-
-        mask = np.array(mask)
-        mask = np.rot90(mask)
-
-        return mask
-
-    def get_mask_from_lblrgbd(self, so_id):
-        """
-        This function 
-
-        Parameters
-        ----------
-
-        Returns
-        -------
+        ans: a DataFrame or a sqlite row list
 
         """
-        # Get a cursor to execute SQLite statements
-        # cur = self.__con.cursor()
 
-        # sql_str = (
-        #     '''
-        #     select pth, f3
-        #     from rh_lblrgbd_temp
-        #     where id = {}
-        #     '''.format(so_id)
-        # )
 
-        sql_str = (
-            f'''
-            select pth, f3
-            from rh_lblrgbd_temp
-            where id = {so_id}
-            '''
-        )
+        if os.path.isfile(sql):
+            script = open(sql, 'r')
+            query = script.read()
+        else:
+            query = sql
 
-        df_rows = pd.read_sql_query(sql_str, self.__con)
-        logger.debug("df_rows.shape: {}", df_rows.shape)
-        # print(df_rows)
-        # print(df_rows.loc[0,"pth"])
-        # print(df_rows.loc[0,"f3"])
-        label_path_file_name = os.path.join(self.__rgbd_path,
-                                            df_rows.loc[0, "pth"],
-                                            df_rows.loc[0, "f3"])
+        if df:
+            ans = pd.read_sql_query(query, self.__con)
+        else:
+            cur = self.__con.cursor()
+            cur.executescript(query)
+            ans = cur.fetchall()
 
-        logger.debug("label_path_file_name: {}", label_path_file_name)
-        mask = self.__get_mask(label_path_file_name)
+        if os.path.isfile(sql):
+            script.close()
 
-        return mask
-
-    def get_label_mask(self, mask, labels):
-        """
-        Returns a binary 2D array (pixels being 1s and 0s)
-        """
-        masks = []
-        for label in labels:
-            arr = mask & (2**(label))
-            np.clip(arr, 0, 1, out=arr)
-            arr = np.uint8(arr[:,2:-2])
-            masks.append(arr)
-        return masks
-
-    def get_object_type_names(self):
-        """
-        Return a list with room type names
-        """
-        return self.select_column('name', 'rh_object_types')
+        return ans
 
 
     """
     Lab
     """
-
-    def create_table_linking_observations_and_lblrgbd(self):
-        """
-        This function 
-
-        Parameters
-        ----------
-
-        Returns
-        -------
-
-        """
-        # Get a cursor to execute SQLite statements
-        # cur = self.__con.cursor()
-
-        sql_str_lblrgbd = (
-            f'''
-            select id, sensor_id
-            from rh_lblrgbd
-            order by id
-            limit 860
-            '''
-        )
-
-        sql_str_observations = (
-            f'''
-            select id, sensor_id
-            from rh_observations
-            order by id
-            -- limit 20
-            '''
-        )
-
-        df_rows_lblrgbd = pd.read_sql_query(sql_str_lblrgbd, self.__con)
-        df_rows_observations = pd.read_sql_query(sql_str_observations, self.__con)
-
-        # for row_lblrgbd in df_rows_lblrgbd.itertuples(index=False):
-        #     print(row_lblrgbd)
-        #     print(row_observation)
-
-        i_obs = 0
-        for i_lbl in range(df_rows_lblrgbd.shape[0]):
-            if df_rows_lblrgbd['sensor_id'][i_lbl] == df_rows_observations['sensor_id'][i_obs]:
-                print(df_rows_lblrgbd['id'][i_lbl], df_rows_observations['id'][i_obs])
-                i_obs += 1
-
-    def get_objects_from_sensor_observations(self, so_id):
-        """TODO """
-        pass
-
-
-    """
-    Just for reference.
-    Don't use any of them.
-    To remove in the near future
-    """
-
-    def __create_temp_views_back(self):
-        """
-        This function creates temporary views to work on the class environment
-        """
-
-        sql_str = '''
-        begin transaction;
-        drop view if exists rh_lblrgbd_temp
-        create temp view rh_lblrgbd_temp as
-        select
-            rh_lblrgbd.id,
-            rh_lblrgbd.home_session_id as hs_id,
-            rh_home_sessions.name as hs_name,
-            rh_lblrgbd.home_subsession_id as hss_id,
-            rh_lblrgbd.home_id as h_id,
-            rh_homes.name as h_name,
-            rh_lblrgbd.room_id as r_id,
-            rh_rooms.name as r_name,
-            rh_lblrgbd.sensor_id as s_id,
-            rh_sensors.name as s_name,
-            rh_lblrgbd.time_stamp as t,
-            rh_lblrgbd.sensor_pose_x as s_px,
-            rh_lblrgbd.sensor_pose_y as s_py,
-            rh_lblrgbd.sensor_pose_z as s_pz,
-            rh_lblrgbd.sensor_pose_yaw as s_pya,
-            rh_lblrgbd.sensor_pose_pitch as s_ppi,
-            rh_lblrgbd.sensor_pose_roll as s_pro,
-            rh2_old2new_rgbd_files.new_file_1 as f1,
-            rh2_old2new_rgbd_files.new_file_2 as f2,
-            rh2_old2new_rgbd_files.new_file_3 as f3,
-            rh2_old2new_rgbd_files.new_path as pth
-        from rh_lblrgbd
-        inner join rh_home_sessions on home_session_id = rh_home_sessions.id
-        inner join rh_homes on rh_lblrgbd.home_id = rh_homes.id
-        inner join rh_rooms on rh_lblrgbd.room_id = rh_rooms.id
-        inner join rh_sensors on rh_lblrgbd.sensor_id = rh_sensors.id
-        inner join rh2_old2new_rgbd_files on rh2_old2new_rgbd_files.id = rh_lblrgbd.id;
-        commit;
-        '''
-
-        # Get a cursor to execute SQLite statements
-        cur = self.__con.cursor()
-        cur.executescript(sql_str)
-
-        self.__aliases.append("rh_lblrgbd_temp")
-        logger.trace("The view rh_lblrgbd_temp has been created")
-
-    def __get_sql_string_for_rgbd_tables(self, table_name):
-        sql_str = (f'''
-        begin transaction;
-        drop view if exists {table_name}_temp;
-        create temp view {table_name}_temp as
-        select
-            {table_name}.id,
-            {table_name}.home_session_id as hs_id,
-            rh_home_sessions.name as hs_name,
-            {table_name}.home_subsession_id as hss_id,
-            {table_name}.home_id as h_id,
-            rh_homes.name as h_name,
-            {table_name}.room_id as r_id,
-            rh_rooms.name as r_name,
-            {table_name}.sensor_id as s_id,
-            rh_sensors.name as s_name,
-            {table_name}.time_stamp as t,
-            {table_name}.sensor_pose_x as s_px,
-            {table_name}.sensor_pose_y as s_py,
-            {table_name}.sensor_pose_z as s_pz,
-            {table_name}.sensor_pose_yaw as s_pya,
-            {table_name}.sensor_pose_pitch as s_ppi,
-            {table_name}.sensor_pose_roll as s_pro,
-            rh2_old2new_rgbd_files.new_file_1 as f1,
-            rh2_old2new_rgbd_files.new_file_2 as f2,
-            rh2_old2new_rgbd_files.new_file_3 as f3,
-            rh2_old2new_rgbd_files.new_path as pth
-        from {table_name}
-        inner join rh_home_sessions on home_session_id = rh_home_sessions.id
-        inner join rh_homes on {table_name}.home_id = rh_homes.id
-        inner join rh_rooms on {table_name}.room_id = rh_rooms.id
-        inner join rh_sensors on {table_name}.sensor_id = rh_sensors.id
-        inner join rh2_old2new_rgbd_files on rh2_old2new_rgbd_files.id = {table_name}.id;
-        commit;
-        ''')
-
-        return sql_str
-
-    def __get_sql_string_for_scan_tables(self, table_name):
-        sql_str = (f'''
-        begin transaction;
-        drop view if exists {table_name}_temp;
-        create temp view {table_name}_temp as
-        select
-            {table_name}.id,
-            {table_name}.home_session_id as hs_id,
-            rh_home_sessions.name as hs_name,
-            {table_name}.home_subsession_id as hss_id,
-            {table_name}.home_id as h_id,
-            rh_homes.name as h_name,
-            {table_name}.room_id as r_id,
-            rh_rooms.name as r_name,
-            {table_name}.sensor_id as s_id,
-            rh_sensors.name as s_name,
-            {table_name}.time_stamp as t,
-            {table_name}.sensor_pose_x as s_px,
-            {table_name}.sensor_pose_y as s_py,
-            {table_name}.sensor_pose_z as s_pz,
-            {table_name}.sensor_pose_yaw as s_pya,
-            {table_name}.sensor_pose_pitch as s_ppi,
-            {table_name}.sensor_pose_roll as s_pro,
-        	NULL as f1,
-			NULL as f2,
-			NULL as f3,
-            NULL as pth
-        from {table_name}
-        inner join rh_home_sessions on home_session_id = rh_home_sessions.id
-        inner join rh_homes on {table_name}.home_id = rh_homes.id
-        inner join rh_rooms on {table_name}.room_id = rh_rooms.id
-        inner join rh_sensors on {table_name}.sensor_id = rh_sensors.id;
-        commit;
-        ''')
-
-        return sql_str
-
-    def __get_sql_string_for_raw_tables(self, table_name):
-        sql_str = (f'''
-        begin transaction;
-        drop view if exists {table_name}_temp;
-        create temp view {table_name}_temp as
-        select
-            {table_name}.id,
-            {table_name}.home_session_id as hs_id,
-            rh_home_sessions.name as hs_name,
-            {table_name}.home_subsession_id as hss_id,
-            {table_name}.home_id as h_id,
-            rh_homes.name as h_name,
-            {table_name}.room_id as r_id,
-            rh_rooms.name as r_name,
-            {table_name}.sensor_id as s_id,
-            rh_sensors.name as s_name,
-            {table_name}.time_stamp as t,
-            {table_name}.sensor_pose_x as s_px,
-            {table_name}.sensor_pose_y as s_py,
-            {table_name}.sensor_pose_z as s_pz,
-            {table_name}.sensor_pose_yaw as s_pya,
-            {table_name}.sensor_pose_pitch as s_ppi,
-            {table_name}.sensor_pose_roll as s_pro,
-            rh2_old2new_rgbd_files.new_file_1 as f1,
-            rh2_old2new_rgbd_files.new_file_2 as f2,
-            rh2_old2new_rgbd_files.new_file_3 as f3,
-            rh2_old2new_rgbd_files.new_path as pth
-        from {table_name}
-        inner join rh_home_sessions on home_session_id = rh_home_sessions.id
-        inner join rh_homes on {table_name}.home_id = rh_homes.id
-        inner join rh_rooms on {table_name}.room_id = rh_rooms.id
-        inner join rh_sensors on {table_name}.sensor_id = rh_sensors.id
-        left join rh2_old2new_rgbd_files on rh2_old2new_rgbd_files.id = {table_name}.id;
-        commit;
-        ''')
-
-        return sql_str
-
-    def __create_temp_views(self):
-        """
-        This function creates temporary views to work on the class environment
-        """
-
-        queries = []
-
-        # Creating view rh_raw_temp
-        table_alias = 'raw'
-        table_name = 'rh_raw'
-        queries.append(self.__get_sql_string_for_raw_tables(table_name))
-        self.__aliases[table_alias] = table_name + '_temp'
-
-        # Creating view rh_rgbd_temp
-        table_alias = 'rgbd'
-        table_name = 'rh_rgbd'
-        queries.append(self.__get_sql_string_for_rgbd_tables(table_name))
-        self.__aliases[table_alias] = table_name + '_temp'
-
-        # Creating view rh_lblrgbd_temp
-        table_alias = 'lblrgbd'
-        table_name = 'rh_lblrgbd'
-        queries.append(self.__get_sql_string_for_rgbd_tables(table_name))
-        self.__aliases[table_alias] = table_name + '_temp'
-
-        # Creating view rh_lsrscan_temp
-        table_alias = 'lsrscan'
-        table_name = 'rh_lsrscan'
-        queries.append(self.__get_sql_string_for_scan_tables(table_name))
-        self.__aliases[table_alias] = table_name + '_temp'
-
-        for query in queries:
-            self.query(query, False)
-
-    def get_aliases(self):
-        """
-        Return a dictionary with table/view aliases 
-        """
-
-        return self.__aliases
-
-    def get_names_of_sensor_data_tables(self):
-        """
-        Return a list of friendly names from sensor observation tables
-        """
-        return list(self.get_aliases().keys())
-
-    def get_sensor_data(self, source='lblrgbd'):
-        """
-        This functions queries the database to extract sensor observation
-        data.
-        """
-
-        # Get a cursor to execute SQLite statements
-        cur = self.__con.cursor()
-
-        sensor_observation_table = self.__aliases[source]
-
-        sql_str = (
-            f'''
-            select *
-            from {sensor_observation_table}
-            order by t
-            '''
-        )
-        logger.debug(sql_str)
-
-        df = pd.read_sql_query(sql_str, self.__con)
-
-        return df
-

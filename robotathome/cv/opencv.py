@@ -11,20 +11,18 @@ import numpy as np
 import pandas as pd
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
+
 # note: conda install -c conda-forge opencv
 import cv2
 # from .log import logger
 
-__all__ = ['hello_cv', 'get_labeled_img', 'plot_labeled_img', 'get_scan_xy', 'plot_scan']
+
+__all__ = ['get_labeled_img', 'plot_labeled_img', 'get_scan_xy', 'plot_scan', 'plot_scene']
 
 
 """
 opencv related functions
 """
-
-def hello_cv():
-    print("Hello CV")
-
 
 def get_labeled_img(labels, img_file):
     """
@@ -157,6 +155,35 @@ def plot_mask(patched_img, names, colors):
     plt.show()
 
 
+"""
+Lab
+"""
+def plot_scene(scene_file):
+    """Docstring
+    """
+    # https://towardsdatascience.com/guide-to-real-time-visualisation-of-massive-3d-point-clouds-in-python-ea6f00241ee0
+    # https://towardsdatascience.com/discover-3d-point-cloud-processing-with-python-6112d9ee38e7
+
+    # from mpl_toolkits import mplot3d
+    # point_cloud = np.loadtxt(scene_file, skiprows=6)
+    # xyz = point_cloud[:,:3]
+    # rgb = point_cloud[:,3:]
+    # ax = plt.axes(projection='3d')
+    # ax.scatter(xyz[:,0], xyz[:,1], xyz[:,2], c = rgb, s=0.01)
+    # plt.show()
+
+    # point_cloud = np.loadtxt(scene_file, skiprows=6)
+    # xyz = point_cloud[:,:3]
+    # rgb = point_cloud[:,3:]
+    # pcd = o3d.geometry.PointCloud()
+    # pcd.points = o3d.utility.Vector3dVector(xyz)
+    # pcd.colors = o3d.utility.Vector3dVector(rgb)
+    # o3d.visualization.draw_geometries([pcd])
+
+    import open3d as o3d
+    pcd = o3d.io.read_point_cloud(scene_file, format='xyzrgb')
+    # downpcd = pcd.voxel_down_sample(voxel_size=0.01)
+    o3d.visualization.draw_geometries([pcd])
 
 """
 Stuff
