@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; buffer-read-only: t -*-
 
 """ test functions for helpers.py
 
@@ -28,7 +28,7 @@ class Test(unittest.TestCase):
         Examples:
             python -m unittest <testModule>.<className>.<function_name>
 
-            $ cd ~/Dropbox/GIT/RobotAtHome_API/tests
+            $ cd ~/cloud/GIT/RobotAtHome_API/tests
             $ python -m unittest test_helpers.Test.test_download
 
 

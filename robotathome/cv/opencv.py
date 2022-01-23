@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; buffer-read-only: t -*-
 
 __author__ = "Gregorio Ambrosio"
 __contact__ = "gambrosio[at]uma.es"
@@ -7,9 +7,160 @@ __copyright__ = "Copyright 2021, Gregorio Ambrosio"
 __date__ = "2021/07/27"
 __license__ = "MIT"
 
-import robotathome as rh
+import numpy as np
+import pandas as pd
+import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
+# note: conda install -c conda-forge opencv
 import cv2
+# from .log import logger
 
+__all__ = ['hello_cv', 'get_labeled_img', 'plot_labeled_img', 'get_scan_xy', 'plot_scan']
+
+
+"""
+opencv related functions
+"""
+
+def hello_cv():
+    print("Hello CV")
+
+
+def get_labeled_img(labels, img_file):
+    """
+    Returns an image patched with labels
+
+    Input
+    =====
+    labels:
+        Label dataframe with masks (label df + mask col <- get_label_masks(id))
+
+    img-file:
+        Full path filename of the RGB image
+
+    Output
+    ======
+    labeled_image:
+        RGB image patched with colored labels. Labels are colored and
+        over imposed with transparency
+    colors:
+        A list with the RGB + Alpha components (4 x 0<= n <=1) of randomly
+        chosen colors
+    """
+    alpha = 0.7
+    bgr_img = cv2.imread(img_file, cv2.IMREAD_COLOR)
+    labeled_img, colors = overlay_mask(cv2.cvtColor(bgr_img, cv2.COLOR_BGR2RGB),
+                                   labels['mask'],
+                                   alpha)
+    return [labeled_img, colors]
+
+def plot_labeled_img(labels, img_file):
+    """
+    Plot a RGB image patched with colored labels with legend
+
+    Input
+    =====
+    labels:
+        Label dataframe with masks (label df + mask col <- get_label_masks(id))
+
+    img-file:
+        Full path filename of the RGB image
+
+    """
+    [labeled_img, colors] = get_labeled_img(labels, img_file)
+    plot_mask(labeled_img, labels['name'], colors)
+
+def get_scan_xy(laser_scan):
+
+    # Computing the smallest angle change
+    da = laser_scan.aperture / laser_scan.no_of_shots
+    # epsilon = np.finfo(np.float64).eps
+
+    # Computing x, y coodinates
+    dist  = laser_scan['scan']
+    angle = laser_scan['shot_id']*da
+    valid = laser_scan['valid_scan']
+
+    # x, y will be 0 when not valid
+    x = dist * np.cos(angle) * valid
+    y = dist * np.sin(angle) * valid
+    x.name = 'x'
+    y.name = 'y'
+    xy = pd.concat([x, y], axis=1)
+    # xy(columns = ['x', 'y'])
+    xy.index.name = 'shot_id'
+    return xy
+
+def plot_scan(laser_scan, cmap = 'gist_heat'):
+
+    # Getting a laser scan dataframe with only valid values
+    valid_laser_scan = laser_scan.loc[laser_scan['valid_scan'] == 1]
+
+    # Computing the smallest angle change
+    da = laser_scan.aperture / laser_scan.no_of_shots
+    # epsilon = np.finfo(np.float64).eps
+
+    # Computing x, y coodinates
+    dist  = valid_laser_scan['scan']
+    angle = valid_laser_scan['shot_id']*da
+
+    x = dist * np.cos(angle)
+    y = dist * np.sin(angle)
+
+    # Plotting points
+    # plt.plot(x, y, marker=".", markersize=2)
+    sc = plt.scatter(x, y, vmin=0, vmax=laser_scan.max_range, c=dist, s=1, cmap = cmap) # or 'gist_heat'
+    plt.scatter(0,0,s=50)
+    plt.colorbar(sc, label='Distance (m)')
+    plt.show()
+
+
+"""
+Helpers
+"""
+
+def bin2rgba(img):
+    """
+    TODO
+    """
+
+    img = cv2.cvtColor(img*255, cv2.COLOR_GRAY2RGB)
+    color_mask = np.random.random((1, 3)).tolist()[0]
+
+    my_mask = cv2.compare(img,245,cv2.CMP_GT)
+    img[my_mask > 0] = 255
+
+    for i in range(3):
+        img[:,:,i] = color_mask[i]*255
+    plt.imshow(img, interpolation='nearest')
+    plt.show()
+
+def overlay_mask(img, masks, alpha=0.5):
+    # cv2.addWeighted(ovl_img, alpha, base_img, 1 - alpha, 0, base_img)
+    # return base_img
+    colors = []
+    for mask in masks:
+        color = np.random.random(3)
+        colors.append(np.append(color,[alpha]))
+        mask = np.repeat((mask > 0)[:, :, np.newaxis], repeats=3, axis=2)
+        img = np.where(mask, img * (1 - alpha) + color*255 * alpha, img)
+    return img.astype('uint8'), colors
+
+def plot_mask(patched_img, names, colors):
+    plt.imshow(patched_img)
+    plt.xticks([]), plt.yticks([])  # to hide tick values on X and Y axis
+    mpatches_ = []
+    for i, color_ in enumerate(colors):
+        mpatches_.append(mpatches.Patch(color=color_, label=names[i]))
+    plt.legend(handles=mpatches_)
+    # plt.savefig('~/temp/foo.png')
+    plt.show()
+
+
+
+"""
+Stuff
+"""
 def get_video_from_rgbd(self,
                         source='lblrgbd',
                         home_session_name='alma-s1',
@@ -284,46 +435,3 @@ def lblrgbd_plot_labels(self, so_id):
                                       label_mask,
                                       alpha)
     rh.plot_mask(out_img, labels['name'], colors)
-
-
-"""
-Helpers
-"""
-
-def bin2rgba(img):
-    """
-    TODO
-    """
-
-    img = cv2.cvtColor(img*255, cv2.COLOR_GRAY2RGB)
-    color_mask = np.random.random((1, 3)).tolist()[0]
-
-    my_mask = cv2.compare(img,245,cv2.CMP_GT)
-    img[my_mask > 0] = 255
-
-    for i in range(3):
-        img[:,:,i] = color_mask[i]*255
-    plt.imshow(img, interpolation='nearest')
-    plt.show()
-
-def overlay_mask(img, masks, alpha=0.5):
-    # cv2.addWeighted(ovl_img, alpha, base_img, 1 - alpha, 0, base_img)
-    # return base_img
-    colors = []
-    for mask in masks:
-        color = np.random.random(3)
-        colors.append(np.append(color,[alpha]))
-        mask = np.repeat((mask > 0)[:, :, np.newaxis], repeats=3, axis=2)
-        img = np.where(mask, img * (1 - alpha) + color*255 * alpha, img)
-    return img.astype('uint8'), colors
-
-def plot_mask(patched_img, names, colors):
-    plt.imshow(patched_img)
-    plt.xticks([]), plt.yticks([])  # to hide tick values on X and Y axis
-    mpatches_=[]
-    for i, color_ in enumerate(colors):
-        mpatches_.append(mpatches.Patch(color=color_, label=names[i]))
-    plt.legend(handles=mpatches_)
-    plt.show()
-
-

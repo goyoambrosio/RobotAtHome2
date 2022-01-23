@@ -75,6 +75,7 @@ setup(
         "requests",
         "tqdm",
         "loguru",
+        "pandas",
         "numpy"
     ],
     extras_require={

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; buffer-read-only: t -*-
 
 """
 Get version for RobotAtHome2 package
@@ -26,6 +26,6 @@ def _get_version(rel_path):
 def get_version_str():
     """ Docstring """
 
-    s = "Robot@Home2 Dataset (v" + _get_version("__init__.py") + ")"
+    s = "Robot@Home2 Dataset Toolbox(v" + _get_version("__init__.py") + ")"
 
     return s

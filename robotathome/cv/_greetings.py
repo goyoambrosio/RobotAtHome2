@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8; buffer-read-only: t -*-
 
 __author__ = "Gregorio Ambrosio"
 __contact__ = "gambrosio[at]uma.es"
