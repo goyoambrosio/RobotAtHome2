@@ -79,7 +79,7 @@ setup(
         "numpy"
     ],
     extras_require={
-        'full':['matplotlib>=3', 'jupyter'],
+        'full':['matplotlib>=3', 'jupyter', 'opencv'],
         'interactive': ['matplotlib>=3', 'jupyter'],
         'cv': ['matplotlib>=3', 'jupyter', 'opencv']
     },
