@@ -93,7 +93,14 @@ setup(
           'rh_schema_diagram/rh_schema_full.pdf']
          ),
         ('robotathome/notebooks',
-         ['notebooks/10-Download-and-install.ipynb']
+         ['notebooks/10-Download-and-install.ipynb',
+          'notebooks/20-Before-starting-the-logging-system.ipynb',
+          'notebooks/30-Getting-started-Framework-data.ipynb',
+          'notebooks/40-Captured-data.ipynb',
+          'notebooks/50-RGBD-observations.ipynb',
+          'notebooks/60-Lsrscan-observations.ipynb',
+          'notebooks/70-Scenes.ipynb',
+          'notebooks/80-Characterized-observations.ipynb']
          )
     ],
     # sql files from robotathome package will be included in the installation package
