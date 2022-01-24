@@ -79,9 +79,9 @@ setup(
         "numpy"
     ],
     extras_require={
-        'full':['matplotlib>=3', 'jupyter','opencv-python >= 4.5.3','mxnet', 'gluoncv'],
+        'full':['matplotlib>=3', 'jupyter'],
         'interactive': ['matplotlib>=3', 'jupyter'],
-        'cv': ['opencv-python >= 4.5.3','mxnet', 'gluoncv']
+        'cv': ['matplotlib>=3', 'jupyter', 'opencv']
     },
     python_requires=PYTHON_REQUIRES,
 
