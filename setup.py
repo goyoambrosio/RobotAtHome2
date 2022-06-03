@@ -34,7 +34,7 @@ except Exception:
 if sys.platform.startswith('win'):
     PYTHON_REQUIRES = '<3.7'
 elif sys.platform.startswith('linux'):
-    PYTHON_REQUIRES = '<3.10'
+    PYTHON_REQUIRES = '>=3.7'
 
 setup(
     name="robotathome",
