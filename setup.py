@@ -79,9 +79,9 @@ setup(
         "numpy"
     ],
     extras_require={
-        'full':['matplotlib>=3', 'jupyter', 'opencv'],
-        'interactive': ['matplotlib>=3', 'jupyter'],
-        'cv': ['matplotlib>=3', 'jupyter', 'opencv']
+        'full':['matplotlib>=3', 'notebook','ipywidgets','opencv-python','opencv-contrib-python'],
+        'interactive': ['matplotlib>=3', 'notebook', 'ipywidgets'],
+        'cv': ['opencv-python','opencv-contrib-python']
     },
     python_requires=PYTHON_REQUIRES,
 
@@ -93,7 +93,8 @@ setup(
           'rh_schema_diagram/rh_schema_full.pdf']
          ),
         ('robotathome/notebooks',
-         ['notebooks/10-Download-and-install.ipynb',
+         ['notebooks/05-Google-colab-drive.ipynb',
+          'notebooks/10-Download-and-install.ipynb',
           'notebooks/20-Before-starting-the-logging-system.ipynb',
           'notebooks/30-Getting-started-Framework-data.ipynb',
           'notebooks/40-Captured-data.ipynb',
