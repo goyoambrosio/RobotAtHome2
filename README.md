@@ -1,8 +1,9 @@
 # Robot@Home2 Dataset Toolbox #
 
 [![PyPI](https://img.shields.io/pypi/v/robotathome)](https://pypi.org/project/robotathome/)
-[![DOI](https://zenodo.org/badge/245370645.svg)](https://zenodo.org/badge/latestdoi/245370645)(Toolbox)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4530453.svg)](https://doi.org/10.5281/zenodo.4530453)(Dataset)
+[![DOI](https://zenodo.org/badge/245370645.svg)](https://zenodo.org/badge/latestdoi/245370645)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4530453.svg)](https://doi.org/10.5281/zenodo.4530453)
+[![Open In Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/drive/folders/1ENnxbKP5MJdlGl2Q93WTbIlofuy6Icxq)
 
 The Robot-at-Home dataset (Robot@Home, paper
 [here](http://mapir.uma.es/papersrepo/2017/2017-raul-IJRR-Robot_at_home_dataset.pdf))
