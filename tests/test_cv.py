@@ -9,10 +9,7 @@ __license__ = "MIT"
 
 import unittest
 import os
-import sys
-import pandas as pd
 import matplotlib.pyplot as plt
-
 import robotathome as rh
 from robotathome import logger, set_log_level
 
@@ -27,8 +24,8 @@ class Test(unittest.TestCase):
         Examples:
             python -m unittest <testModule>.<className>.<function_name>
 
-            $ cd ~/cloud/GIT/RobotAtHome_API/tests
-            $ python -m unittest test_reader.Test.test_get_home_names
+            $ cd .../RobotAtHome2/tests
+            $ python -m unittest test_cv.Test.test_get_labeled_img
 
         """
 
@@ -82,6 +79,7 @@ class Test(unittest.TestCase):
 
     def test_get_labeled_img(self):
         """Testing of get_labeled_img
+        $ python -m unittest test_cv.Test.test_get_labeled_img
         """
         logger.trace("*** Testing of get_labeled_img()")
         logger.info("Getting labeled image")
@@ -95,6 +93,7 @@ class Test(unittest.TestCase):
 
     def test_plot_labeled_img(self):
         """Testing of plot_labels
+        $ python -m unittest test_cv.Test.test_plot_labeled_img
         """
         logger.trace("*** Testing of plot_labeled_img()")
         logger.info("Plotting RGB image patched with labels")
@@ -108,7 +107,8 @@ class Test(unittest.TestCase):
         rh.plot_labeled_img(labels, rgb_f)
 
     def test_get_scan_xy(self):
-        """ Docstring
+        """Testing of get_laser_scan
+        $ python -m unittest test_cv.Test.test_get_scan_xy
         """
         id = 200000 # 0 <= id <= inf
         laser_scan = self.rh.get_laser_scan(id)
@@ -116,14 +116,17 @@ class Test(unittest.TestCase):
         print(xy)
 
     def test_plot_scan(self):
-        """ Docstring
+        """Testing of plot_scan
+        $ python -m unittest test_cv.Test.test_plot_scan
         """
         id = 200000 # 0 <= id <= inf
         laser_scan = self.rh.get_laser_scan(id)
         rh.plot_scan(laser_scan)
 
-
     def test_plot_scene(self):
+        """Testing of plot_scene
+        $ python -m unittest test_cv.Test.test_plot_scene
+        """
         scenes = self.rh.get_scenes()
         s_id = 0
         logger.info("\nScene file: \n{}", scenes.iloc[s_id].scene_file)

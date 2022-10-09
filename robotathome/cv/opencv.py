@@ -12,7 +12,7 @@ import pandas as pd
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 
-# note: conda install -c conda-forge opencv
+# note: pip install opencv-python opencv-contrib-python
 import cv2
 # from .log import logger
 
@@ -21,8 +21,9 @@ __all__ = ['get_labeled_img', 'plot_labeled_img', 'get_scan_xy', 'plot_scan', 'p
 
 
 """
-opencv related functions
+computer vision related functions
 """
+
 
 def get_labeled_img(labels, img_file):
     """
@@ -48,9 +49,10 @@ def get_labeled_img(labels, img_file):
     alpha = 0.7
     bgr_img = cv2.imread(img_file, cv2.IMREAD_COLOR)
     labeled_img, colors = overlay_mask(cv2.cvtColor(bgr_img, cv2.COLOR_BGR2RGB),
-                                   labels['mask'],
-                                   alpha)
+                                       labels['mask'],
+                                       alpha)
     return [labeled_img, colors]
+
 
 def plot_labeled_img(labels, img_file):
     """
@@ -67,6 +69,7 @@ def plot_labeled_img(labels, img_file):
     """
     [labeled_img, colors] = get_labeled_img(labels, img_file)
     plot_mask(labeled_img, labels['name'], colors)
+
 
 def get_scan_xy(laser_scan):
 
@@ -89,7 +92,8 @@ def get_scan_xy(laser_scan):
     xy.index.name = 'shot_id'
     return xy
 
-def plot_scan(laser_scan, cmap = 'gist_heat'):
+
+def plot_scan(laser_scan, cmap='gist_heat'):
 
     # Getting a laser scan dataframe with only valid values
     valid_laser_scan = laser_scan.loc[laser_scan['valid_scan'] == 1]
@@ -108,9 +112,10 @@ def plot_scan(laser_scan, cmap = 'gist_heat'):
     # Plotting points
     # plt.plot(x, y, marker=".", markersize=2)
     sc = plt.scatter(x, y, vmin=0, vmax=laser_scan.max_range, c=dist, s=1, cmap = cmap) # or 'gist_heat'
-    plt.scatter(0,0,s=50)
+    plt.scatter(0, 0, s=50)
     plt.colorbar(sc, label='Distance (m)')
     plt.show()
+
 
 def plot_scene(scene_file):
     """Docstring
@@ -144,6 +149,7 @@ def plot_scene(scene_file):
 Helpers
 """
 
+
 def bin2rgba(img):
     """
     TODO
@@ -152,13 +158,14 @@ def bin2rgba(img):
     img = cv2.cvtColor(img*255, cv2.COLOR_GRAY2RGB)
     color_mask = np.random.random((1, 3)).tolist()[0]
 
-    my_mask = cv2.compare(img,245,cv2.CMP_GT)
+    my_mask = cv2.compare(img, 245, cv2.CMP_GT)
     img[my_mask > 0] = 255
 
     for i in range(3):
-        img[:,:,i] = color_mask[i]*255
+        img[:, :, i] = color_mask[i]*255
     plt.imshow(img, interpolation='nearest')
     plt.show()
+
 
 def overlay_mask(img, masks, alpha=0.5):
     # cv2.addWeighted(ovl_img, alpha, base_img, 1 - alpha, 0, base_img)
@@ -166,10 +173,11 @@ def overlay_mask(img, masks, alpha=0.5):
     colors = []
     for mask in masks:
         color = np.random.random(3)
-        colors.append(np.append(color,[alpha]))
+        colors.append(np.append(color, [alpha]))
         mask = np.repeat((mask > 0)[:, :, np.newaxis], repeats=3, axis=2)
         img = np.where(mask, img * (1 - alpha) + color*255 * alpha, img)
     return img.astype('uint8'), colors
+
 
 def plot_mask(patched_img, names, colors):
     plt.imshow(patched_img)
@@ -178,7 +186,6 @@ def plot_mask(patched_img, names, colors):
     for i, color_ in enumerate(colors):
         mpatches_.append(mpatches.Patch(color=color_, label=names[i]))
     plt.legend(handles=mpatches_)
-    # plt.savefig('~/temp/foo.png')
     plt.show()
 
 
@@ -189,6 +196,8 @@ Lab
 """
 Stuff
 """
+
+
 def get_video_from_rgbd(self,
                         source='lblrgbd',
                         home_session_name='alma-s1',
@@ -267,6 +276,7 @@ def get_video_from_rgbd(self,
         cv2.destroyAllWindows()
 
     return video_file_name
+
 
 def get_composed_video_from_lblrgbd(self,
                                     home_session_name='alma-s1',
@@ -388,6 +398,7 @@ def get_composed_video_from_lblrgbd(self,
 
     return video_file_name
 
+
 def get_rgb_image_from_lblrgbd(self, so_id):
     """
     This function 
@@ -420,6 +431,7 @@ def get_rgb_image_from_lblrgbd(self, so_id):
 
     return bgr_img
 
+
 def get_depth_image_from_lblrgbd(self, so_id):
     """
     This function
@@ -451,6 +463,7 @@ def get_depth_image_from_lblrgbd(self, so_id):
     img = cv2.imread(rgb_image_path_file_name, cv2.IMREAD_COLOR)
 
     return cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+
 
 def lblrgbd_plot_labels(self, so_id):
     img = self.get_rgb_image_from_lblrgbd(so_id)

@@ -1,6 +1,7 @@
 # Robot@Home2 Dataset Toolbox #
 
 [![PyPI](https://img.shields.io/pypi/v/robotathome)](https://pypi.org/project/robotathome/)
+[![DOI](https://zenodo.org/badge/245370645.svg)](https://zenodo.org/badge/latestdoi/245370645)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4530453.svg)](https://doi.org/10.5281/zenodo.4530453)
 
 The Robot-at-Home dataset (Robot@Home, paper
