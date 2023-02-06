@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8; buffer-read-only: t -*-
 
-__version__ = "1.0.7"
+__version__ = "1.0.8"
 
 from ._version import *
 from .log import *
