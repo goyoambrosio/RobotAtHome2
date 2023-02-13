@@ -27,7 +27,7 @@ computer vision related functions
 
 def get_labeled_img(labels, img_file):
     """
-    Returns an image patched with labels
+    Return an image patched with labels.
 
     Input
     =====
@@ -56,7 +56,7 @@ def get_labeled_img(labels, img_file):
 
 def plot_labeled_img(labels, img_file):
     """
-    Plot a RGB image patched with colored labels with legend
+    Plot a RGB image patched with colored labels with legend.
 
     Input
     =====
@@ -118,7 +118,13 @@ def plot_scan(laser_scan, cmap='gist_heat'):
 
 
 def plot_scene(scene_file):
-    """Docstring
+    """
+    Plot a scene using open3d package.
+
+    Input
+    =====
+    scene_file:
+        File containing the point cloud
     """
     # https://towardsdatascience.com/guide-to-real-time-visualisation-of-massive-3d-point-clouds-in-python-ea6f00241ee0
     # https://towardsdatascience.com/discover-3d-point-cloud-processing-with-python-6112d9ee38e7
@@ -206,11 +212,9 @@ def get_video_from_rgbd(self,
                         sensor_name='RGBD_1',
                         video_file_name=None
                         ):
-
     """
     This functions ...
     """
-
     rows = self.get_sensor_observation_files(source,
                                              home_session_name,
                                              home_subsession,
