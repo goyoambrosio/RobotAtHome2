@@ -165,42 +165,42 @@ class RobotAtHome():
         Returns:
             array: [rh_path, rgbd_path, scene_path, wspc_path, db_filename]
         """
-        return[self.__rh_path,
-               self.__rgbd_path,
-               self.__scene_path,
-               self.__wspc_path,
-               self.__db_filename]
+        return [self.__rh_path,
+                self.__rgbd_path,
+                self.__scene_path,
+                self.__wspc_path,
+                self.__db_filename]
     """
     Framework
     """
     def get_homes(self):
         """Return a dataframe with home names."""
-        sql_str = ('select * from rh_homes;')
+        sql_str = 'select * from rh_homes;'
         return self.query(sql_str)
 
     def get_home_sessions(self):
         """Return a dataframe with home session names."""
-        sql_str = ('select * from rh_home_sessions;')
+        sql_str = 'select * from rh_home_sessions;'
         return self.query(sql_str)
 
     def get_rooms(self):
         """Return a dataframe with room names."""
-        sql_str = ('select * from rh_rooms;')
+        sql_str = 'select * from rh_rooms;'
         return self.query(sql_str)
 
     def get_room_types(self):
         """Return a dataframe with room type names."""
-        sql_str = ('select * from rh_room_types;')
+        sql_str = 'select * from rh_room_types;'
         return self.query(sql_str)
 
     def get_sensors(self):
         """Return a dataframe with sensor names."""
-        sql_str = ('select * from rh_sensors;')
+        sql_str = 'select * from rh_sensors;'
         return self.query(sql_str)
 
     def get_sensor_types(self):
         """Return a dataframe with sensor type names."""
-        sql_str = ('select * from rh_sensor_types;')
+        sql_str = 'select * from rh_sensor_types;'
         return self.query(sql_str)
 
     def get_hometopo(self):
@@ -933,7 +933,7 @@ class RobotAtHome():
                     break
                 line = file_handler.readline()
 
-            for i in range(num_of_labels):
+            for _ in range(num_of_labels):
                 line = file_handler.readline()
                 words = line.strip().split()
 
@@ -989,7 +989,7 @@ class RobotAtHome():
         for label in labels:
             arr = label_mask_array & (2**(label))
             np.clip(arr, 0, 1, out=arr)
-            arr = np.uint8(arr[:,2:-2])
+            arr = np.uint8(arr[:, 2:-2])
             masks.append(arr)
         logger.debug("\nmask list with {} items of {} binary arrays", len(masks), masks[0].shape)
 
@@ -1023,6 +1023,13 @@ class RobotAtHome():
 
         return labels
 
+    def get_RGBD_sensor_size(self):
+        """Return RGB sensor pixel dimension."""
+        RGBD_sensor_size = {
+            'w': 240,
+            'h': 320
+        }
+        return RGBD_sensor_size
     """
     Laser Scanner data
     """
@@ -1301,7 +1308,6 @@ class RobotAtHome():
         (without repetition)
         """
         # Get a cursor to execute SQLite statements
-        cur = self.__con.cursor()
         sql_str = (f"select {column_name}  from {table_name} group by {column_name};")
         df_rows = pd.read_sql_query(sql_str, self.__con)
         return df_rows
