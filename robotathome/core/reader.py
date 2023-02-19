@@ -1030,6 +1030,14 @@ class RobotAtHome():
             'h': 320
         }
         return RGBD_sensor_size
+
+
+    def get_RGBD_fps(self):
+        """Return RGBD cameras frame rate."""
+
+        return 10.72
+
+
     """
     Laser Scanner data
     """
