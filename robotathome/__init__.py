@@ -10,9 +10,9 @@ from .helpers import *
 # from . import cv # rh.cv.say_hello
 # from .cv import say_hello, hello_cv # rh.say_hello
 from .cv import *
-from .core import RobotAtHome
+from .core import *
 
-__all__=[]
+__all__ = []
 __all__.extend(_version.__all__)
 __all__.extend(log.__all__)
 __all__.extend(helpers.__all__)

@@ -12,6 +12,7 @@ import os
 import configparser
 import numpy as np
 import pandas as pd
+
 from robotathome.log import logger
 
 __all__ = ['RobotAtHome']
@@ -1033,7 +1034,14 @@ class RobotAtHome():
 
 
     def get_RGBD_fps(self):
-        """Return RGBD cameras frame rate."""
+        """Return RGBD cameras frame rate.
+        
+        The returned value is a fixed quantity resulting from
+        previous average computations.
+        A more precise value can be calculated by dividing the
+        time between the first frame and the last frame by the
+        number of frames.
+        """
 
         return 10.72
 

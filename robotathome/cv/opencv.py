@@ -8,21 +8,24 @@ __date__ = "2021/07/27"
 __license__ = "MIT"
 
 import numpy as np
+import cv2  # note: pip install opencv-python opencv-contrib-python
 import pandas as pd
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 
-# note: pip install opencv-python opencv-contrib-python
-import cv2
-# from .log import logger
+from robotathome import logger
 
 
-__all__ = ['get_labeled_img', 'plot_labeled_img', 'get_scan_xy', 'plot_scan', 'plot_scene']
+__all__ = ['get_labeled_img',
+           'plot_labeled_img',
+           'get_scan_xy',
+           'plot_scan',
+           'plot_scene',
+           'process_image',
+           'concat_images']
 
 
-"""
-computer vision related functions
-"""
+# computer vision related functions
 
 
 def get_labeled_img(labels, img_file):
@@ -151,9 +154,37 @@ def plot_scene(scene_file):
     o3d.visualization.draw_geometries([pcd])
 
 
-"""
-Helpers
-"""
+# Related to RGBD generic function.
+
+
+def process_image(f, img):
+    """ Apply generic function f over img."""
+    return f(img)
+
+
+def concat_images(img_dict):  # (img, par1, ... parn)
+    """ Process the image. """
+    # do something with the img
+    img_list = list(img_dict.values())
+    composed_img = cv2.hconcat(img_list)
+    return composed_img
+
+
+def RGBD_stiching(img_dict):  # (img, par1, ... parn)
+    """ Process the image. """
+    # do something with the img
+    img_list = list(img_dict.values())
+    stitcher = cv2.Stitcher.create(cv2.Stitcher_PANORAMA)
+    status, pano = stitcher.stitch(img_list)
+    if status != cv2.Stitcher_OK:
+        # error code = 1 means that there are no enough features between the 
+        # image intersections.
+        logger.error("Can't stitch images, error code = %d" % status)
+        sys.exit(-1)
+    return pano
+
+
+# Helpers
 
 
 def bin2rgba(img):
@@ -195,13 +226,10 @@ def plot_mask(patched_img, names, colors):
     plt.show()
 
 
-"""
-Lab
-"""
+# Lab
 
-"""
-Stuff
-"""
+
+# Old stuff
 
 
 def get_video_from_rgbd(self,
