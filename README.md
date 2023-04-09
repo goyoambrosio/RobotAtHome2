@@ -2,8 +2,11 @@
 
 [![PyPI](https://img.shields.io/pypi/v/robotathome)](https://pypi.org/project/robotathome/ "R@H2 as PyPI package ready to install")
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7811795.svg)](https://doi.org/10.5281/zenodo.7811795 "The downloadable R@H2 dataset in Zenodo")
+[![DOI](https://zenodo.org/badge/7812048.svg)](https://zenodo.org/badge/latestdoi/7812048 "This repository released on Zenodo") -->
 [![Open In Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/drive/folders/1ENnxbKP5MJdlGl2Q93WTbIlofuy6Icxq)
-<!-- [![DOI](https://zenodo.org/badge/245370645.svg)](https://zenodo.org/badge/latestdoi/245370645 "This repository released on Zenodo") -->
+
+
+
 The Robot-at-Home dataset (Robot@Home, paper
 [here](http://mapir.uma.es/papersrepo/2017/2017-raul-IJRR-Robot_at_home_dataset.pdf))
 is a collection of raw and processed data from five domestic settings compiled
