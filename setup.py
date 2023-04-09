@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Setup for RobotAtHome API
+Setup for RobotAtHome2
 """
 
 import os
@@ -38,8 +38,8 @@ elif sys.platform.startswith('linux'):
 
 setup(
     name="robotathome",
-    version=get_version("robotathome/__init__.py"),
-    description="This package provides a Python Toolbox with a set of functions to assist in the management of Robot@Home 2 Dataset",
+    version=get_version("src/__init__.py"),
+    description="This package provides a Python Toolbox with a set of functions to assist in the management of Robot@Home2 Dataset",
     long_description = LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
 
@@ -49,17 +49,13 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    url="https://github.com/goyoambrosio/RobotAtHome_API",
-    keywords=('semantic mapping '
-              'object categorization '
-              'object recognition '
-              'room categorization '
-              'room recognition '
-              'contextual information '
-              'mobile robots '
-              'domestic robots '
-              'home environment '
-              'robotic dataset benchmark '
+    url="https://github.com/goyoambrosio/RobotAtHome2",
+    keywords=('toolbox '
+              'dataset '
+              'database '
+              'relational model '
+              'mobile robotics '
+              'computer vision '
               ),
 
     author="G. Ambrosio-Cestero",
