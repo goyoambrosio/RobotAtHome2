@@ -38,7 +38,7 @@ elif sys.platform.startswith('linux'):
 
 setup(
     name="robotathome",
-    version=get_version("src/__init__.py"),
+    version=get_version("robotathome/__init__.py"),
     description="This package provides a Python Toolbox with a set of functions to assist in the management of Robot@Home2 Dataset",
     long_description = LONG_DESCRIPTION,
     long_description_content_type="text/markdown",
