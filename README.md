@@ -80,7 +80,7 @@ Download the Anaconda installer
 
 ```shell
 $ cd ~/Downloads
-$ wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
+$ wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh
 ```
 
 > replace `~/Downloads` with the path of your choice
@@ -89,7 +89,7 @@ $ wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
 Install the distribution
 
 ```shell
-$ bash ~/Downloads/Anaconda3-2021.05-Linux-x86_64.sh
+$ bash ~/Downloads/Anaconda3-2022.10-Linux-x86_64.sh
 ```
 
 > include the `bash` command regardless of whether or not you are using Bash shell.
@@ -119,8 +119,8 @@ installed and working, the version information it displays when it starts up
 will include `“Anaconda”`. To exit the Python shell, enter the `quit()` command.
 
     $ python
-    Python 3.9.7 (default, Sep 16 2021, 13:09:58)
-    [GCC 7.5.0] :: Anaconda, Inc. on linux
+    Python 3.9.16 (main, Jan 11 2023, 16:05:54) 
+    [GCC 11.2.0] :: Anaconda, Inc. on linux
     Type "help", "copyright", "credits" or "license" for more information.
     >>> quit()
 
@@ -239,12 +239,11 @@ Robot@Home2 Toolbox can be installed through the Python package manager.
 
     ```
     $ python
-
     Python 3.10.9 (main, Jan 11 2023, 15:21:40) [GCC 11.2.0] on linux
     Type "help", "copyright", "credits" or "license" for more information.
     >>> import robotathome as rh
     >>> print (rh.__version__)
-    1.1.0
+    1.1.1
     ```
 
 4.  Congratulations ! the `robotathome` package has been installed successfully.
