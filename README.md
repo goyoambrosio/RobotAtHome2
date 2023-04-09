@@ -1,8 +1,8 @@
 # Robot@Home2 Dataset Toolbox #
 
 [![PyPI](https://img.shields.io/pypi/v/robotathome)](https://pypi.org/project/robotathome/ "R@H2 as PyPI package ready to install")
-[![DOI](https://zenodo.org/badge/245370645.svg)](https://zenodo.org/badge/latestdoi/245370645 "This repository released on Zenodo")
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4530453.svg)](https://doi.org/10.5281/zenodo.4530453 "The downloadable R@H2 dataset in Zenodo")
+-- [![DOI](https://zenodo.org/badge/245370645.svg)](https://zenodo.org/badge/latestdoi/245370645 "This repository released on Zenodo")
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7811795.svg)](https://doi.org/10.5281/zenodo.7811795 "The downloadable R@H2 dataset in Zenodo")
 [![Open In Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/drive/folders/1ENnxbKP5MJdlGl2Q93WTbIlofuy6Icxq)
 
 The Robot-at-Home dataset (Robot@Home, paper
@@ -238,12 +238,11 @@ Robot@Home2 Toolbox can be installed through the Python package manager.
     ```
     $ python
 
-    Python 3.7.11 (default, Jul 27 2021, 14:32:16) 
-    [GCC 7.5.0] :: Anaconda, Inc. on linux
+    Python 3.10.9 (main, Jan 11 2023, 15:21:40) [GCC 11.2.0] on linux
     Type "help", "copyright", "credits" or "license" for more information.
     >>> import robotathome as rh
     >>> print (rh.__version__)
-    0.5.0
+    1.1.0
     ```
 
 4.  Congratulations ! the `robotathome` package has been installed successfully.
@@ -252,7 +251,7 @@ Robot@Home2 Toolbox can be installed through the Python package manager.
 ### Downloading the dataset
 
 Robot@Home resides in Zenodo site where all data versions can be downloaded.
-Latest version ([v2.0.1](https://zenodo.org/record/4530453)) is composed of two
+Latest version ([v2.0.3](https://zenodo.org/record/7811795)) is composed of two
 files: `Robot@Home2_db.tgz` and `Robot@Home2_files.tgz`. The first one contains the
 database, and the second one contains the bunch of RGBD images and 3D scenes
 
@@ -261,15 +260,15 @@ You can choose to download it on your own or through the new brand toolbox.
 In case you are considering Linux
 
 ```shell
-$ wget https://zenodo.org/record/4530453/files/Robot@Home2_db.tgz
-$ wget https://zenodo.org/record/4530453/files/Robot@Home2_files.tgz
+$ wget https://zenodo.org/record/7811795/files/Robot@Home2_db.tgz
+$ wget https://zenodo.org/record/7811795/files/Robot@Home2_files.tgz
 ```
 
 check the files integrity
 
 ```shell
 $ md5sum Robot@Home2_db.tgz 
-c2a3536b6b98b907c56eda3a78300cbe  Robot@Home2_db.tgz
+d34fb44c01f31c87be8ab14e5ecd0767  Robot@Home2_db.tgz
 
 $ md5sum Robot@Home2_files.tgz 
 c55465536738ec3470c75e1671bab5f2  Robot@Home2_files.tgz
@@ -278,7 +277,7 @@ c55465536738ec3470c75e1671bab5f2  Robot@Home2_files.tgz
 and to finish unzip files
 
 ```shell
-$ pv /home/user/Downloads/Robot@Home2_db.tgz | tar -J -xf - -C /home/user/WORKSPACE/
+$ pv /home/user/Downloads/Robot@Home2_db.tgz | tar -xzf - -C /home/user/WORKSPACE/
 $ pv /home/user/Downloads/Robot@Home2_files.tgz | tar -xzf - -C /home/user/WORKSPACE/files
 ```
 
@@ -288,15 +287,15 @@ or even better, now you can do the same programmatically using the toolbox
 import robotathome as rh
 
 # Download files
-rh.download('https://zenodo.org/record/4530453/files/Robot@Home2_db.tgz', '~/Downloads')
-rh.download('https://zenodo.org/record/4530453/files/Robot@Home2_files.tgz', '~/Downloads')
+rh.download('https://zenodo.org/record/7811795/files/Robot@Home2_db.tgz', '~/Downloads')
+rh.download('https://zenodo.org/record/7811795/files/Robot@Home2_files.tgz', '~/Downloads')
 
 # Compute md5 checksums
 md5_checksum_db = rh.get_md5('~/Downloads/Robot@Home2_db.tgz')
 md5_checksum_files = rh.get_md5('~/Downloads/Robot@Home2_files.tgz')
 
 # Check the files integrity and download
-if md5_checksum_db == 'c2a3536b6b98b907c56eda3a78300cbe':
+if md5_checksum_db == 'd34fb44c01f31c87be8ab14e5ecd0767':
     rh.uncompress('~/Downloads/Robot@Home2_db.tgz', '~/WORKSPACE')
 else:
     print('Integrity of Robot@Home2_db.tgz is compromised, please download again')
