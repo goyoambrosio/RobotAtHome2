@@ -67,19 +67,19 @@ class RobotAtHome():
                 a database connection could not be done).
 
         Note 1: The default folder structure is:
-            R@H2-2.0.1
-                 │    └── files
-                 │        ├── rgbd
-                 │        └── scene
-                 └─────── rh.db
+         └─── R@H2-2.0.3
+              └── files
+              │   ├── rgbd
+              │   └── scene
+              └── rh.db
 
         Note 2: Example of .rh file
             # This is a default configuration file
             [PATHS]
-            rh_path     = $HOME/R@H2-2.0.1
-            rgbd_path   = ~/R@H2-2.0.1/files/rgbd
+            rh_path     = $HOME/R@H2-2.0.3
+            rgbd_path   = ~/R@H2-2.0.3/files/rgbd
             scene_path  = ~/R@H2-2.0.1/files/scene
-            wspc_path   = ~/R@H2-2.0.1
+            wspc_path   = ~/R@H2-2.0.3
             db_filename = rh.db
 
             Paths strings can content environmental variables such as $HOME or
