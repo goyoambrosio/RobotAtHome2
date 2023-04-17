@@ -97,7 +97,12 @@ setup(
           'notebooks/50-RGBD-observations.ipynb',
           'notebooks/60-Lsrscan-observations.ipynb',
           'notebooks/70-Scenes.ipynb',
-          'notebooks/80-Characterized-observations.ipynb']
+          'notebooks/80-Characterized-observations.ipynb',
+          'notebooks/90-The-config-file.ipynb',
+          'notebooks/100-Iterating-over-RGBD-images.ipynb',
+          'notebooks/110-Concatenating-images-from-multiple-cameras.ipynb',
+          'notebooks/120-Making-a-video.ipynb',
+          'notebooks/130-Processing-images-with-YOLO.ipynb']
          )
     ],
     # sql files from robotathome package will be included in the installation package
