@@ -103,7 +103,8 @@ setup(
           'notebooks/110-Concatenating-images-from-multiple-cameras.ipynb',
           'notebooks/120-Making-a-video.ipynb',
           'notebooks/130-Processing-images-with-YOLO.ipynb',
-          'notebooks/140-Loading-dataset-in-Google-Colab.ipynb']
+          'notebooks/140-Loading-dataset-in-Google-Colab.ipynb',
+          'notebooks/150-Segmentation-with-Detectron2.ipynb']
          )
     ],
     # sql files from robotathome package will be included in the installation package
