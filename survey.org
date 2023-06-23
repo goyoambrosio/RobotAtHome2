@@ -1,0 +1,568 @@
+# This file is an org template that, when exported, generates the Latex template
+# with the publication format of Elsevier's SoftwareX journal.
+
+# Author: Gregorio Ambrosio Cestero. gambrosio [at] uma [dot] es
+
+# This file is in read only mode
+# C-x-q  to enable/disable buffer read only mode
+
+* Prelude (v8.0) :noexport:
+
+[[info:org#Export Settings]]
+[[https://orgmode.org/manual/Export-Settings.html#Export-Settings][13.2 Export Settings]]
+
+
+** Identification
+
+# [[https://orgmode.org/manual/Export-settings.html][Export settings]]
+#+TITLE: Robot@Home2 Toolbox: a Demanded Robotic Dataset Iteration Towards an Improved Usability
+#+SUBTITLE:
+
+# The following variables, when exporting latex, are included in \hypersetup{}
+
+#+DESCRIPTION: Paper for Elsevier SoftwareX Journal
+#+KEYWORDS: dataset, relational, toolbox, notebook, mobile robotics
+# Use keybind C-c . or C-c < or free format like "Saturday 9th, 2019"
+# #+DATE: leave this option commented out or uncomment it to include your date
+#+AUTHOR: Gregorio Ambrosio Cestero
+#+EMAIL: gambrosio@uma.es
+#+LANGUAGE: en
+# #+CREATOR: leave this option commented out or uncomment it to include your own text
+
+# Just for reference. C-c C-c to execute it
+# src_elisp{org-version} {{{results(=9.5.5=)}}}
+# src_elisp{emacs-version} {{{results(=28.2=)}}}
+
+** Org settings
+
+[[https://orgmode.org/manual/In_002dbuffer-Settings.html][In-buffer Settings (The Org Manual)]]
+
+# #+STARTUP: hidestars
+# #+STARTUP: hideblocks
+# #+STARTUP: nohideblocks
+#+STARTUP: overview
+#+STARTUP: indent
+#+STARTUP: logdrawer
+
+#+COLUMNS: %25ITEM %TAGS %TODO
+
+** Export settings (general)
+
+#+SELECT_TAGS: export
+#+EXCLUDE_TAGS: noexport
+
+#+OPTIONS: ':nil *:t -:t ::t <:t H:6 \n:nil ^:t arch:headline author:nil
+#+OPTIONS: broken-links:nil c:nil creator:nil d:(not "LOGBOOK") date:t e:t
+#+OPTIONS: email:nil f:t inline:t num:t p:nil pri:nil prop:nil stat:t tags:t
+#+OPTIONS: tasks:t tex:t timestamp:t title:nil toc:nil todo:nil |:t
+
+
+# TOC related
+# #+OPTIONS: toc:t          include all levels in TOC
+# #+OPTIONS: toc:2          only include two levels in TOC
+# #+OPTIONS: toc:nil        no default TOC at all
+
+# To move the TOC to a different location:
+# #+OPTIONS: toc:nil        no default TOC
+# ...
+# #+TOC: headlines 2        insert TOC here, with two headline levels
+
+# Use the TOC keyword to generate list of tables (resp. all listings) with captions.
+# #+TOC: listings           build a list of listings
+# #+TOC: tables             build a list of tables
+
+
+** Export settings (specific)
+*** Code
+
+ # To avoid evaluating code on export use the following header argument:
+ #+PROPERTY: header-args :eval never-export
+
+*** Latex
+
+[[https://orgmode.org/manual/LaTeX-specific-export-settings.html#LaTeX-specific-export-settings][13.10.2 LaTeX specific export settings]]
+[[https://orgmode.org/manual/Images-in-LaTeX-export.html][13.10.6 Images in LaTeX export]]
+
+[[https://www.elsevier.com/journals/softwarex/2352-7110/guide-for-authors][Guide for authors - SoftwareX - ISSN 2352-7110]]
+[[https://www.elsevier.com/authors/policies-and-guidelines/latex-instructions][Elsevier Latex Instructions]]
+
+
+# LaTeX specific export settings
+# ================================
+
+#+LATEX_COMPILER: pdflatex
+#+LATEX_CLASS: elsarticle
+# #+LaTeX_CLASS_OPTIONS: [preprint,12pt, a4paper]
+#+LaTeX_CLASS_OPTIONS: [preprint,5p,times,twocolumn,a4paper]
+# #+LaTeX_CLASS_OPTIONS: [preprint,5p,times,twocolumn,a4paper,12pt]
+# #+LaTeX_CLASS_OPTIONS: [final,5p,a4paper,times,twocolumn]
+
+
+
+#+begin_export latex
+%% Use the option review to obtain double line spacing
+%% \documentclass[authoryear,preprint,review,12pt]{elsarticle}
+
+%% For including figures, graphicx.sty has been loaded in
+%% elsarticle.cls. If you prefer to use the old commands
+%% please give \usepackage{epsfig}
+
+%% The amssymb package provides various useful mathematical symbols
+%% \usepackage{amssymb}
+%% The amsthm package provides extended theorem environments
+%% \usepackage{amsthm}
+
+%% The lineno packages adds line numbers. Start line numbering with
+%% \begin{linenumbers}, end it with \end{linenumbers}. Or switch it on
+%% for the whole article with \linenumbers.
+#+end_export
+
+#+LATEX_HEADER: \usepackage{lineno}  % adds line numbers
+# #+LATEX_HEADER: \modulolinenumbers[1]
+#+LATEX_HEADER: \usepackage{float}
+#+LATEX_HEADER: \restylefloat{table}
+
+# \tiny < \scriptsize < \footnotesize < \small < \normalsize
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\scriptsize}
+
+# Customizing some colors for references.
+#+LATEX_HEADER: \usepackage[usenames,dvipsnames]{xcolor}
+#+LATEX_HEADER: \hypersetup{colorlinks=true}
+#+LATEX_HEADER: \AtBeginDocument{\hypersetup{citecolor=olive,urlcolor=Turquoise,linkcolor=olive}}
+
+#+LATEX_HEADER: \usepackage{subfig}
+
+#+LATEX_HEADER: \usepackage{listings}
+
+#+LATEX_HEADER: \journal{SoftwareX}
+
+#+begin_comment
+#+LaTeX_CLASS_OPTIONS: [preprint,5p,times,twocolumn,a4paper]
+#+LaTeX_CLASS_OPTIONS: [preprint,5p,times,twocolumn,a4paper,12pt]
+#+LaTeX_CLASS_OPTIONS: [final,5p,a4paper,times,twocolumn]
+#+LaTeX_CLASS_OPTIONS: [authoryear,preprint,review,12pt]
+#+end_comment
+
+#+begin_comment
+#+LATEX_HEADER: \usepackage{amssymb}  % provides various useful mathematical symbols <- exported by default
+#+LATEX_HEADER: \usepackage{amsmath}   % provides extended theorem environments
+#+end_comment
+
+#+begin_comment
+# To change font size in code listings
+# \tiny < \scriptsize < \footnotesize < \small < \normalsize
+#+LATEX_HEADER: \RequirePackage{fancyvrb}
+#+LATEX_HEADER: \DefineVerbatimEnvironment{verbatim}{Verbatim}{fontsize=\scriptsize}
+#+end_comment
+
+#+begin_comment
+# Customizing some colors for references.
+#+LATEX_HEADER: \usepackage[usenames,dvipsnames]{xcolor}
+#+LATEX_HEADER: \hypersetup{colorlinks=true}
+#+LATEX_HEADER: \AtBeginDocument{\hypersetup{citecolor=olive,urlcolor=Turquoise,linkcolor=olive}}
+#+end_comment
+
+#+begin_comment
+#+LATEX_HEADER: \usepackage{graphicx}
+#+LATEX_HEADER: \usepackage{color}
+#+LATEX_HEADER: \usepackage{xspace}
+#+LATEX_HEADER: \usepackage{booktabs} % enhances the quality of tables in LaTeX, providing extra commands as well as behind-the-scenes optimisation
+#+LATEX_HEADER: \usepackage{graphicx,dblfloatfix} % dblfloatfix magically fix the position of figures at the bottom, instead of sending them to the end of the document
+#+LATEX_HEADER: \usepackage{array}
+#+end_comment
+
+#+begin_comment
+#+LATEX_HEADER: \usepackage{multicol}
+#+LATEX_HEADER: \usepackage{tabularx}
+#+LATEX_HEADER: \usepackage{colortbl}
+#+LATEX_HEADER: \usepackage{multirow}
+#+end_comment
+
+#+begin_comment
+#+LATEX_HEADER: \usepackage[english]{babel}
+#+end_comment
+
+# From jraul papers
+#+begin_comment
+#+LATEX_HEADER: \newcommand\red[1]{\textcolor{red}{#1}}
+#+LATEX_HEADER: \newcommand\blue[1]{\textcolor{blue}{#1}}
+#+LATEX_HEADER: \newcommand\green[1]{\textcolor{green}{#1}}
+#+LATEX_HEADER: \newcommand\magenta[1]{\textcolor{magenta}{#1}}
+#+LATEX_HEADER: \newcommand\orange[1]{\textcolor{orange}{#1}}
+
+#+LATEX_HEADER: \newcommand\T{\rule{0pt}{2.6ex}}       % Top strut
+#+LATEX_HEADER: \newcommand\Bo{\rule[-2ex]{0pt}{0pt}} % Bottom strut
+
+#+LATEX_HEADER: \newcommand{\C}[1]{\mathcal{#1}}
+#+LATEX_HEADER: \newcommand{\B}[1]{\boldsymbol{#1}}
+#+LATEX_HEADER: \newcommand{\bx}{\boldsymbol{x}}
+#+LATEX_HEADER: \newcommand{\by}{\boldsymbol{y}}
+#+LATEX_HEADER: \newcommand{\btheta}{\boldsymbol{\theta}}
+#+LATEX_HEADER: \newcommand{\NP}{\mbox{$\mathcal{NP}$-hard}}
+#+LATEX_HEADER: \newcommand{\bIH}{\boldsymbol{\mathrm{H}}}
+#+LATEX_HEADER: \newcommand{\degree}{\ensuremath{^\circ}}
+
+#+LATEX_HEADER: \providecommand{\EQ}[1]{Eq.#1}
+#+LATEX_HEADER: \providecommand{\FIG}[1]{Fig.~#1}
+#+LATEX_HEADER: \providecommand{\SEC}[1]{Sec.~#1}
+#+LATEX_HEADER: \providecommand{\TABLE}[1]{Tab.~#1}
+#+LATEX_HEADER: \providecommand{\VECTOR}[1]{\mathbf{#1}}
+#+LATEX_HEADER: \providecommand{\MATRIX}[1]{\mathbf{#1}}
+
+#+LATEX_HEADER: \providecommand{\hcrf}{\textit{ob}CRF\,\xspace}
+#+LATEX_HEADER: \providecommand{\hcrfs}{\textit{ob}CRFs\,\xspace}
+
+#+LATEX_HEADER: \providecommand{\etal}{\emph{et al.\,\xspace}}
+#+LATEX_HEADER: \providecommand{\ie}{\emph{i.e.\,\xspace}}
+#+LATEX_HEADER: \providecommand{\eg}{\emph{e.g.\,\xspace}}
+#+LATEX_HEADER: \providecommand{\RGBD}{\mbox{RGB-D}\,\xspace}
+#+end_comment
+
+
+* Preamble                                                       :ignore:
+
+#+begin_export latex
+\begin{frontmatter}
+#+end_export
+
+#+begin_export latex
+%% Title, authors and addresses
+
+%% use the tnoteref command within \title for footnotes;
+%% use the tnotetext command for theassociated footnote;
+%% use the fnref command within \author or \address for footnotes;
+%% use the fntext command for theassociated footnote;
+%% use the corref command within \author for corresponding author footnotes;
+%% use the cortext command for theassociated footnote;
+%% use the ead command for the email address,
+%% and the form \ead[url] for the home page:
+%% \title{Title\tnoteref{label1}}
+%% \tnotetext[label1]{}
+%% \author{Name\corref{cor1}\fnref{label2}}
+%% \ead{email address}
+%% \ead[url]{home page}
+%% \fntext[label2]{}
+%% \cortext[cor1]{}
+%% \address{Address\fnref{label3}}
+%% \fntext[label3]{}
+#+end_export
+
+#+begin_export latex
+%% use optional labels to link authors explicitly to addresses:
+%% \author[label1,label2]{}
+%% \address[label1]{}
+%% \address[label2]{}
+#+end_export
+
+#+begin_export latex
+\author[uma]{Gregorio Ambrosio Cestero\corref{cor1}}
+\cortext[cor1]{Corresponding author}
+\ead{gambrosio@uma.es}
+
+\author[uma]{Jose-Raul Ruiz-Sarmiento}
+\ead{jotaraul@uma.es}
+
+\author[uma]{Javier Gonzalez-Jimenez}
+\ead{javiergonzalez@uma.es}
+
+\address[uma]{Machine Perception and Intelligent Robotics Group, System Engineering and Automation Department, \\ and Biomedical Research Institute of M\'alaga (IBIMA), University of M\'alaga, Campus de Teatinos, 29071, M\'alaga, Spain.}
+#+end_export
+
+#+BEGIN_abstract
+#+begin_export latex
+%% Text of abstract
+#+end_export
+
+Robot@Home is a dataset of raw data captured from the sensors of a mobile robot
+in different indoor navigation sessions carried out in different homes. The
+dataset is suitable for the development and testing of indoor mobile robotics
+algorithms, especially in the field of semantic mapping. In this paper we
+present Robot@Home2 Toolbox consisting of a Python package, a database and a set
+of learning resources that comes to substitute original dataset for easy and
+usable experimentation. The Python package contains database interface functions
+and display functions, among others. The database forms the dataset itself
+according to a relational model. In addition, the toolbox contains training
+resources in the form of Jupyter notebooks. Robot@Home2 is open source and it is
+available from the corresponding git repository or by installing it as a
+standard Python package. The database can be easily downloaded programatically
+or by accessing a public repository as Zenodo. In addition, the installation and
+execution of Robot@Home2 is possible both in the local environment and in the
+cloud.
+#+END_abstract
+
+#+begin_export latex
+\begin{keyword}
+%% keywords here, in the form: keyword \sep keyword
+toolbox \sep dataset \sep database \sep relational model \sep mobile robotics \sep Python \sep Jupyter \sep Google Colab 
+
+%% PACS codes here, in the form: \PACS code \sep code
+
+%% MSC codes here, in the form: \MSC code \sep code
+%% or \MSC[2008] code \sep code (2000 is the default)
+\end{keyword}
+#+end_export
+
+#+begin_export latex
+\end{frontmatter}
+#+end_export
+
+
+* Appendix A. A survey on the previous use of Robot@Home dataset
+
+#+NAME: table-survey
+#+ATTR_LATEX: :placement [!ht]
+#+CAPTION: Works that have used or featured Robot@Home in some way.
+#+CAPTION: (A) This work is a *PhD thesis* dissertation. The dataset has been used or taken into account for the work.
+#+CAPTION: (B) This work is a *survey* that refers the dataset.
+#+CAPTION: (C) This work refers the dataset as an example of its importance in the field of *mobile robotics*.
+#+CAPTION: (D) This work refers the dataset in the field of *semantic mapping*.
+#+CAPTION: (E) In this work Robot@Home has contributed *in depth* in its verification.
+#+ATTR_LATEX: :booktabs :font \footnotesize
+#+ATTR_LATEX: :align lllccccc
+|---------------------------------------------------+------+--------------------------------+-------+-------+-------+-------+-------|
+| paper                                             | year | main topics                    | A     | B     | C     | D     | E     |
+|---------------------------------------------------+------+--------------------------------+-------+-------+-------+-------+-------|
+| [[cite:&ruiz-sarmiento2016_probabilistic_techniques]] | 2016 | semantic mapping               |       |       |       |       | \bull |
+| [[cite:&ruiz-sarmiento2017_building_multiversal]]     | 2017 | semantic mapping               |       |       |       |       | \bull |
+| cite:&nakamura2017_ensemble                       | 2017 | object categorization, dataset |       |       | \bull |       |       |
+| [[cite:&ruiz-sarmiento2017_modelado_contexto]]        | 2017 | semantic mapping               |       |       |       |       | \bull |
+| [[cite:&tarifa2017_motion]]                           | 2017 | planar odometry                | \bull |       |       |       |       |
+| [[cite:&jaimez2017_motion_estimation]]                | 2017 | planar odometry                | \bull |       |       |       | \bull |
+| [[cite:&deeken2018_grounding]]                        | 2018 | semantic mapping               |       |       |       | \bull |       |
+| [[cite:&jaimez2018_robust]]                           | 2018 | plannar odometry               |       |       |       |       | \bull |
+| [[cite:&gunther2018_context]]                         | 2018 | 3D world modelling             |       |       |       | \bull |       |
+| [[cite:&roa-borbolla2018_realistic]]                  | 2018 | map generation, simulation     |       |       |       | \bull |       |
+| [[cite:&ferri2018_computing_fast]]                    | 2018 | motion planning                | \bull |       | \bull |       |       |
+| [[cite:&suh2018_semantic_task]]                       | 2018 | task planning                  |       |       |       | \bull |       |
+| [[cite:&balloch2018_unbiasing]]                       | 2018 | semantic segmentation          |       |       |       | \bull | \bull |
+| [[cite:&pire2019_rosario]]                            | 2019 | SLAM, dataset                  |       |       |       | \bull |       |
+| [[cite:&ruiz-sarmiento2019_ontology]]                 | 2019 | object recognition             |       |       |       |       | \bull |
+| [[cite:&zuniga2019_automatic]]                        | 2019 | sensor calibration             |       |       | \bull |       |       |
+| [[cite:&chaves2019_integration]]                      | 2019 | semantic mapping               |       |       |       |       | \bull |
+| [[cite:&martinez2019_fukuoka]]                        | 2019 | dataset                        |       |       |       | \bull |       |
+| [[cite:&delapuente2019_robot]]                        | 2019 | indoor navigation              |       |       |       | \bull |       |
+| [[cite:&mishra2019_ego]]                              | 2019 | robotic hardware               |       |       | \bull |       |       |
+| [[cite:&zuniga-noel2019_intrinsic]]                   | 2019 | sensor calibration             |       |       | \bull |       |       |
+| [[cite:&monroy2019_olfaction_vision]]                 | 2019 | robotic olfaction, obj. rec.   |       |       |       |       | \bull |
+| [[cite:&ruiz-sarmiento2019_tutorial_on]]              | 2019 | training                       |       |       |       |       | \bull |
+| [[cite:&fabro2019_design_development]]                | 2019 | dataset                        |       |       | \bull |       |       |
+| [[cite:&baltanas2019_coleccion_jupyter]]              | 2019 | training                       |       |       | \bull |       |       |
+| [[cite:&moreno2020_automatic]]                        | 2020 | path planning                  |       |       |       |       | \bull |
+| [[cite:&chen2020_advanced]]                           | 2020 | dataset                        |       | \bull |       | \bull |       |
+| [[cite:&fernandez-chaves2020_from_object]]            | 2020 | reasoning, categorization      |       |       |       |       | \bull |
+| [[cite:&qi2020_object_lidar]]                         | 2020 | semantic mapping               |       |       |       |       | \bull |
+| [[cite:&andersone2020_quality_evaluation]]            | 2020 | map merging                    |       |       |       |       | \bull |
+| [[cite:&li2020_relative_pose]]                        | 2020 | pose estimation                |       |       |       |       | \bull |
+| [[cite:&ruiz-sarmiento2020_tutorial_python]]          | 2020 | training                       |       |       |       |       | \bull |
+| [[cite:&maffei2020_global_localization]]              | 2020 | localization, path planning    |       |       |       |       | \bull |
+| [[cite:&garg2020_semantics_robotic]]                  | 2020 | semantic mapping, survey       |       | \bull |       | \bull |       |
+| [[cite:&roa-borbolla2020_algorithm_comparison]]       | 2020 | path planning                  |       |       |       | \bull |       |
+| [[cite:&othman2020_towards]]                          | 2020 | indoor navigation              | \bull |       |       | \bull |       |
+| [[cite:&burgueno2020_collection_of]]                  | 2020 | training                       |       |       |       | \bull |       |
+| [[cite:&pierre2020_localisation]]                     | 2020 | localization                   | \bull |       | \bull |       |       |
+| [[cite:&shu2021_slam_field]]                          | 2021 | SLAM                           |       |       | \bull |       |       |
+| [[cite:&yu2021_drsnet]]                               | 2021 | categorization                 |       |       | \bull |       |       |
+| [[cite:&fernandez-chaves2021_vimantic]]               | 2021 | semantic mapping               |       |       |       |       | \bull |
+| [[cite:&burgueno-romero2021_autonomous]]              | 2021 | path planning, learning        |       |       | \bull |       |       |
+| [[cite:&suveges2021_egomap]]                          | 2021 | SLAM, dataset                  |       |       | \bull |       |       |
+| [[cite:&li2021_belief_space]]                         | 2021 | navigation, uncertainty        | \bull |       |       |       |       |
+| [[cite:&asmanis2021_combining_semantics]]             | 2021 | SLAM                           | \bull |       | \bull |       |       |
+| [[cite:&qu2021_outline_multi]]                        | 2021 | SLAM, sensor fusion            |       |       |       |       | \bull |
+| [[cite:&salhi2021_intelligent_embedded]]              | 2021 | SLAM                           | \bull |       | \bull |       |       |
+| [[cite:&jin2021_semantic_mapping]]                    | 2021 | semantic mapping               |       |       |       |       | \bull |
+| [[cite:&chamzas2021_motionbenchmaker]]                | 2021 | dataset                        |       | \bull | \bull |       |       |
+| [[cite:&ruiz-sarmiento2021_jupyter_notebooks]]        | 2021 | training                       |       |       | \bull |       |       |
+| [[cite:&luperto2021_exploration_indoor]]              | 2021 | navigation, uncertainty        |       |       |       |       | \bull |
+| [[cite:&matez-bandera2021_efficient]]                 | 2021 | categorization                 |       |       |       |       | \bull |
+| [[cite:&setiono2021_novel_room]]                      | 2021 | categorization                 |       |       |       |       | \bull |
+| [[cite:&ge2021_capacitive_piezoresistive]]            | 2021 | sensor hardware                |       |       | \bull |       |       |
+| [[cite:&liu2021_simultaneous_localization]]           | 2021 | SLAM, dataset, survey          |       | \bull | \bull |       |       |
+| [[cite:&liu2021_datasets_evaluation]]                 | 2021 | SLAM, dataset, survey          |       | \bull | \bull |       |       |
+|---------------------------------------------------+------+--------------------------------+-------+-------+-------+-------+-------|
+
+Since its publication, Robot@Home dataset
+[[cite:&ruiz-sarmiento2017_robotic_dataset]] has been referenced in a significant
+number of papers. We have carried out a survey (Table [[table-survey]]) to understand how the community
+has been using the dataset and the challenges they have faced using it.
+
+# >>>>>>>>>>>>>>>>>>>>>>>>>> From paper_R@H2.org >>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+On some occasions the dataset was referenced as an example of the importance of datasets
+in the area of mobile robotics
+[[cite:&nakamura2017_ensemble;&zuniga2019_automatic;&mishra2019_ego;&zuniga-noel2019_intrinsic;&fabro2019_design_development;&shu2021_slam_field;&yu2021_drsnet;&burgueno-romero2021_autonomous;&suveges2021_egomap;&chamzas2021_motionbenchmaker;&ge2021_capacitive_piezoresistive;&liu2021_simultaneous_localization;&liu2021_datasets_evaluation]],
+and on other occasions more specifically as a dataset oriented to semantic
+mapping
+[[cite:&deeken2018_grounding;&gunther2018_context;&roa-borbolla2018_realistic;&suh2018_semantic_task;&pire2019_rosario;&martinez2019_fukuoka;&delapuente2019_robot;&garg2020_semantics_robotic;&roa-borbolla2020_algorithm_comparison;&burgueno2020_collection_of]].
+It has also served as a source of inspiration for PhD thesis
+[[cite:&ruiz-sarmiento2016_probabilistic_techniques;&tarifa2017_motion;&jaimez2017_motion_estimation;&ferri2018_computing_fast;&othman2020_towards;&pierre2020_localisation;&li2021_belief_space;&asmanis2021_combining_semantics;&salhi2021_intelligent_embedded]]
+and as an education resource [[cite:&ruiz-sarmiento2021_jupyter_notebooks;&ruiz-sarmiento2019_tutorial_on;&ruiz-sarmiento2020_tutorial_python]]
+
+However, where the data set has been most useful and of greatest interest to us
+has been in those works in which it has been used for the purpose for which it
+was created, that is, as a testing platform for the development of algorithms.
+
+Robot@Home dataset has been exploited for a variety of tasks. Starting with
+semantic mapping, in
+[[cite:&ruiz-sarmiento2017_building_multiversal;&monroy2019_olfaction_vision]]
+Robot@Home dataset was used to check the suitability of a probabilistic
+representation in form of semantic map and its capacity to handle uncertain
+information. This map is an extension of traditional semantic maps for robotics,
+with the ability to coherently manage uncertain information coming from, for
+example, object recognition or gas classification processes, and reference them
+to the location where they were acquired into a metric map. Additionally, it
+also comprises semantic information codified by means of an ontology, enabling
+the execution of high-level reasoning tasks. [[cite:&chaves2019_integration]]
+proposes the integration of a cnn into a robotic architecture to build semantic
+maps of indoor environments and carries out experiments with Robot@Home dataset.
+On the other hand, [[cite:&fernandez-chaves2021_vimantic]] presents ViMantic as a
+novel semantic mapping architecture for the building and maintenance of such
+maps. Experiments were carried out with the Robot@Home dataset considering
+multiple robots collecting data from the same environment, hence enabling the
+testing of multi-agent scenarios. In [[cite:&jin2021_semantic_mapping]] a new deep
+learning-based image feature fusion method is presented. The RGB feature
+information extracted by a classification network and a detection network are
+integrated to improve the robot’s scene recognition ability and make the
+acquired semantic information more accurate. Robot@Home dataset is used to test
+a 2d metric map obtained with the proposed the method.
+
+Other works related to room categorization have made use of the dataset. In
+[[cite:&fernandez-chaves2020_from_object]] proposes a room categorization system
+based on a Bayesian probabilistic framework that combines object detections and
+its semantics. The proposed system is evaluated in houses from the Robot@Home
+dataset, validating its effectiveness under real-world conditions. Moreover,
+[[cite:&setiono2021_novel_room]] implements room categorization via scene
+understanding by integrating available object information in the scene, proposing
+a novel approach based on the prior knowledge of the object appearance frequency
+in the specific room category inside the house. The proposed approach is tested
+and evaluated by applying the Robot@Home dataset using the available RGB images
+under specific room categories.
+
+In [[cite:&tarifa2017_motion;&jaimez2018_robust]] simulations using Robot@Home and
+other datasets are carried out to address the estimation of 2D and 3D motion
+with different kinds of range sensors. Otherwise, ontology-based conditional
+random fields address the problem of object recognition
+[[cite:&ruiz-sarmiento2019_ontology]] using again scenes from Robot@Home to test the
+approach. [[cite:&moreno2020_automatic]] introduces an automatic waypoint generation
+method to improve robot navigation through narrow spaces. This work mainly uses
+Robot@Home dataset and justifies it due to the lack of publicly available
+databases that contain occupancy grids of real houses, being usually focused on
+labs and offices instead. [[cite:&balloch2018_unbiasing]] proposes improving the
+performance of real-time segmentation frameworks on robot perception data by
+transferring features learned from synthetic segmentation data. Their work takes
+advantage of Robot@Home by fine-tuning on various subsets of the dataset to
+quantify the benefits as the amount of supervised fine-tuning data is decreased.
+Moreover [[cite:&luperto2020_exploration;&luperto2021_exploration_indoor]] present
+an approach to map building that exploits a prediction of the geometric
+structure of the unknown parts of an environment to improve exploration
+performance applying it to partial grid maps acquired in real environments. An
+example of a computed map obtained by a real robot is created from the
+Robot@Home dataset.
+
+In [[cite:&qi2020_object_lidar]] an object semantic grid mapping system with 2D
+LiDAR and RGB-D sensors is proposed to solve the lack of semantic information to
+endow the robots with the ability of social goal selection and human-friendly
+operation modes. To verify the the effectiveness of the system the Robot@Home
+dataset is used again. On the other hand [[cite:&andersone2020_quality_evaluation]]
+proposes a method that allows the quality evaluation of occupancy grid maps
+without the need for ground truth maps. The method uses Convolutional Neural
+Network (CNN) for map fragment classification, for map quality evaluation as
+well as for evaluation of map regions. To train and test the CNN, data of
+various quality maps was collected from several open source data sets including
+Robot@Home.
+
+Furthermore, [[cite:&li2020_relative_pose]] presents a complete comprehensive study
+of the relative pose estimation problem for a calibrated camera constrained by
+known SE(3) invariant. To compare some approaches RGBD images from front and
+left cameras of Robot@Home are used. [[cite:&maffei2020_global_localization]]
+presents a localization strategy using floor plan as map, which is based on
+spatial density information computed from dense depth data of RGB-D cameras. The
+experimental validation is made using the Robot@home dataset. As the ground
+truth of the robot pose and the odometry are not directly available, they are
+respectively generated using SLAM and scan matching techniques. For each
+scenario, two types of tests were performed: multi-camera by using the four
+RGB-D cameras, and single-camera by using only the RGB-D camera facing forward.
+And [[cite:&matez-bandera2021_efficient]] presents an attention mechanism for mobile
+robots to face the problem of place categorization. Robot@Home is used to
+demostrate that the proposal generalizes well for the two main paradigms of
+place categorization (object-based and image-based), outperforming typical
+camera-configurations (fixed and continuously-rotating) and a pure-exploratory
+approach, both in quickness and accuracy. As Robot@Home does not explicitly
+offer a controllable pan unit a virtual one with degrees of pan motion and a
+maximum rotation speed of degrees per second is generated by interpolating the
+view from the four available fixed cameras.
+
+# <<<<<<<<<<<<<<<<<<<<<<<<<< From paper_R@H2.org <<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+* References                                                      :ignore:
+#+begin_export latex
+%---------------------------------------------------------------------
+%
+%           References
+%
+%---------------------------------------------------------------------
+#+end_export
+
+# * References
+# :PROPERTIES:
+# :UNNUMBERED: t
+# :END:
+
+# To prevent the addition of a separate section called References before the bibliography
+# #+LATEX: \renewcommand{\bibsection}
+
+# [[nocite:*]]    # Uncomment to include a full list of references contained in
+# the bib file
+
+#+begin_export latex
+%% References:
+%% If you have bibdatabase file and want bibtex to generate the
+%% bibitems, please use
+%%
+%%  \bibliographystyle{elsarticle-num} 
+%%  \bibliography{<your bibdatabase>}
+
+%% else use the following coding to input the bibitems directly in the
+%% TeX file.
+#+end_export
+
+
+#+begin_export latex
+%% \begin{thebibliography}{00}
+
+%% \bibitem{label}
+%% Text of bibliographic item
+
+%% \bibitem{}
+
+
+%% \end{thebibliography}
+%% Please add the reference to the software repository if DOI for software  is available. 
+#+end_export
+
+[[bibliography:PhD.bib]]
+[[bibliographystyle:elsarticle-num]]
+
+
+* Emacs Setup                                                    :noexport:
+  This document has local variables in its postembule, which should
+  allow org-mode to work seamlessly without any setup. If you're
+  uncomfortable using such variables, you can safely ignore them at
+  startup. Exporting may require that you copy them in your .emacs.
+
+  If you are more comfortable setting the variables in preamble (first two
+  lines), it would be something like:
+
+  : -*- mode: org; coding: utf-8-unix; ispell-dictionary: "english"; org-hide-emphasis-markers: t; buffer-read-only: t; eval: (auto-fill-mode)  -*-
+
+# Local Variables:
+# mode: org
+# coding: utf-8-unix
+# ispell-dictionary: "english"
+# org-hide-emphasis-markers: t
+# buffer-read-only: t
+# org-confirm-babel-evaluate: nil
+# eval: (auto-fill-mode)
+# End:
+
