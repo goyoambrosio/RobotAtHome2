@@ -37,15 +37,15 @@ https://doi.org/10.1016/j.softx.2023.101490.
 
 ```BibTeX
 @article{ambrosio2023robotathome2,
-title = {The Robot@Home2 dataset: A new release with improved usability tools},
-author = {Gregorio Ambrosio-Cestero and Jose-Raul Ruiz-Sarmiento and Javier Gonzalez-Jimenez},
-journal = {SoftwareX},
-volume = {23},
-pages = {101490},
-year = {2023},
-issn = {2352-7110},
-doi = {https://doi.org/10.1016/j.softx.2023.101490},
-url = {https://www.sciencedirect.com/science/article/pii/S2352711023001863},
+   title = {The Robot@Home2 dataset: A new release with improved usability tools},
+  author = {Gregorio Ambrosio-Cestero and Jose-Raul Ruiz-Sarmiento and Javier Gonzalez-Jimenez},
+ journal = {SoftwareX},
+  volume = {23},
+   pages = {101490},
+    year = {2023},
+    issn = {2352-7110},
+     doi = {https://doi.org/10.1016/j.softx.2023.101490},
+     url = {https://www.sciencedirect.com/science/article/pii/S2352711023001863},
 keywords = {Dataset, Mobile robotics, Relational database, Python, Jupyter, Google Colab}
 }
 ```
