@@ -1,22 +1,57 @@
-# Robot@Home2 Dataset Toolbox #
+# Robot@Home2, a robotic dataset of home environments #
 
 [![PyPI](https://img.shields.io/pypi/v/robotathome)](https://pypi.org/project/robotathome/ "R@H2 as PyPI package ready to install")
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7811795.svg)](https://doi.org/10.5281/zenodo.7811795 "The downloadable R@H2 dataset in Zenodo")
-[![DOI](https://zenodo.org/badge/245370645.svg)](https://doi.org/10.5281/zenodo.7812048 "This repository released on Zenodo")
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7850971.svg)](https://doi.org/10.5281/zenodo.7850971 "This repository released on Zenodo")
 [![Open In Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/drive/folders/1ENnxbKP5MJdlGl2Q93WTbIlofuy6Icxq)
 
+[Robot@Home](https://mapir.isa.uma.es/mapirwebsite/?p=2318), released by the
+MAPIR-UMA group in 2017, is a vast repository of both raw and processed data
+collected by a mobile robot in a number of apartments. The raw data encompasses
++87K timestamped observations divided into RGB-D images (including both
+intensity and depth information) and 2D laser scans covering 40 scenarios.
+
+[Robot@Home2](https://www.sciencedirect.com/science/article/pii/S2352711023001863),
+is an enhanced version aimed at improving usability and functionality for
+developing and testing mobile robotics and computer vision algorithms.
+Robot@Home2 consists of three main components. Firstly, a [relational
+database](https://doi.org/10.5281/zenodo.7811795) that states the contextual
+information and data links, compatible with Standard Query Language. Secondly,a
+[Python package](https://pypi.org/project/robotathome/) for managing the
+database, including downloading, querying, and interfacing functions. Finally,
+learning resources in the form of [Jupyter
+notebooks](https://drive.google.com/drive/folders/1ENnxbKP5MJdlGl2Q93WTbIlofuy6Icxq),
+runnable locally or on the Google Colab platform, enabling users to explore the
+dataset without local installations. These freely available tools are expected
+to enhance the ease of exploiting the Robot@Home dataset and accelerate research
+in computer vision and robotics.
+
+If using Robot@Home2 for scientific publications, please cite the following
+[paper](https://www.sciencedirect.com/science/article/pii/S2352711023001863):
+
+Gregorio Ambrosio-Cestero, Jose-Raul Ruiz-Sarmiento, Javier Gonzalez-Jimenez,
+**The Robot@Home2 dataset: A new release with improved usability tools**, in
+*SoftwareX, Volume 23, 2023, 101490, ISSN 2352-7110*,
+https://doi.org/10.1016/j.softx.2023.101490.
 
 
-The Robot-at-Home dataset (Robot@Home, paper
-[here](http://mapir.uma.es/papersrepo/2017/2017-raul-IJRR-Robot_at_home_dataset.pdf))
-is a collection of raw and processed data from five domestic settings compiled
-by a mobile robot equipped with 4 RGB-D cameras and a 2D laser scanner. Its main
-purpose is to serve as a testbed for semantic mapping algorithms through the
-categorization of objects and/or rooms.
+```
+@article{ambrosio2023robotathome2,
+title = {The Robot@Home2 dataset: A new release with improved usability tools},
+author = {Gregorio Ambrosio-Cestero and Jose-Raul Ruiz-Sarmiento and Javier Gonzalez-Jimenez},
+journal = {SoftwareX},
+volume = {23},
+pages = {101490},
+year = {2023},
+issn = {2352-7110},
+doi = {https://doi.org/10.1016/j.softx.2023.101490},
+url = {https://www.sciencedirect.com/science/article/pii/S2352711023001863},
+keywords = {Dataset, Mobile robotics, Relational database, Python, Jupyter, Google Colab}
+}
+```
 
-Nevertheless, the Robot@Home dataset has been updated to **Robot@Home2**. This
-update is made up of a relational database file in SQLite format with all the
-original data and a size of only 2,2 GB. The image and scene files have been
+This update is made up of a relational database file in SQLite format with all
+the original data and a size of only 2,2 GB. The image and scene files have been
 reorganized and now takes only 25,9 GB.
 
 The database, named `rh.db`, is a relational sql database accessible with the
@@ -32,7 +67,7 @@ The intensity (RGB) and depth (D) image files have a standard *png* format so
 they can be opened directly. In addition, the files are linked to the data in
 the database through tables that relate them. Moreover, the database contains
 tables that relate the files of the new version with those of the old version.
-  
+
 In the case of 3D scene files, these are plain text files that store the
 coordinates and colors of the points that make up the 3D cloud. These files can
 be easily visualized with current software for the visualization of point
