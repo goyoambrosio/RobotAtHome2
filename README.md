@@ -50,7 +50,8 @@ keywords = {Dataset, Mobile robotics, Relational database, Python, Jupyter, Goog
 }
 ```
 
-This update is made up of a relational database file in SQLite format with all
+## About ##
+This release is made up of a relational database file in SQLite format with all
 the original data and a size of only 2,2 GB. The image and scene files have been
 reorganized and now takes only 25,9 GB.
 
