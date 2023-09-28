@@ -26,7 +26,7 @@ dataset without local installations. These freely available tools are expected
 to enhance the ease of exploiting the Robot@Home dataset and accelerate research
 in computer vision and robotics.
 
-If using Robot@Home2 for scientific publications, please cite the following
+If you use Robot@Home2, please cite the following
 [paper](https://www.sciencedirect.com/science/article/pii/S2352711023001863):
 
 Gregorio Ambrosio-Cestero, Jose-Raul Ruiz-Sarmiento, Javier Gonzalez-Jimenez,
