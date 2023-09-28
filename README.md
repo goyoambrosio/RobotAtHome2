@@ -5,8 +5,6 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.7850971.svg)](https://doi.org/10.5281/zenodo.7850971 "This repository released on Zenodo")
 [![Open In Collab](https://colab.research.google.com/assets/colab-badge.svg)](https://drive.google.com/drive/folders/1ENnxbKP5MJdlGl2Q93WTbIlofuy6Icxq)
 
-<a href="https://mapir.isa.uma.es/mapirwebsite/?p=2318" target="_blank">Robot@Home</a>
-
 [Robot@Home](https://mapir.isa.uma.es/mapirwebsite/?p=2318), released by the
 MAPIR-UMA group in 2017, is a vast repository of both raw and processed data
 collected by a mobile robot in a number of apartments. The raw data encompasses
