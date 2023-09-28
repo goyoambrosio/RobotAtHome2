@@ -69,20 +69,12 @@ the database through tables that relate them. Moreover, the database contains
 tables that relate the files of the new version with those of the old version.
 
 In the case of 3D scene files, these are plain text files that store the
-coordinates and colors of the points that make up the 3D cloud. These files can
-be easily visualized with current software for the visualization of point
-clouds like [MeshLab](https://www.meshlab.net/).
+coordinates and colors of the points that make up the 3D cloud.
 
 You no longer need to waste time diving the obscure data formats (despite an API
--**dataset.py**- for that is provided). Instead, you can simply surf the dataset
-through SQL queries or the new toolbox.
-
-The toolbox (**toolbox.py**) has been coded for various purposes. The first one
-consists of encapsulating frequent queries as functions and integrating the
-results with a data analysis library such as Pandas. Pandas library is widely
-used in data science and machine learning disciplines in the Python framework.
-The second one is the integration of the data set with the GluonCV library to
-apply deep learning algorithms in artificial vision.
+[dataset.py](https://github.com/goyoambrosio/RobotAtHome2/blob/master/robotathome/transition/dataset.py)
+for that is provided). Instead, you can simply surf the dataset through SQL
+queries or the new Python package.
 
 ## Prerequisites: Installing the Python Development Environment
 
